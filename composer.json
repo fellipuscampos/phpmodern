@@ -1,0 +1,40 @@
+{
+    "name": "phpmodern/workspace",
+    "description": "Dev workspace for the phpmodern framework packages (monorepo, not published as-is).",
+    "type": "project",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5",
+        "phpstan/phpstan": "^1.11",
+        "phpmodern/component-engine": "*",
+        "phpmodern/orm": "*",
+        "phpmodern/push-hub": "*",
+        "phpmodern/bridge-adapter": "*",
+        "phpmodern/kernel": "*"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "packages/*/*"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "autoload-dev": {
+        "psr-4": {
+            "PhpModern\\ComponentEngine\\Tests\\": "packages/core/component-engine/tests/",
+            "PhpModern\\Orm\\Tests\\": "packages/core/orm/tests/",
+            "PhpModern\\PushHub\\Tests\\": "packages/core/push-hub/tests/"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "scripts": {
+        "test": "phpunit",
+        "analyse": "phpstan analyse"
+    }
+}

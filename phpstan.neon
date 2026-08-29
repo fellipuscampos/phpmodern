@@ -1,0 +1,13 @@
+parameters:
+    level: 8
+    paths:
+        - packages/core/component-engine/src
+        - packages/core/orm/src
+        - packages/core/push-hub/src
+        - packages/bridge/adapter/src
+        - packages/framework/kernel/src
+    # HubServer::run() is an intentionally long-lived daemon loop.
+    ignoreErrors:
+        -
+            message: '#While loop condition is always true#'
+            path: packages/core/push-hub/src/HubServer.php

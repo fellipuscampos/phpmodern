@@ -1,0 +1,20 @@
+{
+    "name": "phpmodern/legacy-demo",
+    "description": "Simulates a site that already exists in plain PHP, adopting phpmodern only through bridge mode (no router, no bootstrap, no DI container).",
+    "type": "project",
+    "license": "proprietary",
+    "require": {
+        "php": "^8.2",
+        "phpmodern/bridge-adapter": "*",
+        "phpmodern/orm": "*",
+        "phpmodern/push-hub": "*"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../../packages/*/*"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

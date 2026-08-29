@@ -1,0 +1,20 @@
+{
+    "name": "phpmodern/kernel",
+    "description": "Meta-package for greenfield projects: front controller + router on top of the same core engines used in bridge mode.",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "phpmodern/component-engine": "*",
+        "phpmodern/orm": "*",
+        "phpmodern/push-hub": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "PhpModern\\Kernel\\": "src/"
+        }
+    },
+    "bin": [
+        "bin/console"
+    ]
+}

@@ -1,0 +1,24 @@
+{
+    "name": "phpmodern/starter-kernel",
+    "description": "A project built from scratch on top of the phpmodern kernel — same OrderStatusBadge component as apps/legacy-demo, mounted through the router instead of bridge mode.",
+    "type": "project",
+    "license": "proprietary",
+    "require": {
+        "php": "^8.2",
+        "phpmodern/kernel": "*",
+        "phpmodern/bridge-adapter": "*"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../../packages/*/*"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    }
+}

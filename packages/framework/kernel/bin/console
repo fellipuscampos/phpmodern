@@ -1,0 +1,6 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+echo "phpmodern kernel console (v0.1 — proof of concept, no scaffolding commands yet)\n";

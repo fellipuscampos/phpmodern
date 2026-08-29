@@ -1,0 +1,151 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "02254fab92aa4e2822475451ab058fa7",
+    "packages": [
+        {
+            "name": "phpmodern/bridge-adapter",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "../../packages/bridge/adapter",
+                "reference": "b6871d9aade0e3fbe11c2e554101b11eaf8e67b5"
+            },
+            "require": {
+                "php": "^8.2",
+                "phpmodern/component-engine": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/mount.php"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Entry point for embedding phpmodern components into an existing PHP site — no router, no bootstrap, no DI container required.",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "phpmodern/component-engine",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "../../packages/core/component-engine",
+                "reference": "f3a76f772878850214aa3e802ba60d06a204208b"
+            },
+            "require": {
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^10.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PhpModern\\ComponentEngine\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "PhpModern\\ComponentEngine\\Tests\\": "tests/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Server-rendered component base: typed props, lifecycle, render() — the React-equivalent core.",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "phpmodern/orm",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "../../packages/core/orm",
+                "reference": "80a28bb599d72ef88e00158ff639c7a7e91faf02"
+            },
+            "require": {
+                "ext-pdo": "*",
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^10.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PhpModern\\Orm\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "PhpModern\\Orm\\Tests\\": "tests/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Minimal typed database access (PDO wrapper + query helper) — placeholder for the Prisma/Drizzle-equivalent core.",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "phpmodern/push-hub",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "../../packages/core/push-hub",
+                "reference": "cf4bd816cbfe35357877e8e7c25a445ac8fb6deb"
+            },
+            "require": {
+                "ext-json": "*",
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^10.5"
+            },
+            "bin": [
+                "bin/hub.php"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PhpModern\\PushHub\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "PhpModern\\PushHub\\Tests\\": "tests/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Standalone SSE push daemon + publisher client — lets any PHP process (legacy FPM app or kernel app) push HTML updates to the browser without client-side polling.",
+            "transport-options": {
+                "relative": true
+            }
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "dev",
+    "stability-flags": {},
+    "prefer-stable": true,
+    "prefer-lowest": false,
+    "platform": {
+        "php": "^8.2"
+    },
+    "platform-dev": {},
+    "plugin-api-version": "2.6.0"
+}

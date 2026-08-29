@@ -1,0 +1,15 @@
+{
+    "name": "phpmodern/bridge-adapter",
+    "description": "Entry point for embedding phpmodern components into an existing PHP site — no router, no bootstrap, no DI container required.",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "phpmodern/component-engine": "*"
+    },
+    "autoload": {
+        "files": [
+            "src/mount.php"
+        ]
+    }
+}

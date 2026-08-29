@@ -1,0 +1,22 @@
+{
+    "name": "phpmodern/component-engine",
+    "description": "Server-rendered component base: typed props, lifecycle, render() — the React-equivalent core.",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "PhpModern\\ComponentEngine\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "PhpModern\\ComponentEngine\\Tests\\": "tests/"
+        }
+    }
+}
