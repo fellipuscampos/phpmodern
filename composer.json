@@ -29,7 +29,8 @@
             "PhpModern\\ComponentEngine\\Tests\\": "packages/core/component-engine/tests/",
             "PhpModern\\Orm\\Tests\\": "packages/core/orm/tests/",
             "PhpModern\\PushHub\\Tests\\": "packages/core/push-hub/tests/",
-            "PhpModern\\TypingContracts\\Tests\\": "packages/core/typing-contracts/tests/"
+            "PhpModern\\TypingContracts\\Tests\\": "packages/core/typing-contracts/tests/",
+            "PhpModern\\Kernel\\Tests\\": "packages/framework/kernel/tests/"
         }
     },
     "config": {

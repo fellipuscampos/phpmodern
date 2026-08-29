@@ -33,7 +33,7 @@ packages/core/          Independently publishable engine packages
   push-hub/               Standalone SSE daemon: server push, no client polling
   typing-contracts/       The check command + rule banning untyped/mixed props
 packages/bridge/adapter/  Entry point for embedding into an existing PHP site
-packages/framework/kernel/  Meta-package for greenfield projects (router, front controller)
+packages/framework/kernel/  Meta-package for greenfield projects (router, front controller, make:component)
 apps/legacy-demo/         A simulated pre-existing PHP site, using bridge mode only
 apps/starter-kernel/      A project built from scratch on kernel mode
 docs/                     Architecture notes and verification checklists
@@ -104,15 +104,31 @@ It runs PHPStan at level 9 plus a custom rule
 TypeScript — without requiring the consuming project to write any PHPStan
 config of its own.
 
+## Scaffolding: `make:component`
+
+Kernel-mode projects (only — this is a dev-time convenience, not something
+bridge mode needs to own) get a scaffolding command:
+
+```bash
+php vendor/bin/console make:component ProductCard
+# or nested: php vendor/bin/console make:component Orders/StatusBadge
+```
+
+Generates a typed, escaping-by-default `Component` subclass under
+`app/Components/` (subdirectories become sub-namespaces), refuses to
+overwrite an existing file, and the result passes `phpmodern-check`
+out of the box.
+
 ## Roadmap (not yet built)
 
 A broader map of "modern-stack feature → PHP equivalent → feasibility" lives
 in the project's planning notes and guides what gets built next, including:
-CLI scaffolding and a hot-reload dev server, state management, migrations,
-queues, and a debug bar. None of this is committed to yet beyond Phase 0,
-which exists to validate the riskiest assumptions (dual-mode reactivity with
-one engine, patched efficiently on the client, and strict typing enforced
-with no consumer-side config) before investing further.
+a hot-reload dev server, state management, migrations, queues, and a debug
+bar. None of this is committed to yet beyond Phase 0, which exists to
+validate the riskiest assumptions (dual-mode reactivity with one engine,
+patched efficiently on the client, strict typing enforced with no
+consumer-side config, and scaffolding that produces already-compliant code)
+before investing further.
 
 ## Requirements
 

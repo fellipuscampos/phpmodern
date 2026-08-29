@@ -16,5 +16,8 @@
         <testsuite name="typing-contracts">
             <directory>packages/core/typing-contracts/tests</directory>
         </testsuite>
+        <testsuite name="kernel">
+            <directory>packages/framework/kernel/tests</directory>
+        </testsuite>
     </testsuites>
 </phpunit>

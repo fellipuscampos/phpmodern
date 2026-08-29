@@ -3,4 +3,53 @@
 
 declare(strict_types=1);
 
-echo "phpmodern kernel console (v0.1 — proof of concept, no scaffolding commands yet)\n";
+$autoloadCandidates = [
+    __DIR__ . '/../../../../vendor/autoload.php', // running from the workspace root
+    __DIR__ . '/../vendor/autoload.php',          // running the package standalone
+];
+
+foreach ($autoloadCandidates as $autoload) {
+    if (is_file($autoload)) {
+        require $autoload;
+
+        break;
+    }
+}
+
+use PhpModern\Kernel\Console\MakeComponentCommand;
+
+/** @var list<string> $argv */
+$command = $argv[1] ?? null;
+
+if ($command === 'make:component') {
+    $name = $argv[2] ?? null;
+
+    if ($name === null) {
+        fwrite(STDERR, "Usage: console make:component <Name> [--dir=app/Components] [--namespace=App\\Components]\n");
+        exit(1);
+    }
+
+    $targetDir = getcwd() . '/app/Components';
+    $namespace = 'App\\Components';
+
+    foreach (array_slice($argv, 3) as $option) {
+        if (str_starts_with($option, '--dir=')) {
+            $targetDir = getcwd() . '/' . substr($option, strlen('--dir='));
+        } elseif (str_starts_with($option, '--namespace=')) {
+            $namespace = substr($option, strlen('--namespace='));
+        }
+    }
+
+    try {
+        $path = (new MakeComponentCommand())->run($name, $targetDir, $namespace);
+        fwrite(STDOUT, "Created: {$path}\n");
+        exit(0);
+    } catch (Throwable $exception) {
+        fwrite(STDERR, $exception->getMessage() . "\n");
+        exit(1);
+    }
+}
+
+fwrite(STDOUT, "phpmodern kernel console\n\n");
+fwrite(STDOUT, "Commands:\n");
+fwrite(STDOUT, "  make:component <Name>   Scaffold a new typed component (App\\Components\\<Name>)\n");
