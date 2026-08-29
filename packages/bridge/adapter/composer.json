@@ -9,7 +9,8 @@
     },
     "autoload": {
         "files": [
-            "src/mount.php"
+            "src/mount.php",
+            "src/asset.php"
         ]
     }
 }

@@ -8,5 +8,10 @@ declare(strict_types=1);
  * MIME type instead of requiring an asset pipeline.
  */
 
+$sourceFile = __DIR__ . '/../../packages/core/push-hub/resources/vendor/idiomorph/idiomorph.min.js';
+
 header('Content-Type: application/javascript; charset=utf-8');
-readfile(__DIR__ . '/../../packages/core/push-hub/resources/vendor/idiomorph/idiomorph.min.js');
+header(isset($_GET['v'])
+    ? 'Cache-Control: public, max-age=31536000, immutable'
+    : 'Cache-Control: no-cache');
+readfile($sourceFile);

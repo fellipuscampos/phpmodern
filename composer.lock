@@ -244,11 +244,11 @@
         },
         {
             "name": "phpmodern/bridge-adapter",
-            "version": "dev-main",
+            "version": "dev-master",
             "dist": {
                 "type": "path",
                 "url": "packages/bridge/adapter",
-                "reference": "b6871d9aade0e3fbe11c2e554101b11eaf8e67b5"
+                "reference": "9ab262a921c82f67eae729331df4fcb389b53ba0"
             },
             "require": {
                 "php": "^8.2",
@@ -257,7 +257,8 @@
             "type": "library",
             "autoload": {
                 "files": [
-                    "src/mount.php"
+                    "src/mount.php",
+                    "src/asset.php"
                 ]
             },
             "license": [
@@ -270,7 +271,7 @@
         },
         {
             "name": "phpmodern/component-engine",
-            "version": "dev-main",
+            "version": "dev-master",
             "dist": {
                 "type": "path",
                 "url": "packages/core/component-engine",
@@ -303,7 +304,7 @@
         },
         {
             "name": "phpmodern/kernel",
-            "version": "dev-main",
+            "version": "dev-master",
             "dist": {
                 "type": "path",
                 "url": "packages/framework/kernel",
@@ -334,7 +335,7 @@
         },
         {
             "name": "phpmodern/orm",
-            "version": "dev-main",
+            "version": "dev-master",
             "dist": {
                 "type": "path",
                 "url": "packages/core/orm",
@@ -368,7 +369,7 @@
         },
         {
             "name": "phpmodern/push-hub",
-            "version": "dev-main",
+            "version": "dev-master",
             "dist": {
                 "type": "path",
                 "url": "packages/core/push-hub",

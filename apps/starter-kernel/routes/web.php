@@ -9,6 +9,7 @@ use PhpModern\Orm\QueryHelper;
 use PhpModern\PushHub\HubClientPublisher;
 
 use function PhpModern\Bridge\mount;
+use function PhpModern\Bridge\versioned_asset_url;
 
 const STATUS_CYCLE = ['pendente', 'confirmado', 'enviado', 'entregue'];
 
@@ -27,6 +28,15 @@ return static function (Router $router, callable $connectionFactory): void {
         $channel = (new OrderStatusBadge('order-status-badge-42', 42, $order['status']))->channel();
         $channelJson = json_encode($channel);
 
+        $idiomorphSrc = versioned_asset_url(
+            '/assets/idiomorph.js',
+            __DIR__ . '/../../../packages/core/push-hub/resources/vendor/idiomorph/idiomorph.min.js',
+        );
+        $clientSrc = versioned_asset_url(
+            '/assets/push-hub-client.js',
+            __DIR__ . '/../../../packages/core/push-hub/resources/client.js',
+        );
+
         return <<<HTML
             <!doctype html>
             <html lang="pt-br">
@@ -38,9 +48,9 @@ return static function (Router $router, callable $connectionFactory): void {
                     <p style="font-size: 1.5rem;">{$badgeHtml}</p>
                     <button id="advance-button" type="button">Avançar status</button>
                 </main>
-                <script src="/assets/idiomorph.js"></script>
+                <script src="{$idiomorphSrc}"></script>
                 <script type="module">
-                    import { connectPushChannel } from '/assets/push-hub-client.js';
+                    import { connectPushChannel } from '{$clientSrc}';
                     connectPushChannel({$channelJson});
                     document.getElementById('advance-button').addEventListener('click', () => {
                         fetch('/orders/42/advance', { method: 'POST' });
@@ -53,12 +63,14 @@ return static function (Router $router, callable $connectionFactory): void {
 
     $router->get('/assets/push-hub-client.js', function () {
         header('Content-Type: application/javascript; charset=utf-8');
+        header(isset($_GET['v']) ? 'Cache-Control: public, max-age=31536000, immutable' : 'Cache-Control: no-cache');
 
         return (string) file_get_contents(__DIR__ . '/../../../packages/core/push-hub/resources/client.js');
     });
 
     $router->get('/assets/idiomorph.js', function () {
         header('Content-Type: application/javascript; charset=utf-8');
+        header(isset($_GET['v']) ? 'Cache-Control: public, max-age=31536000, immutable' : 'Cache-Control: no-cache');
 
         return (string) file_get_contents(
             __DIR__ . '/../../../packages/core/push-hub/resources/vendor/idiomorph/idiomorph.min.js',

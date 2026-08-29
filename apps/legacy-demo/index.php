@@ -10,6 +10,16 @@ use PhpModern\Orm\Connection;
 use PhpModern\Orm\QueryHelper;
 
 use function PhpModern\Bridge\mount;
+use function PhpModern\Bridge\versioned_asset_url;
+
+$idiomorphSrc = versioned_asset_url(
+    'idiomorph.js.php',
+    __DIR__ . '/../../packages/core/push-hub/resources/vendor/idiomorph/idiomorph.min.js',
+);
+$clientSrc = versioned_asset_url(
+    './push-hub-client.js.php',
+    __DIR__ . '/../../packages/core/push-hub/resources/client.js',
+);
 
 $dbPath = __DIR__ . '/../../var/demo.sqlite';
 $isFirstRun = !file_exists($dbPath);
@@ -51,9 +61,9 @@ $channel = (new OrderStatusBadge('order-status-badge-42', 42, $order['status']))
     <p><small>O clique atualiza o banco; a tela é atualizada por push (SSE), sem F5 e sem polling.</small></p>
 </main>
 
-<script src="idiomorph.js.php"></script>
+<script src="<?= htmlspecialchars($idiomorphSrc, ENT_QUOTES, 'UTF-8') ?>"></script>
 <script type="module">
-    import { connectPushChannel } from './push-hub-client.js.php';
+    import { connectPushChannel } from '<?= $clientSrc ?>';
 
     connectPushChannel(<?= json_encode($channel) ?>);
 
