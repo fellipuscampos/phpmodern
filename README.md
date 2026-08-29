@@ -29,7 +29,7 @@ parallel, lesser reimplementation of kernel mode.
 ```
 packages/core/          Independently publishable engine packages
   component-engine/      Server-rendered components: typed props, lifecycle
-  orm/                    Minimal typed DB access (PDO wrapper + query helper)
+  orm/                    Minimal typed DB access (PDO wrapper, query helper, migrations)
   push-hub/               Standalone SSE daemon: server push, no client polling
   typing-contracts/       The check command + rule banning untyped/mixed props
 packages/bridge/adapter/  Entry point for embedding into an existing PHP site
@@ -119,16 +119,32 @@ Generates a typed, escaping-by-default `Component` subclass under
 overwrite an existing file, and the result passes `phpmodern-check`
 out of the box.
 
+## Migrations
+
+`phpmodern/orm` ships a minimal migration runner (`MigrationRunner`) plus two
+console commands. A migration file just returns an anonymous class
+implementing `Migration` (the same convention Laravel uses) — no separate
+registry to maintain:
+
+```bash
+php vendor/bin/console migrate --dsn=sqlite:var/app.sqlite
+php vendor/bin/console migrate:rollback --dsn=sqlite:var/app.sqlite
+```
+
+`--dsn` can also come from the `DATABASE_URL` environment variable; `--dir`
+defaults to `database/migrations`. Applied migrations are tracked in a
+`phpmodern_migrations` table; rollback reverts only the most recent one.
+
 ## Roadmap (not yet built)
 
 A broader map of "modern-stack feature → PHP equivalent → feasibility" lives
 in the project's planning notes and guides what gets built next, including:
-a hot-reload dev server, state management, migrations, queues, and a debug
-bar. None of this is committed to yet beyond Phase 0, which exists to
-validate the riskiest assumptions (dual-mode reactivity with one engine,
-patched efficiently on the client, strict typing enforced with no
-consumer-side config, and scaffolding that produces already-compliant code)
-before investing further.
+a hot-reload dev server, state management, queues, and a debug bar. None of
+this is committed to yet beyond Phase 0, which exists to validate the
+riskiest assumptions (dual-mode reactivity with one engine, patched
+efficiently on the client, strict typing enforced with no consumer-side
+config, scaffolding that produces already-compliant code, and migrations
+with no registry to maintain) before investing further.
 
 ## Requirements
 

@@ -17,6 +17,23 @@ foreach ($autoloadCandidates as $autoload) {
 }
 
 use PhpModern\Kernel\Console\MakeComponentCommand;
+use PhpModern\Orm\Connection;
+use PhpModern\Orm\MigrationRunner;
+
+/** @param list<string> $args */
+function console_options(array $args): array
+{
+    $options = [];
+
+    foreach ($args as $arg) {
+        if (str_starts_with($arg, '--') && str_contains($arg, '=')) {
+            [$key, $value] = explode('=', substr($arg, 2), 2);
+            $options[$key] = $value;
+        }
+    }
+
+    return $options;
+}
 
 /** @var list<string> $argv */
 $command = $argv[1] ?? null;
@@ -29,16 +46,9 @@ if ($command === 'make:component') {
         exit(1);
     }
 
-    $targetDir = getcwd() . '/app/Components';
-    $namespace = 'App\\Components';
-
-    foreach (array_slice($argv, 3) as $option) {
-        if (str_starts_with($option, '--dir=')) {
-            $targetDir = getcwd() . '/' . substr($option, strlen('--dir='));
-        } elseif (str_starts_with($option, '--namespace=')) {
-            $namespace = substr($option, strlen('--namespace='));
-        }
-    }
+    $options = console_options(array_slice($argv, 3));
+    $targetDir = getcwd() . '/' . ($options['dir'] ?? 'app/Components');
+    $namespace = $options['namespace'] ?? 'App\\Components';
 
     try {
         $path = (new MakeComponentCommand())->run($name, $targetDir, $namespace);
@@ -50,6 +60,45 @@ if ($command === 'make:component') {
     }
 }
 
+if ($command === 'migrate' || $command === 'migrate:rollback') {
+    $options = console_options(array_slice($argv, 2));
+    $dsn = $options['dsn'] ?? (getenv('DATABASE_URL') ?: null);
+    $migrationsDir = getcwd() . '/' . ($options['dir'] ?? 'database/migrations');
+
+    if ($dsn === null) {
+        fwrite(STDERR, "Missing database DSN. Pass --dsn=sqlite:path/to.db or set the DATABASE_URL environment variable.\n");
+        exit(1);
+    }
+
+    try {
+        $runner = new MigrationRunner(new Connection($dsn));
+
+        if ($command === 'migrate') {
+            $applied = $runner->run($migrationsDir);
+
+            if ($applied === []) {
+                fwrite(STDOUT, "Nothing to migrate.\n");
+            } else {
+                foreach ($applied as $name) {
+                    fwrite(STDOUT, "Migrated: {$name}\n");
+                }
+            }
+
+            exit(0);
+        }
+
+        $rolledBack = $runner->rollbackLast($migrationsDir);
+        fwrite(STDOUT, $rolledBack === null ? "Nothing to roll back.\n" : "Rolled back: {$rolledBack}\n");
+        exit(0);
+    } catch (Throwable $exception) {
+        fwrite(STDERR, $exception->getMessage() . "\n");
+        exit(1);
+    }
+}
+
 fwrite(STDOUT, "phpmodern kernel console\n\n");
 fwrite(STDOUT, "Commands:\n");
 fwrite(STDOUT, "  make:component <Name>   Scaffold a new typed component (App\\Components\\<Name>)\n");
+fwrite(STDOUT, "  migrate                 Run pending migrations from database/migrations\n");
+fwrite(STDOUT, "  migrate:rollback        Roll back the most recently applied migration\n");
+fwrite(STDOUT, "\nBoth migrate commands accept --dsn=... (or DATABASE_URL) and --dir=...\n");
