@@ -4,10 +4,12 @@
 declare(strict_types=1);
 
 /**
- * See packages/core/queue/bin/worker.php for why this searches from getcwd()
- * first: a path-repository install junctions this file into the consuming
- * project's vendor tree, so __DIR__ alone can resolve to this file's
- * physical location inside the phpmodern monorepo instead.
+ * Composer path repositories install packages as junctions/symlinks, so
+ * __DIR__ here can resolve to this file's *physical* location inside the
+ * phpmodern monorepo rather than the consuming project's own vendor tree —
+ * an upward search from __DIR__ alone would find OUR autoloader instead of
+ * the app's, silently hiding the app's own job classes. Searching from the
+ * caller's cwd first (where the app actually lives) avoids that.
  */
 function phpmodern_find_upwards(string $startDir, string $relative): ?string
 {
@@ -49,9 +51,17 @@ if ($autoload === null) {
 
 require $autoload;
 
-use PhpModern\PushHub\HubServer;
+use PhpModern\Orm\Connection;
+use PhpModern\Queue\DatabaseQueue;
+use PhpModern\Queue\Worker;
 
-$host = $argv[1] ?? '127.0.0.1';
-$port = isset($argv[2]) ? (int) $argv[2] : 8081;
+$dsn = $argv[1] ?? (getenv('DATABASE_URL') ?: null);
 
-(new HubServer($host, $port))->run();
+if ($dsn === null) {
+    fwrite(STDERR, "Usage: worker.php <dsn>   (or set the DATABASE_URL environment variable)\n");
+    exit(1);
+}
+
+fwrite(STDOUT, "phpmodern queue worker started against {$dsn}\n");
+
+(new Worker(new DatabaseQueue(new Connection($dsn))))->run();

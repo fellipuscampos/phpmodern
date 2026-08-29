@@ -32,6 +32,7 @@ packages/core/          Independently publishable engine packages
   orm/                    Minimal typed DB access (PDO wrapper, query helper, migrations)
   push-hub/               Standalone SSE daemon: server push, no client polling
   typing-contracts/       The check command + rule banning untyped/mixed props
+  queue/                  Database-backed job queue + standalone worker daemon
 packages/bridge/adapter/  Entry point for embedding into an existing PHP site
 packages/framework/kernel/  Meta-package for greenfield projects (router, front controller, make:component)
 apps/legacy-demo/         A simulated pre-existing PHP site, using bridge mode only
@@ -135,16 +136,45 @@ php vendor/bin/console migrate:rollback --dsn=sqlite:var/app.sqlite
 defaults to `database/migrations`. Applied migrations are tracked in a
 `phpmodern_migrations` table; rollback reverts only the most recent one.
 
+## Queues
+
+`phpmodern/queue` is a database-backed job queue: push a job from any
+request (no persistent connection needed on that side), a standalone worker
+daemon processes it — the same "daemon lives outside PHP-FPM" pattern as
+push-hub.
+
+```bash
+php vendor/bin/worker.php sqlite:var/app.sqlite   # or set DATABASE_URL
+```
+
+A job is a plain class implementing `Job` (`handle(): void`), hydrated via
+named-argument unpacking from whatever payload was pushed — no serialization
+format to configure. Failed jobs are marked `failed` with the exception
+message for inspection; there is no retry/backoff policy in this version.
+
+## Repository-wide gotcha this project hit (and fixed)
+
+Every console script under `bin/` (hub, worker, check, kernel's console)
+resolves `vendor/autoload.php` by searching upward from the **caller's**
+current directory first, not from the script's own `__DIR__`. A Composer
+path-repository install junctions these files into a consumer's `vendor/`
+tree, so `__DIR__` can resolve to the file's physical location inside this
+monorepo instead — an upward search from there would silently load the
+monorepo's own autoloader instead of the consuming app's, hiding that app's
+own classes (its job classes, its migrations). Caught by actually running
+`worker.php` against a separate project instead of only unit-testing it.
+
 ## Roadmap (not yet built)
 
 A broader map of "modern-stack feature → PHP equivalent → feasibility" lives
 in the project's planning notes and guides what gets built next, including:
-a hot-reload dev server, state management, queues, and a debug bar. None of
-this is committed to yet beyond Phase 0, which exists to validate the
-riskiest assumptions (dual-mode reactivity with one engine, patched
-efficiently on the client, strict typing enforced with no consumer-side
-config, scaffolding that produces already-compliant code, and migrations
-with no registry to maintain) before investing further.
+a hot-reload dev server, state management, and a debug bar. None of this is
+committed to yet beyond Phase 0, which exists to validate the riskiest
+assumptions (dual-mode reactivity with one engine, patched efficiently on
+the client, strict typing enforced with no consumer-side config, scaffolding
+that produces already-compliant code, migrations with no registry to
+maintain, and queue workers that correctly resolve a consumer's own classes)
+before investing further.
 
 ## Requirements
 

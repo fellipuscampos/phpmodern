@@ -19,5 +19,8 @@
         <testsuite name="kernel">
             <directory>packages/framework/kernel/tests</directory>
         </testsuite>
+        <testsuite name="queue">
+            <directory>packages/core/queue/tests</directory>
+        </testsuite>
     </testsuites>
 </phpunit>

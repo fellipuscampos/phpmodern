@@ -5,10 +5,14 @@ parameters:
         - packages/core/orm/src
         - packages/core/push-hub/src
         - packages/core/typing-contracts/src
+        - packages/core/queue/src
         - packages/bridge/adapter/src
         - packages/framework/kernel/src
-    # HubServer::run() is an intentionally long-lived daemon loop.
+    # HubServer::run() / Worker::run() are intentionally long-lived daemon loops.
     ignoreErrors:
         -
             message: '#While loop condition is always true#'
             path: packages/core/push-hub/src/HubServer.php
+        -
+            message: '#While loop condition is always true#'
+            path: packages/core/queue/src/Worker.php
