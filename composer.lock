@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "83e0709e4f4191e0ec6fc72a1b305b08",
+    "content-hash": "232a45c815fb35754032e934667cb44d",
     "packages": [],
     "packages-dev": [
         {
@@ -400,6 +400,44 @@
                 "MIT"
             ],
             "description": "Standalone SSE push daemon + publisher client — lets any PHP process (legacy FPM app or kernel app) push HTML updates to the browser without client-side polling.",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "phpmodern/typing-contracts",
+            "version": "dev-master",
+            "dist": {
+                "type": "path",
+                "url": "packages/core/typing-contracts",
+                "reference": "ee7fb89e3bef571fc0e52a3a9f6ec92bbb762112"
+            },
+            "require": {
+                "php": "^8.2",
+                "phpmodern/component-engine": "*",
+                "phpstan/phpstan": "^1.11"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^10.5"
+            },
+            "bin": [
+                "bin/phpmodern-check"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PhpModern\\TypingContracts\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "PhpModern\\TypingContracts\\Tests\\": "tests/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "The TypeScript-equivalent pillar: a PHPStan rule that bans untyped/mixed component props, plus a zero-config `check` command.",
             "transport-options": {
                 "relative": true
             }

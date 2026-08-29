@@ -13,7 +13,8 @@
         "phpmodern/orm": "*",
         "phpmodern/push-hub": "*",
         "phpmodern/bridge-adapter": "*",
-        "phpmodern/kernel": "*"
+        "phpmodern/kernel": "*",
+        "phpmodern/typing-contracts": "*"
     },
     "repositories": [
         {
@@ -27,7 +28,8 @@
         "psr-4": {
             "PhpModern\\ComponentEngine\\Tests\\": "packages/core/component-engine/tests/",
             "PhpModern\\Orm\\Tests\\": "packages/core/orm/tests/",
-            "PhpModern\\PushHub\\Tests\\": "packages/core/push-hub/tests/"
+            "PhpModern\\PushHub\\Tests\\": "packages/core/push-hub/tests/",
+            "PhpModern\\TypingContracts\\Tests\\": "packages/core/typing-contracts/tests/"
         }
     },
     "config": {

@@ -1,0 +1,95 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+/**
+ * Zero-config `check` command — the phpmodern equivalent of `tsc --noEmit`.
+ * Runs PHPStan at strict level with the phpmodern component-typing rule
+ * enabled, without requiring the consumer to write any PHPStan config.
+ *
+ * Usage: vendor/bin/phpmodern-check [path ...]   (defaults to the current directory)
+ */
+
+function phpmodern_check_find_upwards(string $startDir, string $relative): ?string
+{
+    $dir = $startDir;
+
+    for ($i = 0; $i < 8; $i++) {
+        $candidate = $dir . DIRECTORY_SEPARATOR . $relative;
+        if (is_file($candidate)) {
+            return $candidate;
+        }
+
+        $parent = dirname($dir);
+        if ($parent === $dir) {
+            break;
+        }
+
+        $dir = $parent;
+    }
+
+    return null;
+}
+
+$autoload = phpmodern_check_find_upwards(__DIR__, 'vendor/autoload.php')
+    ?? phpmodern_check_find_upwards(__DIR__, '../vendor/autoload.php');
+
+if ($autoload === null) {
+    fwrite(STDERR, "Could not locate vendor/autoload.php — run composer install first.\n");
+    exit(1);
+}
+
+require $autoload;
+
+$phpstanBinary = phpmodern_check_find_upwards(__DIR__, 'vendor/bin/phpstan');
+
+if ($phpstanBinary === null) {
+    fwrite(STDERR, "Could not locate vendor/bin/phpstan — is phpmodern/typing-contracts installed?\n");
+    exit(1);
+}
+
+$rulesConfig = __DIR__ . '/../config/phpmodern-rules.neon';
+$paths = array_slice($argv, 1);
+
+if ($paths === []) {
+    $paths = [getcwd()];
+}
+
+// PHPStan resolves relative paths in a neon file against that file's own
+// directory (which is a temp dir here), not the caller's cwd — so every
+// path written into the generated config must be absolute.
+$paths = array_map(static function (string $path): string {
+    $absolute = realpath($path);
+    if ($absolute === false) {
+        fwrite(STDERR, "Path not found: {$path}\n");
+        exit(1);
+    }
+
+    return $absolute;
+}, $paths);
+
+$neon = "includes:\n    - " . str_replace('\\', '/', $rulesConfig) . "\n";
+$neon .= "parameters:\n    level: 9\n    paths:\n";
+foreach ($paths as $path) {
+    $neon .= '        - ' . str_replace('\\', '/', $path) . "\n";
+}
+$neon .= "    excludePaths:\n        - */vendor/*\n        - */var/*\n";
+
+$tmpConfig = tempnam(sys_get_temp_dir(), 'phpmodern-check-') . '.neon';
+file_put_contents($tmpConfig, $neon);
+
+$command = [PHP_BINARY, $phpstanBinary, 'analyse', '-c', $tmpConfig, '--no-progress'];
+
+$process = proc_open($command, [1 => STDOUT, 2 => STDERR], $pipes);
+
+if (!is_resource($process)) {
+    fwrite(STDERR, "Failed to start PHPStan.\n");
+    unlink($tmpConfig);
+    exit(1);
+}
+
+$exitCode = proc_close($process);
+unlink($tmpConfig);
+
+exit($exitCode);

@@ -1,0 +1,5 @@
+services:
+    -
+        class: PhpModern\TypingContracts\Rules\ComponentPropsMustBeTypedRule
+        tags:
+            - phpstan.rules.rule

@@ -31,6 +31,7 @@ packages/core/          Independently publishable engine packages
   component-engine/      Server-rendered components: typed props, lifecycle
   orm/                    Minimal typed DB access (PDO wrapper + query helper)
   push-hub/               Standalone SSE daemon: server push, no client polling
+  typing-contracts/       The check command + rule banning untyped/mixed props
 packages/bridge/adapter/  Entry point for embedding into an existing PHP site
 packages/framework/kernel/  Meta-package for greenfield projects (router, front controller)
 apps/legacy-demo/         A simulated pre-existing PHP site, using bridge mode only
@@ -84,20 +85,34 @@ Full manual verification checklist: [docs/phase-0-proof-of-concept.md](docs/phas
 ### Quality gates
 
 ```bash
-composer test      # PHPUnit across component-engine, orm, push-hub
-composer analyse   # PHPStan, level 8
+composer test      # PHPUnit across component-engine, orm, push-hub, typing-contracts
+composer analyse   # PHPStan, level 8, on the framework's own source
 ```
+
+## The TypeScript-equivalent pillar: `check`
+
+Any project that requires `phpmodern/typing-contracts` gets a zero-config
+strict-typing command — the phpmodern equivalent of `tsc --noEmit`:
+
+```bash
+vendor/bin/phpmodern-check path/to/your/components
+```
+
+It runs PHPStan at level 9 plus a custom rule
+(`ComponentPropsMustBeTypedRule`) that bans untyped and `mixed` props on any
+`Component` subclass — the direct analogue of forbidding `any` in strict
+TypeScript — without requiring the consuming project to write any PHPStan
+config of its own.
 
 ## Roadmap (not yet built)
 
 A broader map of "modern-stack feature → PHP equivalent → feasibility" lives
-in the project's planning notes and guides what gets built next, including: a
-typed-props/PHPStan-backed `check` command (the TypeScript-equivalent
-pillar), CLI scaffolding and a hot-reload dev server, state management,
-migrations, queues, and a debug bar. None of this is committed to yet beyond
-Phase 0, which exists to validate the riskiest assumption (dual-mode
-reactivity with one engine, patched efficiently on the client) before
-investing further.
+in the project's planning notes and guides what gets built next, including:
+CLI scaffolding and a hot-reload dev server, state management, migrations,
+queues, and a debug bar. None of this is committed to yet beyond Phase 0,
+which exists to validate the riskiest assumptions (dual-mode reactivity with
+one engine, patched efficiently on the client, and strict typing enforced
+with no consumer-side config) before investing further.
 
 ## Requirements
 

@@ -4,6 +4,7 @@ parameters:
         - packages/core/component-engine/src
         - packages/core/orm/src
         - packages/core/push-hub/src
+        - packages/core/typing-contracts/src
         - packages/bridge/adapter/src
         - packages/framework/kernel/src
     # HubServer::run() is an intentionally long-lived daemon loop.
