@@ -51,6 +51,7 @@ $channel = (new OrderStatusBadge('order-status-badge-42', 42, $order['status']))
     <p><small>O clique atualiza o banco; a tela é atualizada por push (SSE), sem F5 e sem polling.</small></p>
 </main>
 
+<script src="idiomorph.js.php"></script>
 <script type="module">
     import { connectPushChannel } from './push-hub-client.js.php';
 

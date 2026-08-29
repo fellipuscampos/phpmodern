@@ -38,6 +38,7 @@ return static function (Router $router, callable $connectionFactory): void {
                     <p style="font-size: 1.5rem;">{$badgeHtml}</p>
                     <button id="advance-button" type="button">Avançar status</button>
                 </main>
+                <script src="/assets/idiomorph.js"></script>
                 <script type="module">
                     import { connectPushChannel } from '/assets/push-hub-client.js';
                     connectPushChannel({$channelJson});
@@ -54,6 +55,14 @@ return static function (Router $router, callable $connectionFactory): void {
         header('Content-Type: application/javascript; charset=utf-8');
 
         return (string) file_get_contents(__DIR__ . '/../../../packages/core/push-hub/resources/client.js');
+    });
+
+    $router->get('/assets/idiomorph.js', function () {
+        header('Content-Type: application/javascript; charset=utf-8');
+
+        return (string) file_get_contents(
+            __DIR__ . '/../../../packages/core/push-hub/resources/vendor/idiomorph/idiomorph.min.js',
+        );
     });
 
     $router->post('/orders/42/advance', function () use ($connectionFactory) {

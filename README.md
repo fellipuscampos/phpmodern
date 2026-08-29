@@ -50,10 +50,13 @@ row in SQLite; the change is pushed to the browser over Server-Sent Events
 component is mounted from a simulated legacy script (bridge mode) or from a
 route in a from-scratch app (kernel mode), reusing the exact same PHP class.
 
+The client patches the DOM in place with [Idiomorph](https://github.com/bigskysoftware/idiomorph)
+(vendored under `packages/core/push-hub/resources/vendor/idiomorph/`) rather
+than replacing a component's `outerHTML` wholesale, so focus, scroll position
+and untouched child state survive an update.
+
 Explicit non-goals for this phase: ORM relations, file-based routing, hot
-module reload, authentication, background jobs, and fine-grained HTML
-patching (the client currently replaces a component's outerHTML wholesale
-rather than diffing it — see the roadmap below).
+module reload, authentication, and background jobs.
 
 ### Running it
 
@@ -88,13 +91,13 @@ composer analyse   # PHPStan, level 8
 ## Roadmap (not yet built)
 
 A broader map of "modern-stack feature → PHP equivalent → feasibility" lives
-in the project's planning notes and guides what gets built next, including:
-fine-grained client-side DOM patching (idiomorph/morphdom) instead of full
-outerHTML replacement, a typed-props/PHPStan-backed `check` command (the
-TypeScript-equivalent pillar), CLI scaffolding and a hot-reload dev server,
-state management, migrations, queues, and a debug bar. None of this is
-committed to yet — Phase 0 exists to validate the riskiest assumption
-(dual-mode reactivity with one engine) before investing further.
+in the project's planning notes and guides what gets built next, including: a
+typed-props/PHPStan-backed `check` command (the TypeScript-equivalent
+pillar), CLI scaffolding and a hot-reload dev server, state management,
+migrations, queues, and a debug bar. None of this is committed to yet beyond
+Phase 0, which exists to validate the riskiest assumption (dual-mode
+reactivity with one engine, patched efficiently on the client) before
+investing further.
 
 ## Requirements
 
