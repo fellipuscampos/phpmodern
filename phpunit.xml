@@ -64,5 +64,8 @@
         <testsuite name="console">
             <directory>packages/core/console/tests</directory>
         </testsuite>
+        <testsuite name="testing">
+            <directory>packages/core/testing/tests</directory>
+        </testsuite>
     </testsuites>
 </phpunit>

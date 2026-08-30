@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "08a355f387e23594bf68e24096e61664",
+    "content-hash": "d19d183305af74d0247da1e79da61cbf",
     "packages": [],
     "packages-dev": [
         {
@@ -883,6 +883,38 @@
                 "MIT"
             ],
             "description": "Minimal Redux-shaped state container: register a reducer per action, dispatch() mutates state and notifies every listener. Sized for one PHP request, not a long-lived process — deliberately has no dependency on push-hub or the ORM; composing 'notify a listener that publishes' or 'notify a listener that persists' is left to the caller.",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "phpmodern/testing",
+            "version": "dev-master",
+            "dist": {
+                "type": "path",
+                "url": "packages/core/testing",
+                "reference": "db27d28d0ead3ed8f6efd0ed299a4ac0f494c722"
+            },
+            "require": {
+                "php": "^8.2",
+                "phpmodern/http": "*",
+                "phpunit/phpunit": "^10.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PhpModern\\Testing\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "PhpModern\\Testing\\Tests\\": "tests/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "An in-process HTTP test client: drives a callable(Request): Response app (the same shape phpmodern/http's Pipeline and Middleware already use) and wraps the result in fluent PHPUnit assertions, so a route can be tested by calling PHP directly instead of curling a real running server.",
             "transport-options": {
                 "relative": true
             }

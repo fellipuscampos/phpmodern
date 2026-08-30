@@ -604,9 +604,18 @@ what unblocks what:
    real against the installed binary in `apps/starter-kernel`
    (`make:component`, `migrate`, `migrate:rollback`, plus `--help`/`list`
    and the unknown-command path).
-9. **In-process application testing** — there's no HTTP test client; testing
-   a route today means curling a real running server. A complete framework
-   lets a test simulate a request in memory.
+9. ~~In-process application testing~~ — done (`phpmodern/testing`):
+   `TestClient` drives a `callable(Request): Response` app in-process — the
+   same shape `Pipeline::handle()` and every `Middleware::handle()` already
+   use — and returns a `TestResponse` with fluent PHPUnit assertions
+   (`assertStatus()`, `assertJson()`, `assertHeader()`, `assertBodyContains()`,
+   `assertSuccessful()`). Proven on a real route, not a toy example: the
+   showcase project's `actions/stock-adjust.php` was refactored to expose
+   its logic as `stock_adjust_app(): callable` in `bootstrap.php`, and
+   `tests/StockAdjustAppTest.php` exercises it — success, the
+   quantity-floor-at-zero rule, missing CSRF token, unknown product, and
+   invalid input — entirely in-process, with the real script left as a
+   two-line adapter that still works unchanged against a running server.
 10. **Distribution** — no package has actually been published to Packagist
     or installed by anyone outside this project; no deployment story for
     running the hub/worker daemons as real supervised system services.

@@ -1,0 +1,21 @@
+{
+    "name": "phpmodern/testing",
+    "description": "An in-process HTTP test client: drives a callable(Request): Response app (the same shape phpmodern/http's Pipeline and Middleware already use) and wraps the result in fluent PHPUnit assertions, so a route can be tested by calling PHP directly instead of curling a real running server.",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "phpmodern/http": "*",
+        "phpunit/phpunit": "^10.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "PhpModern\\Testing\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "PhpModern\\Testing\\Tests\\": "tests/"
+        }
+    }
+}
