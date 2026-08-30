@@ -43,5 +43,8 @@
         <testsuite name="http">
             <directory>packages/core/http/tests</directory>
         </testsuite>
+        <testsuite name="config">
+            <directory>packages/core/config/tests</directory>
+        </testsuite>
     </testsuites>
 </phpunit>

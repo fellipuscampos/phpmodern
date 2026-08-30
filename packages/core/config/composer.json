@@ -1,0 +1,22 @@
+{
+    "name": "phpmodern/config",
+    "description": "An .env loader (Env) plus typed environment-variable getters (Config) — every DSN and setting in this project was a CLI flag or hardcoded until now.",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "PhpModern\\Config\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "PhpModern\\Config\\Tests\\": "tests/"
+        }
+    }
+}

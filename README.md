@@ -38,6 +38,7 @@ packages/core/          Independently publishable engine packages
   auth/                   Session, PasswordHasher, and login/logout/check
   validation/             Typed Rule objects + structured per-field errors
   http/                   Request/Response objects + Middleware pipeline
+  config/                 .env loader + typed environment-variable getters
 packages/devtools/dev-server/  Polling file watcher that triggers hot reload via push-hub
 packages/devtools/debugbar/    Request-scoped profiler: DebugBar::time() around any callable
 packages/bridge/adapter/  Entry point for embedding into an existing PHP site
@@ -447,6 +448,27 @@ CSRF token, one with an invalid `delta`, and a valid one all still return
 exactly the status codes they did before the refactor (403, 422, 204), and
 the resulting push to the browser is unchanged.
 
+## Configuration: `.env` + typed getters
+
+`phpmodern/config` is two small pieces: `Env::load($path)` reads `KEY=VALUE`
+lines from a `.env` file into the process environment (a real environment
+variable — set by the OS, a container, or a CI secret — always wins over
+the file), and `Config::string()/int()/bool()/has()` are typed reads over
+whatever's there. No nesting, no caching — the smallest thing that replaces
+scattered `getenv('X') ?: 'default'` calls with one discoverable API.
+
+```php
+Env::load(getcwd() . '/.env');
+$dsn = Config::string('DATABASE_URL');
+```
+
+Deployed for real in `console migrate`/`migrate:rollback` and
+`worker.php`, replacing their raw `getenv('DATABASE_URL')` calls. Verified
+end to end in a throwaway project with no `--dsn` flag and no real
+environment variable set at all: `console migrate` read `DATABASE_URL`
+purely from a `.env` file and ran the migration against exactly that
+database.
+
 ## Phase 2 roadmap: toward a complete framework
 
 Phase 1 closed the gap between "proof of concept" and "an app could be built
@@ -465,9 +487,7 @@ what unblocks what:
    signature rather than Request/Response natively, and there are no named
    routes or route groups yet — migrating Router itself is follow-up work,
    not done in this pass.
-3. **Configuration** — no central config system; DSNs and settings are
-   passed as CLI flags or hardcoded. Needs an env/config loader every other
-   piece (DB, mail, cache) can depend on.
+3. ~~Configuration~~ — done (`phpmodern/config`, see below).
 4. **Authorization** — `phpmodern/auth` answers "who is this," not "what
    can they do." Needs roles/policies (`can($user, 'edit', $post)`).
 5. **Full account lifecycle** — registration, email verification, password

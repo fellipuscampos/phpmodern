@@ -13,6 +13,7 @@ parameters:
         - packages/core/auth/src
         - packages/core/validation/src
         - packages/core/http/src
+        - packages/core/config/src
         - packages/bridge/adapter/src
         - packages/framework/kernel/src
     # HubServer::run() / Worker::run() are intentionally long-lived daemon loops.

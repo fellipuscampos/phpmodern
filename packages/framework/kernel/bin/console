@@ -50,9 +50,13 @@ if ($autoload === null) {
 
 require $autoload;
 
+use PhpModern\Config\Config;
+use PhpModern\Config\Env;
 use PhpModern\Kernel\Console\MakeComponentCommand;
 use PhpModern\Orm\Connection;
 use PhpModern\Orm\MigrationRunner;
+
+Env::load(getcwd() . '/.env'); // a real environment variable always wins over this
 
 /** @param list<string> $args */
 function console_options(array $args): array
@@ -96,7 +100,7 @@ if ($command === 'make:component') {
 
 if ($command === 'migrate' || $command === 'migrate:rollback') {
     $options = console_options(array_slice($argv, 2));
-    $dsn = $options['dsn'] ?? (getenv('DATABASE_URL') ?: null);
+    $dsn = $options['dsn'] ?? Config::string('DATABASE_URL');
     $migrationsDir = getcwd() . '/' . ($options['dir'] ?? 'database/migrations');
 
     if ($dsn === null) {
