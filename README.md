@@ -235,10 +235,39 @@ reactivity with one engine, client-side DOM patching, strict typing with no
 consumer-side config, scaffolding that produces already-compliant code,
 migrations, a database-backed queue, hot reload built on the same push
 primitive as component updates, Redux-shaped state management, and a
-dependency-free debug bar. What's still open is everything a real framework
-accumulates over time beyond this point — routing conventions, auth,
-validation, a richer ORM, a real CLI framework instead of an if-chain — none
-of which is started, and none of which was implied by "Phase 0."
+dependency-free debug bar. Phase 0 was explicitly a proof of concept, not a
+production-ready framework — the gaps below are what stand between it and
+that, in priority order.
+
+## Phase 1 roadmap (not started)
+
+1. **CSRF protection + security headers** — promised back in the original
+   "secure by default" pillar and never delivered. Every state-changing
+   action in this repo today (the stock +1/-1 buttons, the comment form)
+   trusts any request that hits it; a malicious page could trigger those
+   requests from a signed-in user's browser without their knowledge. Needs
+   a CSRF token helper wired into forms/actions, plus a small helper for
+   setting CSP/HSTS/X-Frame-Options headers by default. Highest priority —
+   this is a security promise made and not kept.
+2. **Authentication & sessions** — no login primitive exists at all: no
+   session handling, no password hashing helper, no "current user" concept
+   a component or action can read. Nothing resembling a real app can be
+   built on this framework until this exists.
+3. **Input validation** — every action script hand-rolls its own
+   `if ($x === '')` checks with no shared vocabulary for rules or error
+   messages. Needs a small typed validator usable in bridge and kernel
+   alike, so errors are structured instead of ad hoc.
+4. **A richer ORM** — no relationships (hasMany/belongsTo), no eager
+   loading; anything beyond a single-table lookup means dropping to raw
+   PDO today, with the classic N+1-query risk and no protection against it.
+5. **File-based routing for kernel mode** — routes are still a manual list
+   in `routes/web.php`. A directory-convention router (the way Next.js
+   resolves `pages/`) would remove that boilerplate as an app's route count
+   grows. Lower priority — it's ergonomics, not a missing capability.
+
+Deliberately not planned: an asset bundler (no-build-step is a chosen
+differentiator, not a gap), a GraphQL/API layer, and i18n — none of them
+were part of the "make PHP feel modern" thesis this project set out to test.
 
 ## Requirements
 
