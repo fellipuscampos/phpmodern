@@ -15,7 +15,8 @@
         "phpmodern/bridge-adapter": "*",
         "phpmodern/kernel": "*",
         "phpmodern/typing-contracts": "*",
-        "phpmodern/queue": "*"
+        "phpmodern/queue": "*",
+        "phpmodern/dev-server": "*"
     },
     "repositories": [
         {
@@ -32,7 +33,8 @@
             "PhpModern\\PushHub\\Tests\\": "packages/core/push-hub/tests/",
             "PhpModern\\TypingContracts\\Tests\\": "packages/core/typing-contracts/tests/",
             "PhpModern\\Kernel\\Tests\\": "packages/framework/kernel/tests/",
-            "PhpModern\\Queue\\Tests\\": "packages/core/queue/tests/"
+            "PhpModern\\Queue\\Tests\\": "packages/core/queue/tests/",
+            "PhpModern\\DevServer\\Tests\\": "packages/devtools/dev-server/tests/"
         }
     },
     "config": {

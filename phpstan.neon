@@ -6,6 +6,7 @@ parameters:
         - packages/core/push-hub/src
         - packages/core/typing-contracts/src
         - packages/core/queue/src
+        - packages/devtools/dev-server/src
         - packages/bridge/adapter/src
         - packages/framework/kernel/src
     # HubServer::run() / Worker::run() are intentionally long-lived daemon loops.

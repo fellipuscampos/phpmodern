@@ -33,6 +33,7 @@ packages/core/          Independently publishable engine packages
   push-hub/               Standalone SSE daemon: server push, no client polling
   typing-contracts/       The check command + rule banning untyped/mixed props
   queue/                  Database-backed job queue + standalone worker daemon
+packages/devtools/dev-server/  Polling file watcher that triggers hot reload via push-hub
 packages/bridge/adapter/  Entry point for embedding into an existing PHP site
 packages/framework/kernel/  Meta-package for greenfield projects (router, front controller, make:component)
 apps/legacy-demo/         A simulated pre-existing PHP site, using bridge mode only
@@ -164,17 +165,35 @@ monorepo's own autoloader instead of the consuming app's, hiding that app's
 own classes (its job classes, its migrations). Caught by actually running
 `worker.php` against a separate project instead of only unit-testing it.
 
+## Hot reload
+
+`phpmodern/dev-server` doesn't reinvent push — it reuses push-hub. A polling
+file watcher (`FileWatcher`, no OS filesystem-events extension required)
+detects a change and tells the hub to broadcast a `reload: true` signal
+instead of a component morph; the same `client.js` already loaded on the
+page calls `location.reload()` when it sees that flag.
+
+```bash
+php vendor/bin/watch.php app/Components 127.0.0.1:8081 __hmr__
+```
+
+Then any page that calls `connectPushChannel('__hmr__')` reloads the moment
+a watched file changes. Verified with a real (headless) browser: the page's
+`load` event count went from 1 to 2 the instant a watched file was touched,
+with no manual refresh.
+
 ## Roadmap (not yet built)
 
 A broader map of "modern-stack feature → PHP equivalent → feasibility" lives
-in the project's planning notes and guides what gets built next, including:
-a hot-reload dev server, state management, and a debug bar. None of this is
-committed to yet beyond Phase 0, which exists to validate the riskiest
-assumptions (dual-mode reactivity with one engine, patched efficiently on
-the client, strict typing enforced with no consumer-side config, scaffolding
-that produces already-compliant code, migrations with no registry to
-maintain, and queue workers that correctly resolve a consumer's own classes)
-before investing further.
+in the project's planning notes and guides what gets built next, including
+state management and a debug bar. None of this is committed to yet beyond
+Phase 0, which exists to validate the riskiest assumptions (dual-mode
+reactivity with one engine, patched efficiently on the client, strict typing
+enforced with no consumer-side config, scaffolding that produces
+already-compliant code, migrations with no registry to maintain, queue
+workers that correctly resolve a consumer's own classes, and hot reload
+built entirely on the same push primitive as component updates) before
+investing further.
 
 ## Requirements
 
