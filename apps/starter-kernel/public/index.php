@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 require __DIR__ . '/../vendor/autoload.php';
 
+use PhpModern\Kernel\FileRouter;
 use PhpModern\Kernel\Kernel;
 use PhpModern\Kernel\Router;
 use PhpModern\Orm\Connection;
@@ -20,5 +21,9 @@ if ($isFirstRun) {
 
 $router = new Router();
 (require __DIR__ . '/../routes/web.php')($router, static fn (): Connection => $connection);
+
+// File-based routing lives alongside the manual routes above: anything
+// under pages/ is discovered automatically, actions/assets stay explicit.
+(new FileRouter(__DIR__ . '/../pages'))->register($router);
 
 (new Kernel($router))->run();

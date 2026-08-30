@@ -40,7 +40,7 @@ packages/core/          Independently publishable engine packages
 packages/devtools/dev-server/  Polling file watcher that triggers hot reload via push-hub
 packages/devtools/debugbar/    Request-scoped profiler: DebugBar::time() around any callable
 packages/bridge/adapter/  Entry point for embedding into an existing PHP site
-packages/framework/kernel/  Meta-package for greenfield projects (router, front controller, make:component)
+packages/framework/kernel/  Meta-package for greenfield projects (router, FileRouter, front controller, make:component)
 apps/legacy-demo/         A simulated pre-existing PHP site, using bridge mode only
 apps/starter-kernel/      A project built from scratch on kernel mode
 docs/                     Architecture notes and verification checklists
@@ -366,18 +366,45 @@ how many comments are on screen. Verified end to end: posting a comment
 while logged in shows up with the right author name pulled through the
 relation, and the `comments` table has no `author` column anymore.
 
-## Phase 1 roadmap
+## File-based routing
+
+Kernel mode's `Router` first learned dynamic segments (`/orders/{id}`,
+resolved via a compiled regex, exact-match routes still tried first) so
+that `FileRouter` could sit on top of it: point it at a `pages/` directory
+and it discovers GET routes the way Next.js resolves its own `pages/`
+folder — `pages/about.php` → `/about`, `pages/orders/index.php` →
+`/orders`, `pages/orders/[id].php` → `/orders/{id}`. A page file returns
+either a plain string or a `callable(array $params): string` to receive its
+dynamic segments; mutating actions stay explicit `$router->post(...)` calls
+or their own script, the same page/action split the bridge-mode demos
+already use.
+
+```php
+$router = new Router();
+(require __DIR__ . '/../routes/web.php')($router, $connectionFactory); // manual routes, unchanged
+(new FileRouter(__DIR__ . '/../pages'))->register($router);            // + everything under pages/
+```
+
+Deployed for real in `apps/starter-kernel`: added `pages/hello/[name].php`
+with zero corresponding line in `routes/web.php`, and confirmed against the
+running server that `/hello/Cleber` and `/hello/Mundo` both resolve through
+the file's own `$params['name']`, while every pre-existing manually
+registered route — including the CSRF-protected `POST /orders/42/advance`
+— kept working unmodified.
+
+## Phase 1 roadmap: complete
 
 1. ~~CSRF protection + security headers~~ — done (`phpmodern/security`).
 2. ~~Authentication & sessions~~ — done (`phpmodern/auth`).
 3. ~~Input validation~~ — done (`phpmodern/validation`).
-4. ~~A richer ORM (relationships, N+1 protection)~~ — done (`phpmodern/orm`,
-   see above).
-5. **File-based routing for kernel mode** — routes are still a manual list
-   in `routes/web.php`. A directory-convention router (the way Next.js
-   resolves `pages/`) would remove that boilerplate as an app's route count
-   grows. The one remaining item — lower priority, since it's ergonomics,
-   not a missing capability.
+4. ~~A richer ORM (relationships, N+1 protection)~~ — done (`phpmodern/orm`).
+5. ~~File-based routing for kernel mode~~ — done (`phpmodern/kernel`, see
+   above).
+
+Every item identified as a gap between the Phase 0 proof of concept and a
+framework someone could actually build a real app on is now built and
+verified end to end against real running processes. The project's next
+milestone isn't on this list yet — it hasn't been scoped.
 
 Deliberately not planned: an asset bundler (no-build-step is a chosen
 differentiator, not a gap), a GraphQL/API layer, and i18n — none of them
