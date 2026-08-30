@@ -61,5 +61,8 @@
         <testsuite name="cache">
             <directory>packages/core/cache/tests</directory>
         </testsuite>
+        <testsuite name="console">
+            <directory>packages/core/console/tests</directory>
+        </testsuite>
     </testsuites>
 </phpunit>

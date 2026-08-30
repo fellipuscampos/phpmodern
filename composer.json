@@ -28,7 +28,8 @@
         "phpmodern/mail": "*",
         "phpmodern/logging": "*",
         "phpmodern/error-handler": "*",
-        "phpmodern/cache": "*"
+        "phpmodern/cache": "*",
+        "phpmodern/console": "*"
     },
     "repositories": [
         {
@@ -58,7 +59,8 @@
             "PhpModern\\Mail\\Tests\\": "packages/core/mail/tests/",
             "PhpModern\\Logging\\Tests\\": "packages/core/logging/tests/",
             "PhpModern\\ErrorHandler\\Tests\\": "packages/core/error-handler/tests/",
-            "PhpModern\\Cache\\Tests\\": "packages/core/cache/tests/"
+            "PhpModern\\Cache\\Tests\\": "packages/core/cache/tests/",
+            "PhpModern\\Console\\Tests\\": "packages/core/console/tests/"
         }
     },
     "config": {

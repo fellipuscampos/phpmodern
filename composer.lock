@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3d1f543fddb450126b33cfcccb1bd627",
+    "content-hash": "08a355f387e23594bf68e24096e61664",
     "packages": [],
     "packages-dev": [
         {
@@ -435,6 +435,39 @@
             }
         },
         {
+            "name": "phpmodern/console",
+            "version": "dev-master",
+            "dist": {
+                "type": "path",
+                "url": "packages/core/console",
+                "reference": "c3e87321a7aa7bd8d7e7caea8778d8215856f2ae"
+            },
+            "require": {
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^10.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PhpModern\\Console\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "PhpModern\\Console\\Tests\\": "tests/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "A real CLI framework: registered Command objects with typed argument/option parsing, --help, and a command list — what bin/console's if-chain was missing once more than two or three commands existed.",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
             "name": "phpmodern/debugbar",
             "version": "dev-master",
             "dist": {
@@ -577,12 +610,13 @@
             "dist": {
                 "type": "path",
                 "url": "packages/framework/kernel",
-                "reference": "db2c28d7163ccc7dcb78e0fd8b2babd349069942"
+                "reference": "c23cdbb70984e42c91ca809b21d68c1504819716"
             },
             "require": {
                 "php": "^8.2",
                 "phpmodern/component-engine": "*",
                 "phpmodern/config": "*",
+                "phpmodern/console": "*",
                 "phpmodern/orm": "*",
                 "phpmodern/push-hub": "*"
             },

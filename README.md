@@ -592,9 +592,18 @@ what unblocks what:
    left open in item 5 above: 5 failed logins for a username within 15
    minutes returns 429 even with the correct password on the 6th attempt,
    verified end to end against a running server.
-8. **A real CLI framework** — `bin/console` is still an if-chain; needs
-   argument parsing, `--help`, and command registration as more commands
-   accumulate.
+8. ~~A real CLI framework~~ — done (`phpmodern/console`): a registered
+   `Command` interface (`name()`/`description()`/`handle(Input, Output)`)
+   dispatched by an `Application`, `Input` parsing positional args and
+   `--key=value`/`--flag` options, global `--help`/`list` and per-command
+   `--help`, and a caught-exception fallback so a bug in one command can't
+   skip the exit code owed to the shell. `bin/console` in
+   `phpmodern/kernel` is now three registered commands
+   (`MakeComponentConsoleCommand`, `MigrateConsoleCommand`,
+   `MigrateRollbackConsoleCommand`) instead of an if-chain, verified for
+   real against the installed binary in `apps/starter-kernel`
+   (`make:component`, `migrate`, `migrate:rollback`, plus `--help`/`list`
+   and the unknown-command path).
 9. **In-process application testing** — there's no HTTP test client; testing
    a route today means curling a real running server. A complete framework
    lets a test simulate a request in memory.

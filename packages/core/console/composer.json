@@ -1,0 +1,22 @@
+{
+    "name": "phpmodern/console",
+    "description": "A real CLI framework: registered Command objects with typed argument/option parsing, --help, and a command list — what bin/console's if-chain was missing once more than two or three commands existed.",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "PhpModern\\Console\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "PhpModern\\Console\\Tests\\": "tests/"
+        }
+    }
+}

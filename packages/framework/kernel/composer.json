@@ -8,7 +8,8 @@
         "phpmodern/component-engine": "*",
         "phpmodern/orm": "*",
         "phpmodern/push-hub": "*",
-        "phpmodern/config": "*"
+        "phpmodern/config": "*",
+        "phpmodern/console": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "^10.5"

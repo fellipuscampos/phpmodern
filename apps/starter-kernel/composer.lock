@@ -67,16 +67,117 @@
             }
         },
         {
+            "name": "phpmodern/config",
+            "version": "dev-master",
+            "dist": {
+                "type": "path",
+                "url": "../../packages/core/config",
+                "reference": "1d38b27dc35b51dc5ac628ab0922bc08e4707796"
+            },
+            "require": {
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^10.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PhpModern\\Config\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "PhpModern\\Config\\Tests\\": "tests/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "An .env loader (Env) plus typed environment-variable getters (Config) — every DSN and setting in this project was a CLI flag or hardcoded until now.",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "phpmodern/console",
+            "version": "dev-master",
+            "dist": {
+                "type": "path",
+                "url": "../../packages/core/console",
+                "reference": "c3e87321a7aa7bd8d7e7caea8778d8215856f2ae"
+            },
+            "require": {
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^10.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PhpModern\\Console\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "PhpModern\\Console\\Tests\\": "tests/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "A real CLI framework: registered Command objects with typed argument/option parsing, --help, and a command list — what bin/console's if-chain was missing once more than two or three commands existed.",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "phpmodern/http",
+            "version": "dev-master",
+            "dist": {
+                "type": "path",
+                "url": "../../packages/core/http",
+                "reference": "ccd773839a3f0757a758b695ee592a3b76123cba"
+            },
+            "require": {
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^10.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PhpModern\\Http\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "PhpModern\\Http\\Tests\\": "tests/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Typed Request/Response objects plus a Middleware pipeline — usable from bridge mode (an existing script builds a Request and sends a Response) or kernel mode alike, not tied to Router.",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
             "name": "phpmodern/kernel",
             "version": "dev-master",
             "dist": {
                 "type": "path",
                 "url": "../../packages/framework/kernel",
-                "reference": "16b599be8b56574a505afd98cbed4d59c37ca6df"
+                "reference": "c23cdbb70984e42c91ca809b21d68c1504819716"
             },
             "require": {
                 "php": "^8.2",
                 "phpmodern/component-engine": "*",
+                "phpmodern/config": "*",
+                "phpmodern/console": "*",
                 "phpmodern/orm": "*",
                 "phpmodern/push-hub": "*"
             },
@@ -182,10 +283,11 @@
             "dist": {
                 "type": "path",
                 "url": "../../packages/core/security",
-                "reference": "1b2c1792975bf8df2aa89e2e9829cf503e015a7e"
+                "reference": "e6c76602cf8cc0f01d85dca16170b5f5666d65ba"
             },
             "require": {
-                "php": "^8.2"
+                "php": "^8.2",
+                "phpmodern/http": "*"
             },
             "require-dev": {
                 "phpunit/phpunit": "^10.5"
