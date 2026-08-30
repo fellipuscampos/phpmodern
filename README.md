@@ -616,12 +616,71 @@ what unblocks what:
    quantity-floor-at-zero rule, missing CSRF token, unknown product, and
    invalid input — entirely in-process, with the real script left as a
    two-line adapter that still works unchanged against a running server.
-10. **Distribution** — no package has actually been published to Packagist
-    or installed by anyone outside this project; no deployment story for
-    running the hub/worker daemons as real supervised system services.
+10. **Distribution** — partially done. Every package now lives in its own
+    public GitHub repository (`github.com/fellipuscampos/phpmodern-<name>`,
+    e.g. `phpmodern-orm`, `phpmodern-http`), split out of this monorepo with
+    `git subtree split` and tagged `v0.1.0`, instead of only existing as a
+    subdirectory nobody outside this project could depend on. Verified end
+    to end: a throwaway project with no relation to this repo installed
+    `phpmodern/security` (which itself requires `phpmodern/http`) via
+    Composer VCS repositories pointing at the two GitHub repos, and both
+    classes worked. `tools/split-packages.sh` re-runs the split for every
+    package — re-run it after merging changes to keep the mirrors current
+    (it force-pushes `main` on each mirror since those repos are generated
+    output, but never touches existing tags; cutting a new released version
+    for a package is a deliberate, separate `git tag`/`git push` per repo).
+    Still open: actually **submitting** each repo to Packagist. That's a
+    one-time manual step on packagist.org (Submit Package, paste each
+    GitHub URL) tied to a personal account — not something that can be done
+    without either that account's login or its API token, so it's left for
+    the maintainer. Until then, installing a package works today via a VCS
+    repository, e.g.:
+    ```json
+    {
+        "require": { "phpmodern/orm": "^0.1" },
+        "repositories": [
+            { "type": "vcs", "url": "https://github.com/fellipuscampos/phpmodern-orm" }
+        ]
+    }
+    ```
+    Also still open: a deployment story for running the hub/worker daemons
+    as real supervised system services (systemd/supervisor), rather than a
+    manually-started CLI process.
 
-None of this is committed to yet beyond item 1 (CI), which is being built
-now.
+## Individual package repositories
+
+Each package below is a standalone GitHub repository (split from this
+monorepo, tagged `v0.1.0`) — ready to submit to Packagist at
+[packagist.org/packages/submit](https://packagist.org/packages/submit).
+
+| Package | Repository |
+|---|---|
+| `phpmodern/auth` | [phpmodern-auth](https://github.com/fellipuscampos/phpmodern-auth) |
+| `phpmodern/authorization` | [phpmodern-authorization](https://github.com/fellipuscampos/phpmodern-authorization) |
+| `phpmodern/bridge-adapter` | [phpmodern-bridge-adapter](https://github.com/fellipuscampos/phpmodern-bridge-adapter) |
+| `phpmodern/cache` | [phpmodern-cache](https://github.com/fellipuscampos/phpmodern-cache) |
+| `phpmodern/component-engine` | [phpmodern-component-engine](https://github.com/fellipuscampos/phpmodern-component-engine) |
+| `phpmodern/config` | [phpmodern-config](https://github.com/fellipuscampos/phpmodern-config) |
+| `phpmodern/console` | [phpmodern-console](https://github.com/fellipuscampos/phpmodern-console) |
+| `phpmodern/debugbar` | [phpmodern-debugbar](https://github.com/fellipuscampos/phpmodern-debugbar) |
+| `phpmodern/dev-server` | [phpmodern-dev-server](https://github.com/fellipuscampos/phpmodern-dev-server) |
+| `phpmodern/error-handler` | [phpmodern-error-handler](https://github.com/fellipuscampos/phpmodern-error-handler) |
+| `phpmodern/http` | [phpmodern-http](https://github.com/fellipuscampos/phpmodern-http) |
+| `phpmodern/kernel` | [phpmodern-kernel](https://github.com/fellipuscampos/phpmodern-kernel) |
+| `phpmodern/logging` | [phpmodern-logging](https://github.com/fellipuscampos/phpmodern-logging) |
+| `phpmodern/mail` | [phpmodern-mail](https://github.com/fellipuscampos/phpmodern-mail) |
+| `phpmodern/orm` | [phpmodern-orm](https://github.com/fellipuscampos/phpmodern-orm) |
+| `phpmodern/push-hub` | [phpmodern-push-hub](https://github.com/fellipuscampos/phpmodern-push-hub) |
+| `phpmodern/queue` | [phpmodern-queue](https://github.com/fellipuscampos/phpmodern-queue) |
+| `phpmodern/security` | [phpmodern-security](https://github.com/fellipuscampos/phpmodern-security) |
+| `phpmodern/store` | [phpmodern-store](https://github.com/fellipuscampos/phpmodern-store) |
+| `phpmodern/testing` | [phpmodern-testing](https://github.com/fellipuscampos/phpmodern-testing) |
+| `phpmodern/typing-contracts` | [phpmodern-typing-contracts](https://github.com/fellipuscampos/phpmodern-typing-contracts) |
+| `phpmodern/validation` | [phpmodern-validation](https://github.com/fellipuscampos/phpmodern-validation) |
+
+Submitting one of these on Packagist also connects a GitHub webhook, so
+future pushes to that mirror (via `tools/split-packages.sh`) update the
+Packagist listing automatically — no re-submission needed after the first time.
 
 ## Requirements
 
