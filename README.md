@@ -566,8 +566,20 @@ what unblocks what:
    open, tracked separately below): registration, password reset, and
    email verification are all built and verified end to end in the
    showcase project on top of `phpmodern/mail` (see below).
-6. **A more capable ORM** — transactions, soft deletes, automatic
-   timestamps, pagination, richer queries than `WHERE ... IN (...)`, seeders.
+6. ~~A more capable ORM~~ — partially done: `Connection::transaction()`
+   (commit on success, rollback on exception) and `QueryHelper::paginate()`
+   (count + limit/offset, with optional `ORDER BY`) both exist and are used
+   for real. Soft deletes are not a dedicated method — `findOneBy()`/
+   `findMany()`/`update()` now compile a `null` condition value to
+   `IS NULL` instead of the always-false `= NULL`, which is what a soft
+   delete actually needs (`update('t', ['deleted_at' => now], [...])` to
+   delete, `['deleted_at' => null]` in the read conditions to exclude
+   deleted rows) — see the showcase project's comment board, which soft-
+   deletes comments and paginates the last 5 by this exact mechanism, and
+   wraps registration's user-insert + token-insert in a transaction so a
+   user row can never exist without a verification token. Automatic
+   timestamps, richer queries beyond equality/IN, and seeders are still
+   open.
 7. **Observability** — a PSR-3 logger, a central exception handler (an
    uncaught exception today just breaks the page with no record of it
    anywhere), and a cache abstraction.
