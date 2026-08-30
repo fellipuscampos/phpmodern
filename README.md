@@ -37,6 +37,7 @@ packages/core/          Independently publishable engine packages
   security/               CSRF (double-submit cookie) + default security headers
   auth/                   Session, PasswordHasher, and login/logout/check
   validation/             Typed Rule objects + structured per-field errors
+  http/                   Request/Response objects + Middleware pipeline
 packages/devtools/dev-server/  Polling file watcher that triggers hot reload via push-hub
 packages/devtools/debugbar/    Request-scoped profiler: DebugBar::time() around any callable
 packages/bridge/adapter/  Entry point for embedding into an existing PHP site
@@ -409,6 +410,43 @@ Deliberately not planned: an asset bundler (no-build-step is a chosen
 differentiator, not a gap), a GraphQL/API layer, and i18n — none of them
 were part of the "make PHP feel modern" thesis this project set out to test.
 
+## HTTP layer: Request, Response, Middleware, Pipeline
+
+`phpmodern/http` is intentionally not tied to `Router` — it's usable from a
+bridge-mode script exactly as well as a kernel route, since it's just
+`Request::fromGlobals()` in, a `Response` out:
+
+```php
+$pipeline = new Pipeline([new CsrfMiddleware()]); // from phpmodern/security
+
+$response = $pipeline->handle(Request::fromGlobals(), function (Request $request): Response {
+    $validated = Validator::validate($request->json() ?? [], [...]);
+
+    if ($validated->fails()) {
+        return Response::json(['errors' => $validated->errors()], 422);
+    }
+
+    // ...do the work...
+
+    return Response::noContent();
+});
+
+$response->send();
+```
+
+`Pipeline` composes Middleware "onion"-style — each layer decides whether
+and how to call the next one in, down to the handler at the center.
+`CsrfMiddleware` (in `phpmodern/security`) is the first real middleware:
+the same check `require_valid_csrf_token()` did by hand, now a composable,
+swappable pipeline stage instead of a bespoke function.
+
+Deployed for real in the showcase project's `stock-adjust.php`: CSRF moved
+into the pipeline, `http_response_code()`/`echo` calls became `Response`
+objects. Verified end to end against the live server — a request with no
+CSRF token, one with an invalid `delta`, and a valid one all still return
+exactly the status codes they did before the refactor (403, 422, 204), and
+the resulting push to the browser is unchanged.
+
 ## Phase 2 roadmap: toward a complete framework
 
 Phase 1 closed the gap between "proof of concept" and "an app could be built
@@ -421,11 +459,12 @@ what unblocks what:
    every green run so far has been manual. Building everything else on top
    of an unverified baseline compounds risk. Done first, before anything
    else in this phase.
-2. **HTTP layer maturity** — proper Request/Response objects instead of
-   reading `$_SERVER`/`php://input` and calling `echo`/`http_response_code()`
-   directly, a real middleware pipeline (CSRF/auth checks are currently
-   plain function calls at the top of each script), named routes and route
-   groups.
+2. ~~HTTP layer maturity~~ — partially done: `phpmodern/http` (Request,
+   Response, Middleware, Pipeline — see below) exists and is used for real.
+   Router/Kernel still use their original `callable(array $params): string`
+   signature rather than Request/Response natively, and there are no named
+   routes or route groups yet — migrating Router itself is follow-up work,
+   not done in this pass.
 3. **Configuration** — no central config system; DSNs and settings are
    passed as CLI flags or hardcoded. Needs an env/config loader every other
    piece (DB, mail, cache) can depend on.

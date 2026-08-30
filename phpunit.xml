@@ -40,5 +40,8 @@
         <testsuite name="validation">
             <directory>packages/core/validation/tests</directory>
         </testsuite>
+        <testsuite name="http">
+            <directory>packages/core/http/tests</directory>
+        </testsuite>
     </testsuites>
 </phpunit>

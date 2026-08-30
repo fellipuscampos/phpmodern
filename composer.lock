@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "56545099132dec67bff3d6601fdd2dd2",
+    "content-hash": "ae1fb399ae1ddcf20e1ce1c7a8a28c0b",
     "packages": [],
     "packages-dev": [
         {
@@ -406,6 +406,39 @@
             }
         },
         {
+            "name": "phpmodern/http",
+            "version": "dev-master",
+            "dist": {
+                "type": "path",
+                "url": "packages/core/http",
+                "reference": "ccd773839a3f0757a758b695ee592a3b76123cba"
+            },
+            "require": {
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^10.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PhpModern\\Http\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "PhpModern\\Http\\Tests\\": "tests/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Typed Request/Response objects plus a Middleware pipeline — usable from bridge mode (an existing script builds a Request and sends a Response) or kernel mode alike, not tied to Router.",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
             "name": "phpmodern/kernel",
             "version": "dev-master",
             "dist": {
@@ -558,10 +591,11 @@
             "dist": {
                 "type": "path",
                 "url": "packages/core/security",
-                "reference": "1b2c1792975bf8df2aa89e2e9829cf503e015a7e"
+                "reference": "e6c76602cf8cc0f01d85dca16170b5f5666d65ba"
             },
             "require": {
-                "php": "^8.2"
+                "php": "^8.2",
+                "phpmodern/http": "*"
             },
             "require-dev": {
                 "phpunit/phpunit": "^10.5"

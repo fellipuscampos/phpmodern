@@ -1,0 +1,22 @@
+{
+    "name": "phpmodern/http",
+    "description": "Typed Request/Response objects plus a Middleware pipeline — usable from bridge mode (an existing script builds a Request and sends a Response) or kernel mode alike, not tied to Router.",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "PhpModern\\Http\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "PhpModern\\Http\\Tests\\": "tests/"
+        }
+    }
+}
