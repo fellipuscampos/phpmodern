@@ -35,6 +35,7 @@ packages/core/          Independently publishable engine packages
   queue/                  Database-backed job queue + standalone worker daemon
   store/                  Redux-shaped state container (reducers + listeners)
   security/               CSRF (double-submit cookie) + default security headers
+  auth/                   Session, PasswordHasher, and login/logout/check
 packages/devtools/dev-server/  Polling file watcher that triggers hot reload via push-hub
 packages/devtools/debugbar/    Request-scoped profiler: DebugBar::time() around any callable
 packages/bridge/adapter/  Entry point for embedding into an existing PHP site
@@ -278,14 +279,41 @@ dependency-free debug bar. Phase 0 was explicitly a proof of concept, not a
 production-ready framework — the gaps below are what stand between it and
 that, in priority order.
 
+## Authentication & sessions
+
+`phpmodern/auth` is three small pieces, composed rather than one class doing
+everything: `Session` (a testable `$_SESSION` wrapper), `PasswordHasher` (a
+typed face on `password_hash`/`password_verify`), and `Auth` (login/logout/
+id/check, regenerating the session id on every privilege change to prevent
+session fixation). `Auth` never fetches a user record — that's the caller's
+job, same as `Store`'s listeners.
+
+```php
+if (!Auth::check()) {
+    // show a login form
+}
+
+// actions/login.php
+if (PasswordHasher::verify($password, $user['password_hash'])) {
+    Auth::login((int) $user['id']);
+}
+
+// a protected action
+Auth::requireLogin(); // 401s and exits if nobody is logged in
+```
+
+Deployed for real in the showcase project: posting a comment now requires
+login, and the author name is read server-side from the logged-in user's
+own record — never trusted from client input, so nobody can post as someone
+else. Verified end to end, including in a real headless browser: the login
+form disappears and the comment form appears after logging in, a posted
+comment shows up on the board via push, and curl confirms 401 both before
+login and again after logout, with 204 in between.
+
 ## Phase 1 roadmap
 
-1. ~~CSRF protection + security headers~~ — done (`phpmodern/security`, see
-   above).
-2. **Authentication & sessions** — no login primitive exists at all: no
-   session handling, no password hashing helper, no "current user" concept
-   a component or action can read. Nothing resembling a real app can be
-   built on this framework until this exists. Highest remaining priority.
+1. ~~CSRF protection + security headers~~ — done (`phpmodern/security`).
+2. ~~Authentication & sessions~~ — done (`phpmodern/auth`, see above).
 3. **Input validation** — every action script hand-rolls its own
    `if ($x === '')` checks with no shared vocabulary for rules or error
    messages. Needs a small typed validator usable in bridge and kernel

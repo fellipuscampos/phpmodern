@@ -19,7 +19,8 @@
         "phpmodern/dev-server": "*",
         "phpmodern/store": "*",
         "phpmodern/debugbar": "*",
-        "phpmodern/security": "*"
+        "phpmodern/security": "*",
+        "phpmodern/auth": "*"
     },
     "repositories": [
         {
@@ -40,7 +41,8 @@
             "PhpModern\\DevServer\\Tests\\": "packages/devtools/dev-server/tests/",
             "PhpModern\\Store\\Tests\\": "packages/core/store/tests/",
             "PhpModern\\DebugBar\\Tests\\": "packages/devtools/debugbar/tests/",
-            "PhpModern\\Security\\Tests\\": "packages/core/security/tests/"
+            "PhpModern\\Security\\Tests\\": "packages/core/security/tests/",
+            "PhpModern\\Auth\\Tests\\": "packages/core/auth/tests/"
         }
     },
     "config": {
