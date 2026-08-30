@@ -29,7 +29,7 @@ parallel, lesser reimplementation of kernel mode.
 ```
 packages/core/          Independently publishable engine packages
   component-engine/      Server-rendered components: typed props, lifecycle
-  orm/                    Minimal typed DB access (PDO wrapper, query helper, migrations)
+  orm/                    Typed DB access: query helper, hasMany/belongsTo, migrations
   push-hub/               Standalone SSE daemon: server push, no client polling
   typing-contracts/       The check command + rule banning untyped/mixed props
   queue/                  Database-backed job queue + standalone worker daemon
@@ -339,19 +339,45 @@ over-length `message` both come back as `422` with the specific field and
 reason (`"delta must be one of: 1, -1."`, `"message must be at most 280
 characters."`) instead of a bare `400`.
 
+## Relationships: hasMany / belongsTo
+
+`phpmodern/orm` hydrates rows as plain arrays (never objects/active-record
+magic — consistent with keeping data-shape explicit everywhere else in this
+framework), so `Relations::hasMany()`/`belongsTo()` attach related rows
+under a chosen array key rather than a magic property:
+
+```php
+$authors = $queryHelper->findMany('authors');
+$authors = Relations::hasMany($queryHelper, $authors, 'id', 'books', 'author_id', 'books');
+// $authors[0]['books'] is now that author's list of book rows
+```
+
+Each call issues exactly **one** extra query — `WHERE foreign_key IN (...)`
+over the distinct keys — no matter how many parent rows there are, which is
+the actual fix for N+1, not just a smaller constant. That claim is verified
+by instrumentation, not just read from the source: a test installs a
+counting `PDOStatement` subclass via `PDO::ATTR_STATEMENT_CLASS` and asserts
+`hasMany()` creates exactly one statement.
+
+Deployed for real in the showcase project: comments now store a `user_id`
+foreign key instead of a denormalized author string, and the author shown
+on the board is resolved via `belongsTo()` — one batched query regardless of
+how many comments are on screen. Verified end to end: posting a comment
+while logged in shows up with the right author name pulled through the
+relation, and the `comments` table has no `author` column anymore.
+
 ## Phase 1 roadmap
 
 1. ~~CSRF protection + security headers~~ — done (`phpmodern/security`).
 2. ~~Authentication & sessions~~ — done (`phpmodern/auth`).
-3. ~~Input validation~~ — done (`phpmodern/validation`, see above).
-4. **A richer ORM** — no relationships (hasMany/belongsTo), no eager
-   loading; anything beyond a single-table lookup means dropping to raw
-   PDO today, with the classic N+1-query risk and no protection against it.
-   Highest remaining priority.
+3. ~~Input validation~~ — done (`phpmodern/validation`).
+4. ~~A richer ORM (relationships, N+1 protection)~~ — done (`phpmodern/orm`,
+   see above).
 5. **File-based routing for kernel mode** — routes are still a manual list
    in `routes/web.php`. A directory-convention router (the way Next.js
    resolves `pages/`) would remove that boilerplate as an app's route count
-   grows. Lower priority — it's ergonomics, not a missing capability.
+   grows. The one remaining item — lower priority, since it's ergonomics,
+   not a missing capability.
 
 Deliberately not planned: an asset bundler (no-build-step is a chosen
 differentiator, not a gap), a GraphQL/API layer, and i18n — none of them
