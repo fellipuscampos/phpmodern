@@ -31,5 +31,8 @@
         <testsuite name="debugbar">
             <directory>packages/devtools/debugbar/tests</directory>
         </testsuite>
+        <testsuite name="security">
+            <directory>packages/core/security/tests</directory>
+        </testsuite>
     </testsuites>
 </phpunit>

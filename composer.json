@@ -18,7 +18,8 @@
         "phpmodern/queue": "*",
         "phpmodern/dev-server": "*",
         "phpmodern/store": "*",
-        "phpmodern/debugbar": "*"
+        "phpmodern/debugbar": "*",
+        "phpmodern/security": "*"
     },
     "repositories": [
         {
@@ -38,7 +39,8 @@
             "PhpModern\\Queue\\Tests\\": "packages/core/queue/tests/",
             "PhpModern\\DevServer\\Tests\\": "packages/devtools/dev-server/tests/",
             "PhpModern\\Store\\Tests\\": "packages/core/store/tests/",
-            "PhpModern\\DebugBar\\Tests\\": "packages/devtools/debugbar/tests/"
+            "PhpModern\\DebugBar\\Tests\\": "packages/devtools/debugbar/tests/",
+            "PhpModern\\Security\\Tests\\": "packages/core/security/tests/"
         }
     },
     "config": {

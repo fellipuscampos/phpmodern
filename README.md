@@ -34,6 +34,7 @@ packages/core/          Independently publishable engine packages
   typing-contracts/       The check command + rule banning untyped/mixed props
   queue/                  Database-backed job queue + standalone worker daemon
   store/                  Redux-shaped state container (reducers + listeners)
+  security/               CSRF (double-submit cookie) + default security headers
 packages/devtools/dev-server/  Polling file watcher that triggers hot reload via push-hub
 packages/devtools/debugbar/    Request-scoped profiler: DebugBar::time() around any callable
 packages/bridge/adapter/  Entry point for embedding into an existing PHP site
@@ -227,6 +228,44 @@ shows actual per-query and per-component timings (verified against the live
 server — e.g. `StockCounter (Camiseta Azul)` at 0.47ms, 2.04ms total request
 time), not placeholder numbers.
 
+## Security: CSRF + headers
+
+`phpmodern/security` delivers the "secure by default" promise from the
+original pillar that shipped without it. There's no session yet (see the
+roadmap below), so CSRF uses the double-submit-cookie pattern instead: a
+random token goes out as a cookie, the page echoes it back as an
+`X-CSRF-Token` header or form field, and a cross-origin attacker's page
+can't read the cookie to forge a match.
+
+```php
+$nonce = SecurityHeaders::apply(['http://127.0.0.1:8081']); // the push-hub origin, for connect-src
+$csrfToken = CsrfToken::issue();
+// ...
+<script nonce="<?= $nonce ?>">...</script>          // CSP has no 'unsafe-inline' for scripts
+```
+
+```php
+if (!CsrfToken::verify($_SERVER['HTTP_X_CSRF_TOKEN'] ?? null)) {
+    http_response_code(403);
+    exit;
+}
+```
+
+The CSP nonces scripts strictly (no `unsafe-inline`) but allows
+`'unsafe-inline'` for styles — every component in this repo uses inline
+`style=""` — and explicitly lists the push-hub's origin in `connect-src`,
+since it's a different port and CSP's `default-src 'self'` would otherwise
+silently block the EventSource connection reactivity depends on. Fixing
+that required removing `DebugBar`'s inline `onclick` (nonce-based CSP
+doesn't cover inline event-handler attributes, only `<script>` tags) in
+favor of a nonced `<script>` that attaches the listener instead.
+
+Wired into all three demos (`legacy-demo`, `starter-kernel`, and the
+showcase project) and verified for real: curl confirms a request with no
+token or the wrong one gets 403 while the right one gets through, and a
+headless-browser run of the showcase page found zero CSP violations on load
+or on the click → fetch → push → morph round trip.
+
 ## Where this leaves Phase 0
 
 Every item from the original roadmap sketch is now built and verified end to
@@ -239,20 +278,14 @@ dependency-free debug bar. Phase 0 was explicitly a proof of concept, not a
 production-ready framework — the gaps below are what stand between it and
 that, in priority order.
 
-## Phase 1 roadmap (not started)
+## Phase 1 roadmap
 
-1. **CSRF protection + security headers** — promised back in the original
-   "secure by default" pillar and never delivered. Every state-changing
-   action in this repo today (the stock +1/-1 buttons, the comment form)
-   trusts any request that hits it; a malicious page could trigger those
-   requests from a signed-in user's browser without their knowledge. Needs
-   a CSRF token helper wired into forms/actions, plus a small helper for
-   setting CSP/HSTS/X-Frame-Options headers by default. Highest priority —
-   this is a security promise made and not kept.
+1. ~~CSRF protection + security headers~~ — done (`phpmodern/security`, see
+   above).
 2. **Authentication & sessions** — no login primitive exists at all: no
    session handling, no password hashing helper, no "current user" concept
    a component or action can read. Nothing resembling a real app can be
-   built on this framework until this exists.
+   built on this framework until this exists. Highest remaining priority.
 3. **Input validation** — every action script hand-rolls its own
    `if ($x === '')` checks with no shared vocabulary for rules or error
    messages. Needs a small typed validator usable in bridge and kernel

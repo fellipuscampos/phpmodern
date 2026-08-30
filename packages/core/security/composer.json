@@ -1,0 +1,22 @@
+{
+    "name": "phpmodern/security",
+    "description": "CSRF protection (double-submit cookie — no session dependency) and default security headers (CSP with per-request nonces, HSTS, frame/content-type hardening). The 'secure by default' pillar promised early on and not delivered until now.",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "PhpModern\\Security\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "PhpModern\\Security\\Tests\\": "tests/"
+        }
+    }
+}

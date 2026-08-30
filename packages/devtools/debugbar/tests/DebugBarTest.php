@@ -60,6 +60,16 @@ final class DebugBarTest extends TestCase
         self::assertStringNotContainsString('<script>alert(2)</script>', $html);
     }
 
+    public function test_render_has_no_inline_event_handler_and_carries_the_nonce(): void
+    {
+        DebugBar::enable();
+
+        $html = DebugBar::render('the-nonce-value');
+
+        self::assertStringNotContainsString('onclick=', $html);
+        self::assertStringContainsString('nonce="the-nonce-value"', $html);
+    }
+
     public function test_reset_clears_enabled_state_and_collected_data(): void
     {
         DebugBar::enable();

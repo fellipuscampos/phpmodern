@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "76daf863a14413dca228800115672f7b",
+    "content-hash": "5ea62b9af8911eed3f4df77151da0d90",
     "packages": [
         {
             "name": "phpmodern/bridge-adapter",
@@ -72,13 +72,16 @@
             "dist": {
                 "type": "path",
                 "url": "../../packages/framework/kernel",
-                "reference": "d880c5342847cd164b640322c93dce3df4a414b5"
+                "reference": "16b599be8b56574a505afd98cbed4d59c37ca6df"
             },
             "require": {
                 "php": "^8.2",
                 "phpmodern/component-engine": "*",
                 "phpmodern/orm": "*",
                 "phpmodern/push-hub": "*"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^10.5"
             },
             "bin": [
                 "bin/console"
@@ -87,6 +90,11 @@
             "autoload": {
                 "psr-4": {
                     "PhpModern\\Kernel\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "PhpModern\\Kernel\\Tests\\": "tests/"
                 }
             },
             "license": [
@@ -164,6 +172,39 @@
                 "MIT"
             ],
             "description": "Standalone SSE push daemon + publisher client — lets any PHP process (legacy FPM app or kernel app) push HTML updates to the browser without client-side polling.",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "phpmodern/security",
+            "version": "dev-master",
+            "dist": {
+                "type": "path",
+                "url": "../../packages/core/security",
+                "reference": "1b2c1792975bf8df2aa89e2e9829cf503e015a7e"
+            },
+            "require": {
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^10.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PhpModern\\Security\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "PhpModern\\Security\\Tests\\": "tests/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "CSRF protection (double-submit cookie — no session dependency) and default security headers (CSP with per-request nonces, HSTS, frame/content-type hardening). The 'secure by default' pillar promised early on and not delivered until now.",
             "transport-options": {
                 "relative": true
             }

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "02254fab92aa4e2822475451ab058fa7",
+    "content-hash": "9f80258fc4ddcd9aad975d984878afac",
     "packages": [
         {
             "name": "phpmodern/bridge-adapter",
@@ -133,6 +133,39 @@
                 "MIT"
             ],
             "description": "Standalone SSE push daemon + publisher client — lets any PHP process (legacy FPM app or kernel app) push HTML updates to the browser without client-side polling.",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "phpmodern/security",
+            "version": "dev-master",
+            "dist": {
+                "type": "path",
+                "url": "../../packages/core/security",
+                "reference": "1b2c1792975bf8df2aa89e2e9829cf503e015a7e"
+            },
+            "require": {
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^10.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PhpModern\\Security\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "PhpModern\\Security\\Tests\\": "tests/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "CSRF protection (double-submit cookie — no session dependency) and default security headers (CSP with per-request nonces, HSTS, frame/content-type hardening). The 'secure by default' pillar promised early on and not delivered until now.",
             "transport-options": {
                 "relative": true
             }

@@ -8,9 +8,14 @@ require __DIR__ . '/../starter-kernel/app/Components/OrderStatusBadge.php';
 use App\Components\OrderStatusBadge;
 use PhpModern\Orm\Connection;
 use PhpModern\Orm\QueryHelper;
+use PhpModern\Security\CsrfToken;
+use PhpModern\Security\SecurityHeaders;
 
 use function PhpModern\Bridge\mount;
 use function PhpModern\Bridge\versioned_asset_url;
+
+$nonce = SecurityHeaders::apply(['http://127.0.0.1:8081']);
+$csrfToken = CsrfToken::issue();
 
 $idiomorphSrc = versioned_asset_url(
     'idiomorph.js.php',
@@ -46,6 +51,7 @@ $channel = (new OrderStatusBadge('order-status-badge-42', 42, $order['status']))
 <html lang="pt-br">
 <head>
     <meta charset="utf-8">
+    <meta name="csrf-token" content="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
     <title>Loja Legada — pedido #42</title>
 </head>
 <body style="font-family: sans-serif;">
@@ -61,14 +67,19 @@ $channel = (new OrderStatusBadge('order-status-badge-42', 42, $order['status']))
     <p><small>O clique atualiza o banco; a tela é atualizada por push (SSE), sem F5 e sem polling.</small></p>
 </main>
 
-<script src="<?= htmlspecialchars($idiomorphSrc, ENT_QUOTES, 'UTF-8') ?>"></script>
-<script type="module">
+<script src="<?= htmlspecialchars($idiomorphSrc, ENT_QUOTES, 'UTF-8') ?>" nonce="<?= htmlspecialchars($nonce, ENT_QUOTES, 'UTF-8') ?>"></script>
+<script type="module" nonce="<?= htmlspecialchars($nonce, ENT_QUOTES, 'UTF-8') ?>">
     import { connectPushChannel } from '<?= $clientSrc ?>';
+
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 
     connectPushChannel(<?= json_encode($channel) ?>);
 
     document.getElementById('advance-button').addEventListener('click', () => {
-        fetch('actions/advance-status.php', { method: 'POST' });
+        fetch('actions/advance-status.php', {
+            method: 'POST',
+            headers: { 'X-CSRF-Token': csrfToken },
+        });
     });
 </script>
 </body>

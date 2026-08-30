@@ -9,10 +9,19 @@ use App\Components\OrderStatusBadge;
 use PhpModern\Orm\Connection;
 use PhpModern\Orm\QueryHelper;
 use PhpModern\PushHub\HubClientPublisher;
+use PhpModern\Security\CsrfToken;
 
 use function PhpModern\Bridge\mount;
 
 const STATUS_CYCLE = ['pendente', 'confirmado', 'enviado', 'entregue'];
+
+$submittedToken = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? null;
+
+if (!CsrfToken::verify(is_string($submittedToken) ? $submittedToken : null)) {
+    http_response_code(403);
+    echo 'Invalid or missing CSRF token.';
+    exit;
+}
 
 $connection = Connection::sqlite(__DIR__ . '/../../../var/demo.sqlite');
 $queryHelper = new QueryHelper($connection);

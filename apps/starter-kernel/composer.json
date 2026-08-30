@@ -6,7 +6,8 @@
     "require": {
         "php": "^8.2",
         "phpmodern/kernel": "*",
-        "phpmodern/bridge-adapter": "*"
+        "phpmodern/bridge-adapter": "*",
+        "phpmodern/security": "*"
     },
     "repositories": [
         {

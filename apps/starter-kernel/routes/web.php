@@ -7,6 +7,8 @@ use PhpModern\Kernel\Router;
 use PhpModern\Orm\Connection;
 use PhpModern\Orm\QueryHelper;
 use PhpModern\PushHub\HubClientPublisher;
+use PhpModern\Security\CsrfToken;
+use PhpModern\Security\SecurityHeaders;
 
 use function PhpModern\Bridge\mount;
 use function PhpModern\Bridge\versioned_asset_url;
@@ -16,6 +18,9 @@ const STATUS_CYCLE = ['pendente', 'confirmado', 'enviado', 'entregue'];
 /** @param callable(): Connection $connectionFactory */
 return static function (Router $router, callable $connectionFactory): void {
     $router->get('/', function () use ($connectionFactory) {
+        $nonce = SecurityHeaders::apply(['http://127.0.0.1:8081']);
+        $csrfToken = CsrfToken::issue();
+
         $queryHelper = new QueryHelper($connectionFactory());
         $order = $queryHelper->findOneBy('orders', ['id' => 42]);
 
@@ -37,6 +42,8 @@ return static function (Router $router, callable $connectionFactory): void {
             __DIR__ . '/../../../packages/core/push-hub/resources/client.js',
         );
 
+        $csrfTokenJson = json_encode($csrfToken);
+
         return <<<HTML
             <!doctype html>
             <html lang="pt-br">
@@ -48,12 +55,15 @@ return static function (Router $router, callable $connectionFactory): void {
                     <p style="font-size: 1.5rem;">{$badgeHtml}</p>
                     <button id="advance-button" type="button">Avançar status</button>
                 </main>
-                <script src="{$idiomorphSrc}"></script>
-                <script type="module">
+                <script src="{$idiomorphSrc}" nonce="{$nonce}"></script>
+                <script type="module" nonce="{$nonce}">
                     import { connectPushChannel } from '{$clientSrc}';
                     connectPushChannel({$channelJson});
                     document.getElementById('advance-button').addEventListener('click', () => {
-                        fetch('/orders/42/advance', { method: 'POST' });
+                        fetch('/orders/42/advance', {
+                            method: 'POST',
+                            headers: { 'X-CSRF-Token': {$csrfTokenJson} },
+                        });
                     });
                 </script>
             </body>
@@ -78,6 +88,14 @@ return static function (Router $router, callable $connectionFactory): void {
     });
 
     $router->post('/orders/42/advance', function () use ($connectionFactory) {
+        $submittedToken = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? null;
+
+        if (!CsrfToken::verify(is_string($submittedToken) ? $submittedToken : null)) {
+            http_response_code(403);
+
+            return 'Invalid or missing CSRF token.';
+        }
+
         $queryHelper = new QueryHelper($connectionFactory());
         $order = $queryHelper->findOneBy('orders', ['id' => 42]);
 

@@ -80,8 +80,12 @@ final class DebugBar
         self::$notes[] = $message;
     }
 
-    /** Renders the floating bar, or an empty string when disabled. */
-    public static function render(): string
+    /**
+     * Renders the floating bar, or an empty string when disabled. Pass the
+     * nonce from SecurityHeaders::apply() (if you're using it) so the bar's
+     * own toggle script isn't blocked by a nonce-based script-src CSP.
+     */
+    public static function render(?string $nonce = null): string
     {
         if (!self::$enabled) {
             return '';
@@ -105,9 +109,11 @@ final class DebugBar
             $noteItems .= '<li>' . htmlspecialchars($note, ENT_QUOTES, 'UTF-8') . '</li>';
         }
 
+        $nonceAttr = $nonce !== null ? ' nonce="' . htmlspecialchars($nonce, ENT_QUOTES, 'UTF-8') . '"' : '';
+
         return <<<HTML
             <div id="phpmodern-debugbar" style="position:fixed;left:0;right:0;bottom:0;z-index:2147483647;font:12px/1.4 monospace;background:#1c1e21;color:#eee;border-top:2px solid #2f6fed;">
-                <div style="display:flex;align-items:center;gap:1rem;padding:0.4rem 0.75rem;cursor:pointer;" onclick="document.getElementById('phpmodern-debugbar-body').classList.toggle('phpmodern-debugbar--open')">
+                <div id="phpmodern-debugbar-summary" style="display:flex;align-items:center;gap:1rem;padding:0.4rem 0.75rem;cursor:pointer;">
                     <strong style="color:#2f6fed;">phpmodern</strong>
                     <span>{$totalMs}ms total</span>
                     <span>{$memoryMb}MB peak</span>
@@ -119,6 +125,11 @@ final class DebugBar
                 </div>
             </div>
             <style>#phpmodern-debugbar-body.phpmodern-debugbar--open{display:block!important;}</style>
+            <script{$nonceAttr}>
+                document.getElementById('phpmodern-debugbar-summary').addEventListener('click', function () {
+                    document.getElementById('phpmodern-debugbar-body').classList.toggle('phpmodern-debugbar--open');
+                });
+            </script>
             HTML;
     }
 }
