@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d360caa5a4f36a8a1ad62698e34bd670",
+    "content-hash": "278cf86306ce2dab8d93e3aa20aab064",
     "packages": [],
     "packages-dev": [
         {
@@ -482,6 +482,39 @@
                 "MIT"
             ],
             "description": "Database-backed job queue: push a job from any request, process it with a standalone worker daemon — the same 'daemon lives outside PHP-FPM' pattern as push-hub.",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "phpmodern/store",
+            "version": "dev-master",
+            "dist": {
+                "type": "path",
+                "url": "packages/core/store",
+                "reference": "9081c5ca7ff806272f19ca80474f19f5a8a0466b"
+            },
+            "require": {
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^10.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PhpModern\\Store\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "PhpModern\\Store\\Tests\\": "tests/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Minimal Redux-shaped state container: register a reducer per action, dispatch() mutates state and notifies every listener. Sized for one PHP request, not a long-lived process — deliberately has no dependency on push-hub or the ORM; composing 'notify a listener that publishes' or 'notify a listener that persists' is left to the caller.",
             "transport-options": {
                 "relative": true
             }

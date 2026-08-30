@@ -33,6 +33,7 @@ packages/core/          Independently publishable engine packages
   push-hub/               Standalone SSE daemon: server push, no client polling
   typing-contracts/       The check command + rule banning untyped/mixed props
   queue/                  Database-backed job queue + standalone worker daemon
+  store/                  Redux-shaped state container (reducers + listeners)
 packages/devtools/dev-server/  Polling file watcher that triggers hot reload via push-hub
 packages/bridge/adapter/  Entry point for embedding into an existing PHP site
 packages/framework/kernel/  Meta-package for greenfield projects (router, front controller, make:component)
@@ -182,18 +183,40 @@ a watched file changes. Verified with a real (headless) browser: the page's
 `load` event count went from 1 to 2 the instant a watched file was touched,
 with no manual refresh.
 
+## State management
+
+`phpmodern/store` is a Redux-shaped container sized for one PHP request
+(there's no long-lived process to hold state across requests): seed it from
+a DB read, register a reducer per action, dispatch, let listeners react.
+
+```php
+/** @var Store<array{quantity: int}> $store */
+$store = new Store(['quantity' => $row['quantity']]);
+$store->on('adjust', fn (array $s, array $p): array => ['quantity' => max(0, $s['quantity'] + $p['delta'])]);
+$store->subscribe(fn (array $s) => $queryHelper->update('stock', $s, ['id' => 1])); // persist
+$store->subscribe(fn (array $s) => $publisher->publish($channel, $id, mount(Counter::class, $s))); // push
+$store->dispatch('adjust', ['delta' => 1]);
+```
+
+The reducer is a pure function (trivially unit-testable on its own); each
+side effect of a dispatch — persisting, pushing — is a separate listener
+instead of being hand-inlined one after another. Deployed for real in
+`stock-adjust.php` in the showcase project, replacing the hand-rolled
+"compute, persist, publish" sequence every other action in this repo still
+uses; verified end to end that it produces byte-identical push output.
+
 ## Roadmap (not yet built)
 
 A broader map of "modern-stack feature → PHP equivalent → feasibility" lives
-in the project's planning notes and guides what gets built next, including
-state management and a debug bar. None of this is committed to yet beyond
-Phase 0, which exists to validate the riskiest assumptions (dual-mode
-reactivity with one engine, patched efficiently on the client, strict typing
-enforced with no consumer-side config, scaffolding that produces
-already-compliant code, migrations with no registry to maintain, queue
-workers that correctly resolve a consumer's own classes, and hot reload
-built entirely on the same push primitive as component updates) before
-investing further.
+in the project's planning notes and guides what gets built next — currently
+just a debug bar. None of this is committed to yet beyond Phase 0, which
+exists to validate the riskiest assumptions (dual-mode reactivity with one
+engine, patched efficiently on the client, strict typing enforced with no
+consumer-side config, scaffolding that produces already-compliant code,
+migrations with no registry to maintain, queue workers that correctly
+resolve a consumer's own classes, hot reload built entirely on the same push
+primitive as component updates, and state management that composes with
+both persistence and push as plain listeners) before investing further.
 
 ## Requirements
 

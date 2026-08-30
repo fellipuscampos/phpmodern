@@ -1,0 +1,22 @@
+{
+    "name": "phpmodern/store",
+    "description": "Minimal Redux-shaped state container: register a reducer per action, dispatch() mutates state and notifies every listener. Sized for one PHP request, not a long-lived process — deliberately has no dependency on push-hub or the ORM; composing 'notify a listener that publishes' or 'notify a listener that persists' is left to the caller.",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "PhpModern\\Store\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "PhpModern\\Store\\Tests\\": "tests/"
+        }
+    }
+}

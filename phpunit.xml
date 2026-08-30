@@ -25,5 +25,8 @@
         <testsuite name="dev-server">
             <directory>packages/devtools/dev-server/tests</directory>
         </testsuite>
+        <testsuite name="store">
+            <directory>packages/core/store/tests</directory>
+        </testsuite>
     </testsuites>
 </phpunit>
