@@ -46,5 +46,8 @@
         <testsuite name="config">
             <directory>packages/core/config/tests</directory>
         </testsuite>
+        <testsuite name="authorization">
+            <directory>packages/core/authorization/tests</directory>
+        </testsuite>
     </testsuites>
 </phpunit>

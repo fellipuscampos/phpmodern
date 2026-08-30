@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ddfb79c4a3313dfb829e38c3f8944317",
+    "content-hash": "b1a6a84061ae1804a8ca4f420326684a",
     "packages": [],
     "packages-dev": [
         {
@@ -271,6 +271,39 @@
                 "MIT"
             ],
             "description": "Session-backed authentication: PasswordHasher (a typed face on password_hash/verify), Session (a testable wrapper around $_SESSION), and Auth (login/logout/id/check, with session-fixation protection). Fetching the actual user record is left to the caller — this only tracks who is logged in.",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "phpmodern/authorization",
+            "version": "dev-master",
+            "dist": {
+                "type": "path",
+                "url": "packages/core/authorization",
+                "reference": "c69743c5f21b7ead4fc675a454976c2cc5fcfc06"
+            },
+            "require": {
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^10.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PhpModern\\Authorization\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "PhpModern\\Authorization\\Tests\\": "tests/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Gate: register a policy per ability, check it before acting. phpmodern/auth answers 'who is this'; this answers 'what can they do' — the piece Phase 1's auth work explicitly left out.",
             "transport-options": {
                 "relative": true
             }

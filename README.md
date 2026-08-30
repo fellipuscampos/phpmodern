@@ -39,6 +39,7 @@ packages/core/          Independently publishable engine packages
   validation/             Typed Rule objects + structured per-field errors
   http/                   Request/Response objects + Middleware pipeline
   config/                 .env loader + typed environment-variable getters
+  authorization/          Gate: policy registry answering "what can they do"
 packages/devtools/dev-server/  Polling file watcher that triggers hot reload via push-hub
 packages/devtools/debugbar/    Request-scoped profiler: DebugBar::time() around any callable
 packages/bridge/adapter/  Entry point for embedding into an existing PHP site
@@ -469,6 +470,37 @@ environment variable set at all: `console migrate` read `DATABASE_URL`
 purely from a `.env` file and ran the migration against exactly that
 database.
 
+## Authorization: Gate
+
+`phpmodern/authorization` answers "what can they do," the half `phpmodern/
+auth` explicitly leaves out. `Gate` is a registry of policies — plain
+callables returning bool, no roles table or migration needed for the common
+case of "can this specific user act on this specific record":
+
+```php
+Gate::define('delete-comment', fn (?int $userId, array $comment): bool =>
+    $userId !== null && $comment['user_id'] === $userId);
+
+Gate::authorize('delete-comment', Auth::id(), $comment); // 403s and exits if denied
+```
+
+Deployed for real in the showcase project: comments can now be deleted, but
+only by whoever posted them. Building this surfaced a real architecture
+lesson, not just a feature: `CommentBoard`'s pushed HTML is identical for
+every connected viewer (push-hub broadcasts one render to a channel), so a
+first attempt at baking "is this my comment" into the server-rendered
+component showed the delete button to the *wrong* people on every other
+open tab. Fixed by always rendering the button with the comment's owner id
+as a `data-user-id` attribute and letting the client decide visibility per
+viewer (re-applied via a `MutationObserver` after every push) — the actual
+security boundary stays entirely server-side in `Gate::authorize()`
+regardless of what the button shows. Verified end to end: deleting while
+logged out returns 401, deleting someone else's comment while logged in as
+a different user returns 403 ("Forbidden."), and deleting your own comment
+returns 204 and it's gone — confirmed in a real headless browser too, where
+the delete button rendered visible on your own comment and `none` on
+someone else's.
+
 ## Phase 2 roadmap: toward a complete framework
 
 Phase 1 closed the gap between "proof of concept" and "an app could be built
@@ -488,8 +520,7 @@ what unblocks what:
    routes or route groups yet — migrating Router itself is follow-up work,
    not done in this pass.
 3. ~~Configuration~~ — done (`phpmodern/config`, see below).
-4. **Authorization** — `phpmodern/auth` answers "who is this," not "what
-   can they do." Needs roles/policies (`can($user, 'edit', $post)`).
+4. ~~Authorization~~ — done (`phpmodern/authorization`, see below).
 5. **Full account lifecycle** — registration, email verification, password
    reset, login rate-limiting. Requires a Mailer abstraction, which doesn't
    exist yet either.

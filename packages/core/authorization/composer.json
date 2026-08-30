@@ -1,0 +1,22 @@
+{
+    "name": "phpmodern/authorization",
+    "description": "Gate: register a policy per ability, check it before acting. phpmodern/auth answers 'who is this'; this answers 'what can they do' — the piece Phase 1's auth work explicitly left out.",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "PhpModern\\Authorization\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "PhpModern\\Authorization\\Tests\\": "tests/"
+        }
+    }
+}

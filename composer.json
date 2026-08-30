@@ -23,7 +23,8 @@
         "phpmodern/auth": "*",
         "phpmodern/validation": "*",
         "phpmodern/http": "*",
-        "phpmodern/config": "*"
+        "phpmodern/config": "*",
+        "phpmodern/authorization": "*"
     },
     "repositories": [
         {
@@ -48,7 +49,8 @@
             "PhpModern\\Auth\\Tests\\": "packages/core/auth/tests/",
             "PhpModern\\Validation\\Tests\\": "packages/core/validation/tests/",
             "PhpModern\\Http\\Tests\\": "packages/core/http/tests/",
-            "PhpModern\\Config\\Tests\\": "packages/core/config/tests/"
+            "PhpModern\\Config\\Tests\\": "packages/core/config/tests/",
+            "PhpModern\\Authorization\\Tests\\": "packages/core/authorization/tests/"
         }
     },
     "config": {
