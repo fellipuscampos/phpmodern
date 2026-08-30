@@ -24,7 +24,8 @@
         "phpmodern/validation": "*",
         "phpmodern/http": "*",
         "phpmodern/config": "*",
-        "phpmodern/authorization": "*"
+        "phpmodern/authorization": "*",
+        "phpmodern/mail": "*"
     },
     "repositories": [
         {
@@ -50,7 +51,8 @@
             "PhpModern\\Validation\\Tests\\": "packages/core/validation/tests/",
             "PhpModern\\Http\\Tests\\": "packages/core/http/tests/",
             "PhpModern\\Config\\Tests\\": "packages/core/config/tests/",
-            "PhpModern\\Authorization\\Tests\\": "packages/core/authorization/tests/"
+            "PhpModern\\Authorization\\Tests\\": "packages/core/authorization/tests/",
+            "PhpModern\\Mail\\Tests\\": "packages/core/mail/tests/"
         }
     },
     "config": {

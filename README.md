@@ -40,6 +40,7 @@ packages/core/          Independently publishable engine packages
   http/                   Request/Response objects + Middleware pipeline
   config/                 .env loader + typed environment-variable getters
   authorization/          Gate: policy registry answering "what can they do"
+  mail/                   Message/Mailer (LogMailer for dev, real SmtpMailer)
 packages/devtools/dev-server/  Polling file watcher that triggers hot reload via push-hub
 packages/devtools/debugbar/    Request-scoped profiler: DebugBar::time() around any callable
 packages/bridge/adapter/  Entry point for embedding into an existing PHP site
@@ -501,6 +502,33 @@ returns 204 and it's gone — confirmed in a real headless browser too, where
 the delete button rendered visible on your own comment and `none` on
 someone else's.
 
+## Mail + password reset
+
+`phpmodern/mail` is `Message` + a `Mailer` interface, with two
+implementations: `LogMailer` writes to a file instead of actually sending
+(the sensible default for local development — the same idea as Laravel's
+"log" driver), and `SmtpMailer` is a real minimal SMTP client over a plain
+socket (EHLO, optional AUTH LOGIN, MAIL FROM/RCPT TO/DATA, no external
+library, no STARTTLS/attachments). Swapping one for the other is a
+one-line change; nothing else in a password-reset flow needs to know which
+one is in use.
+
+`SmtpMailer` was verified for real, not mocked: a local SMTP debug server
+(Python's `aiosmtpd`) received a message sent through it with byte-correct
+UTF-8 content and properly formed headers — confirmed by hex-dumping the
+body before sending and comparing. A mock would only have proven the class
+agrees with itself.
+
+Deployed for real in the showcase project: `forgot-password.php` issues a
+random single-use token (expires in 1 hour) and emails it via `LogMailer`
+to `var/mail.log`, without revealing whether the address has an account
+either way (a deliberate defense against user enumeration).
+`reset-password.php` consumes the token to set a new password. Verified
+end to end with curl end-to-end, including edge cases: a fake token is
+rejected (400), the real token succeeds (204) and the old password stops
+working (401) while the new one works (204), and reusing the same
+(now-consumed) token fails (400) — the single-use guarantee actually holds.
+
 ## Phase 2 roadmap: toward a complete framework
 
 Phase 1 closed the gap between "proof of concept" and "an app could be built
@@ -521,9 +549,10 @@ what unblocks what:
    not done in this pass.
 3. ~~Configuration~~ — done (`phpmodern/config`, see below).
 4. ~~Authorization~~ — done (`phpmodern/authorization`, see below).
-5. **Full account lifecycle** — registration, email verification, password
-   reset, login rate-limiting. Requires a Mailer abstraction, which doesn't
-   exist yet either.
+5. ~~Full account lifecycle~~ — partially done: `phpmodern/mail` (the
+   prerequisite) exists, and password reset is built and verified end to
+   end in the showcase project (see below). Registration, email
+   verification, and login rate-limiting are still open.
 6. **A more capable ORM** — transactions, soft deletes, automatic
    timestamps, pagination, richer queries than `WHERE ... IN (...)`, seeders.
 7. **Observability** — a PSR-3 logger, a central exception handler (an

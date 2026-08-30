@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b1a6a84061ae1804a8ca4f420326684a",
+    "content-hash": "5d2f030bae39ef4176ef35aca58b6005",
     "packages": [],
     "packages-dev": [
         {
@@ -540,6 +540,39 @@
                 "MIT"
             ],
             "description": "Meta-package for greenfield projects: front controller + router on top of the same core engines used in bridge mode.",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "phpmodern/mail",
+            "version": "dev-master",
+            "dist": {
+                "type": "path",
+                "url": "packages/core/mail",
+                "reference": "49b6033a4fbe0d27de32b68cf3fc0ca172139ce0"
+            },
+            "require": {
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^10.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PhpModern\\Mail\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "PhpModern\\Mail\\Tests\\": "tests/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Message + Mailer interface, with a LogMailer for local dev (writes to a file instead of actually sending) and a real minimal SmtpMailer (EHLO/AUTH LOGIN/MAIL FROM/RCPT TO/DATA over a plain socket, no external library). The prerequisite for password reset and email verification.",
             "transport-options": {
                 "relative": true
             }
