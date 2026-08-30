@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b49d112d6a93a7970ce7ed491f148d4c",
+    "content-hash": "56545099132dec67bff3d6601fdd2dd2",
     "packages": [],
     "packages-dev": [
         {
@@ -652,6 +652,39 @@
                 "MIT"
             ],
             "description": "The TypeScript-equivalent pillar: a PHPStan rule that bans untyped/mixed component props, plus a zero-config `check` command.",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "phpmodern/validation",
+            "version": "dev-master",
+            "dist": {
+                "type": "path",
+                "url": "packages/core/validation",
+                "reference": "66dbb32451fc6a39d68c4a2ea91ff3ca41b8c0fc"
+            },
+            "require": {
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^10.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PhpModern\\Validation\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "PhpModern\\Validation\\Tests\\": "tests/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "A small typed validator: composable Rule objects instead of a magic-string DSL, structured per-field errors instead of a bare 400. The shared vocabulary every action script in this repo was hand-rolling its own version of.",
             "transport-options": {
                 "relative": true
             }

@@ -1,0 +1,22 @@
+{
+    "name": "phpmodern/validation",
+    "description": "A small typed validator: composable Rule objects instead of a magic-string DSL, structured per-field errors instead of a bare 400. The shared vocabulary every action script in this repo was hand-rolling its own version of.",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "PhpModern\\Validation\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "PhpModern\\Validation\\Tests\\": "tests/"
+        }
+    }
+}

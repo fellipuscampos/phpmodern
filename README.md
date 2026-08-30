@@ -36,6 +36,7 @@ packages/core/          Independently publishable engine packages
   store/                  Redux-shaped state container (reducers + listeners)
   security/               CSRF (double-submit cookie) + default security headers
   auth/                   Session, PasswordHasher, and login/logout/check
+  validation/             Typed Rule objects + structured per-field errors
 packages/devtools/dev-server/  Polling file watcher that triggers hot reload via push-hub
 packages/devtools/debugbar/    Request-scoped profiler: DebugBar::time() around any callable
 packages/bridge/adapter/  Entry point for embedding into an existing PHP site
@@ -310,17 +311,43 @@ form disappears and the comment form appears after logging in, a posted
 comment shows up on the board via push, and curl confirms 401 both before
 login and again after logout, with 204 in between.
 
+## Input validation
+
+`phpmodern/validation` replaces every action script's hand-rolled
+`if ($x === '')` checks with composable, typed `Rule` objects — no
+magic-string DSL ("`required|max:280`"), consistent with how this framework
+treats strings-standing-in-for-types as a first principle everywhere else
+(see `typing-contracts`). `Validator::validate()` runs each field's rules in
+order, stopping at the first failure per field, and returns a
+`ValidationResult` with structured `array<field, list<message>>` errors
+instead of a bare status code.
+
+```php
+$validated = Validator::validate($input, [
+    'product' => [new Required(), new StringType()],
+    'delta' => [new Required(), new In([1, -1])],
+]);
+abort_if_invalid($validated); // 422 + {"errors": {...}} — the caller's own helper
+
+$product = (string) $validated->get('product');
+```
+
+Deployed for real across all three of the showcase project's mutating
+actions (stock adjustment, login, comment posting), replacing their ad hoc
+checks. Verified end to end with curl: an out-of-range `delta` and an
+over-length `message` both come back as `422` with the specific field and
+reason (`"delta must be one of: 1, -1."`, `"message must be at most 280
+characters."`) instead of a bare `400`.
+
 ## Phase 1 roadmap
 
 1. ~~CSRF protection + security headers~~ — done (`phpmodern/security`).
-2. ~~Authentication & sessions~~ — done (`phpmodern/auth`, see above).
-3. **Input validation** — every action script hand-rolls its own
-   `if ($x === '')` checks with no shared vocabulary for rules or error
-   messages. Needs a small typed validator usable in bridge and kernel
-   alike, so errors are structured instead of ad hoc.
+2. ~~Authentication & sessions~~ — done (`phpmodern/auth`).
+3. ~~Input validation~~ — done (`phpmodern/validation`, see above).
 4. **A richer ORM** — no relationships (hasMany/belongsTo), no eager
    loading; anything beyond a single-table lookup means dropping to raw
    PDO today, with the classic N+1-query risk and no protection against it.
+   Highest remaining priority.
 5. **File-based routing for kernel mode** — routes are still a manual list
    in `routes/web.php`. A directory-convention router (the way Next.js
    resolves `pages/`) would remove that boilerplate as an app's route count

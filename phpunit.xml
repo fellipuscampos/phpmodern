@@ -37,5 +37,8 @@
         <testsuite name="auth">
             <directory>packages/core/auth/tests</directory>
         </testsuite>
+        <testsuite name="validation">
+            <directory>packages/core/validation/tests</directory>
+        </testsuite>
     </testsuites>
 </phpunit>
