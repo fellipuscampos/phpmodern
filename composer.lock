@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5d2f030bae39ef4176ef35aca58b6005",
+    "content-hash": "3d1f543fddb450126b33cfcccb1bd627",
     "packages": [],
     "packages-dev": [
         {
@@ -336,6 +336,39 @@
             }
         },
         {
+            "name": "phpmodern/cache",
+            "version": "dev-master",
+            "dist": {
+                "type": "path",
+                "url": "packages/core/cache",
+                "reference": "a6e7e1a6002ab62ce277b89463d5d1f890f88538"
+            },
+            "require": {
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^10.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PhpModern\\Cache\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "PhpModern\\Cache\\Tests\\": "tests/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "A tiny key/value cache with TTL and an atomic increment() — the primitive login rate-limiting (and anything else that needs a short-lived counter) needs, without pulling in Redis for a framework that has to run on shared PHP hosting too.",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
             "name": "phpmodern/component-engine",
             "version": "dev-master",
             "dist": {
@@ -472,6 +505,40 @@
             }
         },
         {
+            "name": "phpmodern/error-handler",
+            "version": "dev-master",
+            "dist": {
+                "type": "path",
+                "url": "packages/core/error-handler",
+                "reference": "6c138733516b2408763defd398026a18a78eea45"
+            },
+            "require": {
+                "php": "^8.2",
+                "phpmodern/logging": "*"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^10.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PhpModern\\ErrorHandler\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "PhpModern\\ErrorHandler\\Tests\\": "tests/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Registers a global exception/error handler so an uncaught Throwable is always logged and always gets a response — never a blank page, never a leaked stack trace to a real visitor.",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
             "name": "phpmodern/http",
             "version": "dev-master",
             "dist": {
@@ -540,6 +607,39 @@
                 "MIT"
             ],
             "description": "Meta-package for greenfield projects: front controller + router on top of the same core engines used in bridge mode.",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "phpmodern/logging",
+            "version": "dev-master",
+            "dist": {
+                "type": "path",
+                "url": "packages/core/logging",
+                "reference": "7a4bdb77cbb5f21e5b391c190ce7fb5a3780839b"
+            },
+            "require": {
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^10.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PhpModern\\Logging\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "PhpModern\\Logging\\Tests\\": "tests/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "A typed logger contract (LogLevel is an enum, not a string constant) plus a FileLogger and NullLogger — the write side of observability that phpmodern/error-handler logs uncaught exceptions through.",
             "transport-options": {
                 "relative": true
             }

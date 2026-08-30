@@ -25,7 +25,10 @@
         "phpmodern/http": "*",
         "phpmodern/config": "*",
         "phpmodern/authorization": "*",
-        "phpmodern/mail": "*"
+        "phpmodern/mail": "*",
+        "phpmodern/logging": "*",
+        "phpmodern/error-handler": "*",
+        "phpmodern/cache": "*"
     },
     "repositories": [
         {
@@ -52,7 +55,10 @@
             "PhpModern\\Http\\Tests\\": "packages/core/http/tests/",
             "PhpModern\\Config\\Tests\\": "packages/core/config/tests/",
             "PhpModern\\Authorization\\Tests\\": "packages/core/authorization/tests/",
-            "PhpModern\\Mail\\Tests\\": "packages/core/mail/tests/"
+            "PhpModern\\Mail\\Tests\\": "packages/core/mail/tests/",
+            "PhpModern\\Logging\\Tests\\": "packages/core/logging/tests/",
+            "PhpModern\\ErrorHandler\\Tests\\": "packages/core/error-handler/tests/",
+            "PhpModern\\Cache\\Tests\\": "packages/core/cache/tests/"
         }
     },
     "config": {

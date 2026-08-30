@@ -1,0 +1,23 @@
+{
+    "name": "phpmodern/error-handler",
+    "description": "Registers a global exception/error handler so an uncaught Throwable is always logged and always gets a response — never a blank page, never a leaked stack trace to a real visitor.",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "phpmodern/logging": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "PhpModern\\ErrorHandler\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "PhpModern\\ErrorHandler\\Tests\\": "tests/"
+        }
+    }
+}

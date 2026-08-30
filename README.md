@@ -562,10 +562,10 @@ what unblocks what:
    not done in this pass.
 3. ~~Configuration~~ — done (`phpmodern/config`, see below).
 4. ~~Authorization~~ — done (`phpmodern/authorization`, see below).
-5. ~~Full account lifecycle~~ — done, except login rate-limiting (left
-   open, tracked separately below): registration, password reset, and
-   email verification are all built and verified end to end in the
-   showcase project on top of `phpmodern/mail` (see below).
+5. ~~Full account lifecycle~~ — done: registration, password reset, email
+   verification, and (via `phpmodern/cache`, see item 7 below)
+   login rate-limiting are all built and verified end to end in the
+   showcase project on top of `phpmodern/mail`.
 6. ~~A more capable ORM~~ — partially done: `Connection::transaction()`
    (commit on success, rollback on exception) and `QueryHelper::paginate()`
    (count + limit/offset, with optional `ORDER BY`) both exist and are used
@@ -580,9 +580,18 @@ what unblocks what:
    user row can never exist without a verification token. Automatic
    timestamps, richer queries beyond equality/IN, and seeders are still
    open.
-7. **Observability** — a PSR-3 logger, a central exception handler (an
-   uncaught exception today just breaks the page with no record of it
-   anywhere), and a cache abstraction.
+7. ~~Observability~~ — done: `phpmodern/logging` (a typed `Logger` — `LogLevel`
+   is an enum, not a PSR-3 string constant — plus `FileLogger` and
+   `NullLogger`), `phpmodern/error-handler` (`ErrorHandler::register()` wires
+   up `set_exception_handler()`/`set_error_handler()` so an uncaught
+   `Throwable` is always logged and always gets a real response instead of a
+   blank page or a leaked stack trace), and `phpmodern/cache` (`FileCache`,
+   a flat-file key/value store with TTL and a `flock()`-guarded atomic
+   `increment()`). The showcase project registers the error handler in
+   `bootstrap.php` and uses the cache to close the login rate-limiting gap
+   left open in item 5 above: 5 failed logins for a username within 15
+   minutes returns 429 even with the correct password on the 6th attempt,
+   verified end to end against a running server.
 8. **A real CLI framework** — `bin/console` is still an if-chain; needs
    argument parsing, `--help`, and command registration as more commands
    accumulate.

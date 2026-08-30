@@ -52,5 +52,14 @@
         <testsuite name="mail">
             <directory>packages/core/mail/tests</directory>
         </testsuite>
+        <testsuite name="logging">
+            <directory>packages/core/logging/tests</directory>
+        </testsuite>
+        <testsuite name="error-handler">
+            <directory>packages/core/error-handler/tests</directory>
+        </testsuite>
+        <testsuite name="cache">
+            <directory>packages/core/cache/tests</directory>
+        </testsuite>
     </testsuites>
 </phpunit>

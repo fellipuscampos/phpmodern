@@ -1,0 +1,22 @@
+{
+    "name": "phpmodern/logging",
+    "description": "A typed logger contract (LogLevel is an enum, not a string constant) plus a FileLogger and NullLogger — the write side of observability that phpmodern/error-handler logs uncaught exceptions through.",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "PhpModern\\Logging\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "PhpModern\\Logging\\Tests\\": "tests/"
+        }
+    }
+}

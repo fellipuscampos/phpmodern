@@ -1,0 +1,22 @@
+{
+    "name": "phpmodern/cache",
+    "description": "A tiny key/value cache with TTL and an atomic increment() — the primitive login rate-limiting (and anything else that needs a short-lived counter) needs, without pulling in Redis for a framework that has to run on shared PHP hosting too.",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "PhpModern\\Cache\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "PhpModern\\Cache\\Tests\\": "tests/"
+        }
+    }
+}
