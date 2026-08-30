@@ -502,7 +502,7 @@ returns 204 and it's gone — confirmed in a real headless browser too, where
 the delete button rendered visible on your own comment and `none` on
 someone else's.
 
-## Mail + password reset
+## Mail + the full account lifecycle
 
 `phpmodern/mail` is `Message` + a `Mailer` interface, with two
 implementations: `LogMailer` writes to a file instead of actually sending
@@ -524,10 +524,23 @@ random single-use token (expires in 1 hour) and emails it via `LogMailer`
 to `var/mail.log`, without revealing whether the address has an account
 either way (a deliberate defense against user enumeration).
 `reset-password.php` consumes the token to set a new password. Verified
-end to end with curl end-to-end, including edge cases: a fake token is
-rejected (400), the real token succeeds (204) and the old password stops
-working (401) while the new one works (204), and reusing the same
-(now-consumed) token fails (400) — the single-use guarantee actually holds.
+end to end with curl, including edge cases: a fake token is rejected (400),
+the real token succeeds (204) and the old password stops working (401)
+while the new one works (204), and reusing the same (now-consumed) token
+fails (400) — the single-use guarantee actually holds.
+
+Registration and email verification round out the lifecycle on the same
+foundation: `register.php` rejects a taken username/email (422, structured
+per-field errors), otherwise creates the account, emails a 24-hour
+verification token via the same `Mailer`, and logs the user in immediately
+— verification is tracked and surfaced in the UI, not a gate that blocks
+using the account. `verify-email.php` consumes that token the same way
+password reset does. Verified end to end: a duplicate username is rejected,
+a fresh registration auto-logs-in with `email_verified_at` still `NULL`
+and an "unverified" banner showing, and submitting the emailed token clears
+`email_verified_at` and makes the banner disappear on the next load. Login
+rate-limiting is the one sub-item still open (needs a cache/counter store —
+see the ORM/cache items below).
 
 ## Phase 2 roadmap: toward a complete framework
 
@@ -549,10 +562,10 @@ what unblocks what:
    not done in this pass.
 3. ~~Configuration~~ — done (`phpmodern/config`, see below).
 4. ~~Authorization~~ — done (`phpmodern/authorization`, see below).
-5. ~~Full account lifecycle~~ — partially done: `phpmodern/mail` (the
-   prerequisite) exists, and password reset is built and verified end to
-   end in the showcase project (see below). Registration, email
-   verification, and login rate-limiting are still open.
+5. ~~Full account lifecycle~~ — done, except login rate-limiting (left
+   open, tracked separately below): registration, password reset, and
+   email verification are all built and verified end to end in the
+   showcase project on top of `phpmodern/mail` (see below).
 6. **A more capable ORM** — transactions, soft deletes, automatic
    timestamps, pagination, richer queries than `WHERE ... IN (...)`, seeders.
 7. **Observability** — a PSR-3 logger, a central exception handler (an
