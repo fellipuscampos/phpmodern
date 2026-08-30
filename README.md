@@ -403,12 +403,54 @@ registered route — including the CSRF-protected `POST /orders/42/advance`
 
 Every item identified as a gap between the Phase 0 proof of concept and a
 framework someone could actually build a real app on is now built and
-verified end to end against real running processes. The project's next
-milestone isn't on this list yet — it hasn't been scoped.
+verified end to end against real running processes.
 
 Deliberately not planned: an asset bundler (no-build-step is a chosen
 differentiator, not a gap), a GraphQL/API layer, and i18n — none of them
 were part of the "make PHP feel modern" thesis this project set out to test.
+
+## Phase 2 roadmap: toward a complete framework
+
+Phase 1 closed the gap between "proof of concept" and "an app could be built
+on this." Phase 2 is the larger, longer gap between that and "a complete
+framework" in the sense Laravel/Symfony/Rails are — this is realistically
+months of work for a team, not something to build in one pass. Grouped by
+what unblocks what:
+
+1. **CI** — nothing runs the test suite or PHPStan automatically on a push;
+   every green run so far has been manual. Building everything else on top
+   of an unverified baseline compounds risk. Done first, before anything
+   else in this phase.
+2. **HTTP layer maturity** — proper Request/Response objects instead of
+   reading `$_SERVER`/`php://input` and calling `echo`/`http_response_code()`
+   directly, a real middleware pipeline (CSRF/auth checks are currently
+   plain function calls at the top of each script), named routes and route
+   groups.
+3. **Configuration** — no central config system; DSNs and settings are
+   passed as CLI flags or hardcoded. Needs an env/config loader every other
+   piece (DB, mail, cache) can depend on.
+4. **Authorization** — `phpmodern/auth` answers "who is this," not "what
+   can they do." Needs roles/policies (`can($user, 'edit', $post)`).
+5. **Full account lifecycle** — registration, email verification, password
+   reset, login rate-limiting. Requires a Mailer abstraction, which doesn't
+   exist yet either.
+6. **A more capable ORM** — transactions, soft deletes, automatic
+   timestamps, pagination, richer queries than `WHERE ... IN (...)`, seeders.
+7. **Observability** — a PSR-3 logger, a central exception handler (an
+   uncaught exception today just breaks the page with no record of it
+   anywhere), and a cache abstraction.
+8. **A real CLI framework** — `bin/console` is still an if-chain; needs
+   argument parsing, `--help`, and command registration as more commands
+   accumulate.
+9. **In-process application testing** — there's no HTTP test client; testing
+   a route today means curling a real running server. A complete framework
+   lets a test simulate a request in memory.
+10. **Distribution** — no package has actually been published to Packagist
+    or installed by anyone outside this project; no deployment story for
+    running the hub/worker daemons as real supervised system services.
+
+None of this is committed to yet beyond item 1 (CI), which is being built
+now.
 
 ## Requirements
 

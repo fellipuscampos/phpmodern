@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+  test:
+    name: "Test & analyse (PHP ${{ matrix.php }})"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ["8.2", "8.4"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP ${{ matrix.php }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: pdo_sqlite, mbstring, phar
+          coverage: none
+
+      - name: Validate composer.json
+        run: composer validate --no-check-publish
+
+      - name: Install dependencies (workspace root)
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Run tests
+        run: composer test
+
+      - name: Run static analysis
+        run: composer analyse
+
+  demo-apps:
+    name: "Demo apps install + lint"
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: pdo_sqlite, mbstring, phar
+          coverage: none
+
+      - name: Install legacy-demo
+        run: composer install --no-interaction --prefer-dist -d apps/legacy-demo
+
+      - name: Install starter-kernel
+        run: composer install --no-interaction --prefer-dist -d apps/starter-kernel
+
+      - name: Lint every PHP file in both demo apps
+        run: |
+          find apps/legacy-demo apps/starter-kernel -name '*.php' -not -path '*/vendor/*' \
+            -print0 | xargs -0 -n1 php -l
