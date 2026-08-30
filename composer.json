@@ -17,7 +17,8 @@
         "phpmodern/typing-contracts": "*",
         "phpmodern/queue": "*",
         "phpmodern/dev-server": "*",
-        "phpmodern/store": "*"
+        "phpmodern/store": "*",
+        "phpmodern/debugbar": "*"
     },
     "repositories": [
         {
@@ -36,7 +37,8 @@
             "PhpModern\\Kernel\\Tests\\": "packages/framework/kernel/tests/",
             "PhpModern\\Queue\\Tests\\": "packages/core/queue/tests/",
             "PhpModern\\DevServer\\Tests\\": "packages/devtools/dev-server/tests/",
-            "PhpModern\\Store\\Tests\\": "packages/core/store/tests/"
+            "PhpModern\\Store\\Tests\\": "packages/core/store/tests/",
+            "PhpModern\\DebugBar\\Tests\\": "packages/devtools/debugbar/tests/"
         }
     },
     "config": {

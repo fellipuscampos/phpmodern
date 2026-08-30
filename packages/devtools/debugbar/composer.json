@@ -1,0 +1,22 @@
+{
+    "name": "phpmodern/debugbar",
+    "description": "A floating, request-scoped debug bar. Deliberately depends on nothing else in the framework — DebugBar::time() wraps any callable (a component render, a query, a store dispatch), so instrumenting core packages never requires them to know this package exists.",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "PhpModern\\DebugBar\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "PhpModern\\DebugBar\\Tests\\": "tests/"
+        }
+    }
+}

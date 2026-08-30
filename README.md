@@ -35,6 +35,7 @@ packages/core/          Independently publishable engine packages
   queue/                  Database-backed job queue + standalone worker daemon
   store/                  Redux-shaped state container (reducers + listeners)
 packages/devtools/dev-server/  Polling file watcher that triggers hot reload via push-hub
+packages/devtools/debugbar/    Request-scoped profiler: DebugBar::time() around any callable
 packages/bridge/adapter/  Entry point for embedding into an existing PHP site
 packages/framework/kernel/  Meta-package for greenfield projects (router, front controller, make:component)
 apps/legacy-demo/         A simulated pre-existing PHP site, using bridge mode only
@@ -205,18 +206,39 @@ instead of being hand-inlined one after another. Deployed for real in
 "compute, persist, publish" sequence every other action in this repo still
 uses; verified end to end that it produces byte-identical push output.
 
-## Roadmap (not yet built)
+## Debug bar
 
-A broader map of "modern-stack feature → PHP equivalent → feasibility" lives
-in the project's planning notes and guides what gets built next — currently
-just a debug bar. None of this is committed to yet beyond Phase 0, which
-exists to validate the riskiest assumptions (dual-mode reactivity with one
-engine, patched efficiently on the client, strict typing enforced with no
+`phpmodern/debugbar` is deliberately dependency-free — it doesn't know
+`Component`, `Connection`, or `Store` exist. `DebugBar::time($label,
+$callback)` wraps any callable and records how long it took; `DebugBar::note()`
+logs an arbitrary line. Nothing elsewhere in the framework calls into it, so
+instrumenting core packages never makes them depend on this one, and leaving
+it disabled in production costs one boolean check.
+
+```php
+DebugBar::enable();
+$html = DebugBar::time(OrderStatusBadge::class, fn () => mount(OrderStatusBadge::class, $props));
+DebugBar::note(sprintf('%d comment(s) loaded', count($comments)));
+echo DebugBar::render(); // a floating bar, or '' when disabled
+```
+
+Wired into the showcase project's `index.php` for real: the rendered bar
+shows actual per-query and per-component timings (verified against the live
+server — e.g. `StockCounter (Camiseta Azul)` at 0.47ms, 2.04ms total request
+time), not placeholder numbers.
+
+## Where this leaves Phase 0
+
+Every item from the original roadmap sketch is now built and verified end to
+end against real running processes (not just unit tests): dual-mode
+reactivity with one engine, client-side DOM patching, strict typing with no
 consumer-side config, scaffolding that produces already-compliant code,
-migrations with no registry to maintain, queue workers that correctly
-resolve a consumer's own classes, hot reload built entirely on the same push
-primitive as component updates, and state management that composes with
-both persistence and push as plain listeners) before investing further.
+migrations, a database-backed queue, hot reload built on the same push
+primitive as component updates, Redux-shaped state management, and a
+dependency-free debug bar. What's still open is everything a real framework
+accumulates over time beyond this point — routing conventions, auth,
+validation, a richer ORM, a real CLI framework instead of an if-chain — none
+of which is started, and none of which was implied by "Phase 0."
 
 ## Requirements
 

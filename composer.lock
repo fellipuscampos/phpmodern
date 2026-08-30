@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "278cf86306ce2dab8d93e3aa20aab064",
+    "content-hash": "89ce39e86058d26ee12b987d193d4614",
     "packages": [],
     "packages-dev": [
         {
@@ -298,6 +298,39 @@
                 "MIT"
             ],
             "description": "Server-rendered component base: typed props, lifecycle, render() — the React-equivalent core.",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "phpmodern/debugbar",
+            "version": "dev-master",
+            "dist": {
+                "type": "path",
+                "url": "packages/devtools/debugbar",
+                "reference": "aa02ae69c80a955d6a1332da806424e03a0e9eb4"
+            },
+            "require": {
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^10.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PhpModern\\DebugBar\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "PhpModern\\DebugBar\\Tests\\": "tests/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "A floating, request-scoped debug bar. Deliberately depends on nothing else in the framework — DebugBar::time() wraps any callable (a component render, a query, a store dispatch), so instrumenting core packages never requires them to know this package exists.",
             "transport-options": {
                 "relative": true
             }

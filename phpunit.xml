@@ -28,5 +28,8 @@
         <testsuite name="store">
             <directory>packages/core/store/tests</directory>
         </testsuite>
+        <testsuite name="debugbar">
+            <directory>packages/devtools/debugbar/tests</directory>
+        </testsuite>
     </testsuites>
 </phpunit>
