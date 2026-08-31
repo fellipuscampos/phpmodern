@@ -938,9 +938,19 @@ it is realistic in one pass:
 6. **push-hub is SSE-only** — no WebSocket driver, no channel-level
    authorization model (a channel is just a string, not authenticated per
    subscriber like Laravel's private/presence channels).
-7. **Missing subsystems**: a unified notifications API (email/SMS/Slack/
-   database from one call), a file storage abstraction (local/S3), a
-   fluent task scheduler, and i18n. ~~An events/listeners system~~ is done
+7. **Missing subsystems**: a file storage abstraction (local/S3), a fluent
+   task scheduler, and i18n. ~~A unified notifications API~~ is done —
+   `phpmodern/notifications`' `NotificationSender::send()` delivers through
+   every channel a `Notification` names in `via()`; a notification
+   implements the matching per-channel interface (`MailNotification`,
+   `LogNotification`) for each one, and a channel named without its
+   interface implemented is a clear thrown error, not a silently-skipped
+   send. Verified for real: the showcase project's verification email
+   (previously a bare `Mailer::send()` call with no record of it anywhere
+   else) is now a `VerifyEmailNotification` sent through `mail` and `log`
+   at once — confirmed against a running server, with the real token
+   showing up in the mail log and a matching entry in the app log from the
+   exact same notification object. ~~An events/listeners system~~ is done
    — `phpmodern/events`' `Dispatcher` is deliberately minimal: an event is
    a plain typed object (no base `Event` class/interface to implement,
    matching the "no magic marker types" rule elsewhere), `listen()`

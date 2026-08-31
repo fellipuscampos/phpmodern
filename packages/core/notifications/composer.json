@@ -1,0 +1,24 @@
+{
+    "name": "phpmodern/notifications",
+    "description": "A unified notification API: one send() call, a notification class declares via() (which channels it supports) and implements the matching per-channel method (toMail(), toLogMessage()) — send mail and log a copy from one object instead of calling the Mailer and Logger separately at every call site.",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "phpmodern/mail": "*",
+        "phpmodern/logging": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "PhpModern\\Notifications\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "PhpModern\\Notifications\\Tests\\": "tests/"
+        }
+    }
+}
