@@ -939,9 +939,28 @@ it is realistic in one pass:
    observed waiting out real 2-then-4-second backoff delays before
    succeeding and being deleted from the queue. Still open: a Redis/SQS
    backend, job batching/chaining, and per-job rate limiting.
-6. **push-hub is SSE-only** — no WebSocket driver, no channel-level
-   authorization model (a channel is just a string, not authenticated per
-   subscriber like Laravel's private/presence channels).
+6. ~~push-hub has no channel-level authorization model~~ — done. `HubServer`
+   takes an optional `$authorizer` (`callable(string $channel, ?string
+   $token): bool`); a subscribe request now carries `&token=...`, and a
+   rejected one gets 403 before ever upgrading to SSE — the private-channel
+   equivalent of Laravel Echo's authorization endpoint, but stateless.
+   `ChannelToken` is the typed way to issue and check an HMAC-SHA256-signed
+   token for it, though `$authorizer` accepts any callable (a session or
+   database-backed check works just as well). No `$authorizer` configured
+   at all (the default) behaves exactly as before — every existing public
+   channel in the showcase apps keeps working unchanged. Verified for
+   real against a running daemon: 403 with no token, 403 with a wrong
+   token, 200 with real SSE headers for a token actually signed for that
+   channel — and, separately, a hub started with no authorizer at all
+   still serves an unauthenticated subscribe with 200, confirmed
+   backward-compatible. **Still not done, and still out of scope for the
+   reason given before**: a WebSocket driver. A correct hand-rolled RFC
+   6455 implementation is real protocol work this project has no way to
+   validate against real browsers/client libraries — unlike everything
+   else here, checked against a real counterpart (Postgres, MySQL, a live
+   SMTP server, a real browser via CDP) — and Swoole would be a genuinely
+   heavy runtime dependency. Left open honestly rather than shipped
+   unverified, the same call made on S3 storage.
 7. ~~Missing subsystems~~ — all closed except S3 storage (an honest,
    explicit exception — see below), each verified end to end in the
    showcase project, not just unit tested:
