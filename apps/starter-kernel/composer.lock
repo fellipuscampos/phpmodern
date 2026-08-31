@@ -171,13 +171,14 @@
             "dist": {
                 "type": "path",
                 "url": "../../packages/framework/kernel",
-                "reference": "c23cdbb70984e42c91ca809b21d68c1504819716"
+                "reference": "44b815f26d6c819192c1840844a06b0e61fec5ee"
             },
             "require": {
                 "php": "^8.2",
                 "phpmodern/component-engine": "*",
                 "phpmodern/config": "*",
                 "phpmodern/console": "*",
+                "phpmodern/http": "*",
                 "phpmodern/orm": "*",
                 "phpmodern/push-hub": "*"
             },

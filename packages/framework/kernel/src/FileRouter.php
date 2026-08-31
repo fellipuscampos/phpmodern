@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace PhpModern\Kernel;
 
 use FilesystemIterator;
+use PhpModern\Http\Request;
+use PhpModern\Http\Response;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
@@ -16,9 +18,9 @@ use RecursiveIteratorIterator;
  * registered onto Router's existing `{id}` syntax.
  *
  * Each discovered file is `require`d when its route matches and may either
- * `return` a `callable(array<string, string> $params): string` to receive
- * the route's dynamic segments, or just return/echo a plain string for a
- * static page.
+ * `return` a `callable(Request, array<string, string> $params): (Response|string)`
+ * to receive the request and the route's dynamic segments, or just
+ * return/echo a plain string for a static page.
  *
  * This only ever registers GET routes — mutating actions stay explicit
  * `$router->post(...)` calls (or their own bridge-mode script), the same
@@ -33,10 +35,10 @@ final class FileRouter
     public function register(Router $router): void
     {
         foreach ($this->discover() as $urlPath => $absoluteFile) {
-            $router->get($urlPath, static function (array $params = []) use ($absoluteFile) {
+            $router->get($urlPath, static function (Request $request, array $params) use ($absoluteFile): Response|string {
                 $page = require $absoluteFile;
 
-                return is_callable($page) ? $page($params) : (string) $page;
+                return is_callable($page) ? $page($request, $params) : (string) $page;
             });
         }
     }

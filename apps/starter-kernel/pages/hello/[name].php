@@ -2,12 +2,14 @@
 
 declare(strict_types=1);
 
+use PhpModern\Http\Request;
+
 /**
  * File-based routing demo: this file's own path — pages/hello/[name].php —
  * is what makes it match GET /hello/{anything}, with {anything} handed in
  * as $params['name']. No entry in routes/web.php for this route at all.
  */
-return function (array $params): string {
+return function (Request $request, array $params): string {
     $name = htmlspecialchars($params['name'] ?? 'stranger', ENT_QUOTES, 'UTF-8');
 
     return <<<HTML

@@ -3,10 +3,14 @@
 declare(strict_types=1);
 
 use App\Components\OrderStatusBadge;
+use PhpModern\Http\Pipeline;
+use PhpModern\Http\Request;
+use PhpModern\Http\Response;
 use PhpModern\Kernel\Router;
 use PhpModern\Orm\Connection;
 use PhpModern\Orm\QueryHelper;
 use PhpModern\PushHub\HubClientPublisher;
+use PhpModern\Security\CsrfMiddleware;
 use PhpModern\Security\CsrfToken;
 use PhpModern\Security\SecurityHeaders;
 
@@ -87,37 +91,37 @@ return static function (Router $router, callable $connectionFactory): void {
         );
     });
 
-    $router->post('/orders/42/advance', function () use ($connectionFactory) {
-        $submittedToken = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? null;
+    /**
+     * The same CsrfMiddleware + Pipeline bridge-mode actions use (see
+     * phpmodern-demo's stock_adjust_app()) — kernel mode and bridge mode
+     * now enforce CSRF with identical code instead of one hand-rolling the
+     * $_SERVER['HTTP_X_CSRF_TOKEN'] check the other already had a package for.
+     */
+    $router->post('/orders/42/advance', function (Request $request) use ($connectionFactory): Response {
+        $pipeline = new Pipeline([new CsrfMiddleware()]);
 
-        if (!CsrfToken::verify(is_string($submittedToken) ? $submittedToken : null)) {
-            http_response_code(403);
+        return $pipeline->handle($request, function (Request $request) use ($connectionFactory): Response {
+            $queryHelper = new QueryHelper($connectionFactory());
+            $order = $queryHelper->findOneBy('orders', ['id' => 42]);
 
-            return 'Invalid or missing CSRF token.';
-        }
+            $currentIndex = array_search($order['status'], STATUS_CYCLE, true);
+            $nextStatus = STATUS_CYCLE[($currentIndex === false ? 0 : $currentIndex + 1) % count(STATUS_CYCLE)];
 
-        $queryHelper = new QueryHelper($connectionFactory());
-        $order = $queryHelper->findOneBy('orders', ['id' => 42]);
+            $queryHelper->update('orders', ['status' => $nextStatus], ['id' => 42]);
 
-        $currentIndex = array_search($order['status'], STATUS_CYCLE, true);
-        $nextStatus = STATUS_CYCLE[($currentIndex === false ? 0 : $currentIndex + 1) % count(STATUS_CYCLE)];
+            $badge = new OrderStatusBadge('order-status-badge-42', 42, $nextStatus);
 
-        $queryHelper->update('orders', ['status' => $nextStatus], ['id' => 42]);
+            (new HubClientPublisher())->publish(
+                channel: $badge->channel(),
+                id: $badge->id,
+                html: mount(OrderStatusBadge::class, [
+                    'id' => $badge->id,
+                    'orderId' => $badge->orderId,
+                    'status' => $nextStatus,
+                ]),
+            );
 
-        $badge = new OrderStatusBadge('order-status-badge-42', 42, $nextStatus);
-
-        (new HubClientPublisher())->publish(
-            channel: $badge->channel(),
-            id: $badge->id,
-            html: mount(OrderStatusBadge::class, [
-                'id' => $badge->id,
-                'orderId' => $badge->orderId,
-                'status' => $nextStatus,
-            ]),
-        );
-
-        http_response_code(204);
-
-        return '';
+            return Response::noContent();
+        });
     });
 };

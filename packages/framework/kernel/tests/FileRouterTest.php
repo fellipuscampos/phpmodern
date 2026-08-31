@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PhpModern\Kernel\Tests;
 
+use PhpModern\Http\Request;
 use PhpModern\Kernel\FileRouter;
 use PhpModern\Kernel\Router;
 use PHPUnit\Framework\TestCase;
@@ -17,12 +18,12 @@ final class FileRouterTest extends TestCase
         $this->tmpDir = sys_get_temp_dir() . '/phpmodern-file-router-test-' . uniqid();
         mkdir($this->tmpDir . '/orders', 0777, true);
 
-        file_put_contents($this->tmpDir . '/index.php', "<?php\nreturn fn (array \$p): string => 'home';\n");
+        file_put_contents($this->tmpDir . '/index.php', "<?php\nreturn fn (\$request, array \$p): string => 'home';\n");
         file_put_contents($this->tmpDir . '/about.php', "<?php\nreturn 'about page';\n");
         file_put_contents($this->tmpDir . '/orders/index.php', "<?php\nreturn 'orders list';\n");
         file_put_contents(
             $this->tmpDir . '/orders/[id].php',
-            "<?php\nreturn fn (array \$p): string => \"order #{\$p['id']}\";\n",
+            "<?php\nreturn fn (\$request, array \$p): string => \"order #{\$p['id']}\";\n",
         );
     }
 
@@ -51,9 +52,9 @@ final class FileRouterTest extends TestCase
         $router = new Router();
         (new FileRouter($this->tmpDir))->register($router);
 
-        self::assertSame('home', $router->match('GET', '/')());
-        self::assertSame('about page', $router->match('GET', '/about')());
-        self::assertSame('orders list', $router->match('GET', '/orders')());
+        self::assertSame('home', $router->match('GET', '/')(Request::create('GET', '/'))->body);
+        self::assertSame('about page', $router->match('GET', '/about')(Request::create('GET', '/about'))->body);
+        self::assertSame('orders list', $router->match('GET', '/orders')(Request::create('GET', '/orders'))->body);
     }
 
     public function test_a_bracket_filename_becomes_a_live_dynamic_route(): void
@@ -64,7 +65,7 @@ final class FileRouterTest extends TestCase
         $handler = $router->match('GET', '/orders/42');
 
         self::assertNotNull($handler);
-        self::assertSame('order #42', $handler());
+        self::assertSame('order #42', $handler(Request::create('GET', '/orders/42'))->body);
     }
 
     private static function removeDir(string $dir): void

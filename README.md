@@ -656,15 +656,24 @@ after a decade of use," the way Laravel/Symfony are. Phase 3 is the honest
 list of what's still thin, gathered from admitting the real gaps rather than
 declaring victory:
 
-1. **Router/Kernel still isn't on Request/Response** — `Router::match()` and
-   `Kernel` still use the original `callable(array $params): string`
-   handler signature from Phase 0. `phpmodern/http`'s `Request`/`Response`/
-   `Middleware`/`Pipeline` exist and are used for real (see
-   `stock_adjust_app()` in the showcase project), but only in bridge-mode
-   action scripts wired up by hand — kernel-mode routes never see a
-   `Request` object. Migrating `Router`/`Kernel` to dispatch through
-   `Pipeline` natively is the actual unification of the two modes around
-   one HTTP abstraction, not just two abstractions that happen to coexist.
+1. ~~Router/Kernel still isn't on Request/Response~~ — done. A route
+   handler is now `callable(Request, array<string,string> $params):
+   (Response|string)` — `Router::match()` returns a `callable(Request):
+   Response`, normalizing a plain `string` return into `Response::html()`
+   so every handler written before this migration keeps working unchanged
+   (PHP allows calling a closure with more arguments than it declares,
+   which is what makes the old zero-argument and `array $params`-only
+   handlers still work). `Kernel::handle(Request): Response` now runs the
+   route through a `Pipeline`, so a kernel-mode app can wrap its whole
+   route table in `Middleware` — proven for real in `apps/starter-kernel`,
+   whose `/orders/42/advance` route now enforces CSRF with the exact same
+   `CsrfMiddleware`/`Pipeline` bridge-mode's `stock_adjust_app()` uses,
+   replacing a hand-rolled `$_SERVER['HTTP_X_CSRF_TOKEN']` check. Verified
+   against a running server: the route 403s without a token and 204s (with
+   the order status genuinely advanced) with one. `Kernel::handle()` is
+   also now a `callable(Request): Response` itself, so a kernel-mode app
+   becomes testable with `phpmodern/testing`'s `TestClient` exactly like a
+   bridge-mode one.
 2. **The ORM has never touched a real database engine besides SQLite** —
    every test, every showcase feature, runs against `:memory:` or a
    `.sqlite` file. `Connection::sqlite()` is the only named constructor;

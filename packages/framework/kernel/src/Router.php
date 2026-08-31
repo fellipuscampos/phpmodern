@@ -4,30 +4,41 @@ declare(strict_types=1);
 
 namespace PhpModern\Kernel;
 
+use PhpModern\Http\Request;
+use PhpModern\Http\Response;
+
+/**
+ * Routes now speak Request/Response natively — the same abstraction
+ * bridge-mode action scripts already build on via phpmodern/http — instead
+ * of the original `callable(array $params): string` signature from Phase 0.
+ * A handler may still just `return` a plain string for the common "just
+ * render some HTML" case; normalize() wraps it in Response::html() so
+ * nothing that predates this migration has to change to keep working.
+ */
 final class Router
 {
-    /** @var array<string, array<string, callable(array<string, string>): string>> exact matches: method => path => handler */
+    /** @var array<string, array<string, callable(Request, array<string, string>): (Response|string)>> exact matches: method => path => handler */
     private array $routes = [];
 
     /**
-     * @var array<string, list<array{pattern: string, paramNames: list<string>, handler: callable(array<string, string>): string}>>
+     * @var array<string, list<array{pattern: string, paramNames: list<string>, handler: callable(Request, array<string, string>): (Response|string)}>>
      * dynamic matches (a path containing `{param}`): method => list of compiled routes
      */
     private array $patternRoutes = [];
 
-    /** @param callable(array<string, string>): string $handler */
+    /** @param callable(Request, array<string, string>): (Response|string) $handler */
     public function get(string $path, callable $handler): void
     {
         $this->addRoute('GET', $path, $handler);
     }
 
-    /** @param callable(array<string, string>): string $handler */
+    /** @param callable(Request, array<string, string>): (Response|string) $handler */
     public function post(string $path, callable $handler): void
     {
         $this->addRoute('POST', $path, $handler);
     }
 
-    /** @param callable(array<string, string>): string $handler */
+    /** @param callable(Request, array<string, string>): (Response|string) $handler */
     private function addRoute(string $method, string $path, callable $handler): void
     {
         if (!str_contains($path, '{')) {
@@ -41,19 +52,20 @@ final class Router
     }
 
     /**
-     * Existing handlers registered with no parameters keep working
-     * unmodified here — PHP allows calling a zero-argument closure with an
-     * (ignored) argument, so wrapping every match in `fn () => $handler($params)`
-     * doesn't break anything that predates dynamic segments.
+     * A handler registered before Request/Response existed — declared as
+     * `function (array $params)` or even zero-argument — keeps working
+     * unmodified: PHP allows calling a closure with more arguments than it
+     * declares, so passing (Request, params) through never breaks a
+     * handler that only reads one of them or neither.
      *
-     * @return (callable(): string)|null
+     * @return (callable(Request): Response)|null
      */
     public function match(string $method, string $path): ?callable
     {
         if (isset($this->routes[$method][$path])) {
             $handler = $this->routes[$method][$path];
 
-            return fn () => $handler([]);
+            return static fn (Request $request): Response => self::normalize($handler($request, []));
         }
 
         foreach ($this->patternRoutes[$method] ?? [] as $route) {
@@ -68,10 +80,15 @@ final class Router
 
             $handler = $route['handler'];
 
-            return fn () => $handler($params);
+            return static fn (Request $request): Response => self::normalize($handler($request, $params));
         }
 
         return null;
+    }
+
+    private static function normalize(Response|string $result): Response
+    {
+        return $result instanceof Response ? $result : Response::html($result);
     }
 
     /**
