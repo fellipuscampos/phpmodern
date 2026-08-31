@@ -647,6 +647,59 @@ what unblocks what:
     as real supervised system services (systemd/supervisor), rather than a
     manually-started CLI process.
 
+## Phase 3 roadmap: production-hardening polish
+
+Phase 2 made the framework complete relative to the roadmap this project set
+for itself — every item was built, tested end to end, and wired into the
+showcase project. "Complete" is not the same claim as "production-grade
+after a decade of use," the way Laravel/Symfony are. Phase 3 is the honest
+list of what's still thin, gathered from admitting the real gaps rather than
+declaring victory:
+
+1. **Router/Kernel still isn't on Request/Response** — `Router::match()` and
+   `Kernel` still use the original `callable(array $params): string`
+   handler signature from Phase 0. `phpmodern/http`'s `Request`/`Response`/
+   `Middleware`/`Pipeline` exist and are used for real (see
+   `stock_adjust_app()` in the showcase project), but only in bridge-mode
+   action scripts wired up by hand — kernel-mode routes never see a
+   `Request` object. Migrating `Router`/`Kernel` to dispatch through
+   `Pipeline` natively is the actual unification of the two modes around
+   one HTTP abstraction, not just two abstractions that happen to coexist.
+2. **The ORM has never touched a real database engine besides SQLite** —
+   every test, every showcase feature, runs against `:memory:` or a
+   `.sqlite` file. `Connection::sqlite()` is the only named constructor;
+   `new Connection($dsn)` accepts any PDO DSN in principle, but MySQL/
+   Postgres-specific behavior (identifier quoting, `LIMIT`/`OFFSET` syntax
+   differences, transaction isolation defaults) has never been exercised.
+3. **ORM feature gaps** — automatic `created_at`/`updated_at` timestamps,
+   queries richer than equality/`IN` (no `LIKE`, no comparison operators, no
+   `ORDER BY` outside `paginate()`), and seeders for repeatable test/demo
+   data.
+4. **PHPStan is pinned to the 1.12.x series** — every `composer analyse` run
+   this whole project prints a deprecation warning urging an upgrade to
+   2.2+. Never addressed because the 1.x line still catches real bugs at
+   level 8, but it's accumulating tooling debt.
+5. **No measured test coverage** — 187+ tests passing is not the same claim
+   as "the important branches are covered." No coverage driver (Xdebug/
+   PCOV) or `--coverage` report is wired into CI, so there's no actual
+   number behind "well tested," just the absence of known gaps.
+6. **Submitting the 22 split packages to Packagist** — the repos exist,
+   are tagged `v0.1.0`, and install today via a Composer VCS repository
+   (see above), but nobody can `composer require phpmodern/orm` with zero
+   configuration until each one is actually submitted on packagist.org —
+   a manual step tied to a personal account, left for the maintainer.
+7. **A real deployment story for the daemons** — `push-hub` and the queue
+   `Worker` have only ever been started by hand (`php bin/hub.php` in a
+   terminal). No systemd unit file, no supervisor config, no documented
+   restart-on-crash/restart-on-boot behavior — the "daemon lives outside
+   PHP-FPM" architecture decision was never followed through to "and here's
+   how it survives a server reboot."
+
+Explicitly still out of scope, unchanged from earlier phases: an asset
+bundler, a GraphQL/API layer, i18n, and real WebSocket support (the push hub
+is SSE-only; swapping in Swoole/a WS driver was always deferred to a future
+scaling phase that was never opened).
+
 ## Individual package repositories
 
 Each package below is a standalone GitHub repository (split from this
