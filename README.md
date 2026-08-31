@@ -674,12 +674,18 @@ declaring victory:
    also now a `callable(Request): Response` itself, so a kernel-mode app
    becomes testable with `phpmodern/testing`'s `TestClient` exactly like a
    bridge-mode one.
-2. **The ORM has never touched a real database engine besides SQLite** —
-   every test, every showcase feature, runs against `:memory:` or a
-   `.sqlite` file. `Connection::sqlite()` is the only named constructor;
-   `new Connection($dsn)` accepts any PDO DSN in principle, but MySQL/
-   Postgres-specific behavior (identifier quoting, `LIMIT`/`OFFSET` syntax
-   differences, transaction isolation defaults) has never been exercised.
+2. ~~The ORM has never touched a real database engine besides SQLite~~ —
+   done, durably: `packages/core/orm/tests/CrossEngineSmokeTest.php`
+   exercises insert+timestamps, `Comparison`+`ORDER BY`, pagination, and
+   transaction commit/rollback against whatever `PHPMODERN_TEST_DSN` points
+   at (SQLite in-memory when unset, so it runs everywhere by default). CI
+   gained two new jobs, `orm-postgres` and `orm-mysql`, running this exact
+   suite against real `postgres:16`/`mysql:8` GitHub Actions service
+   containers on every push — not a one-off local check, a permanent gate.
+   Deliberately a small separate smoke test rather than retrofitting the
+   full ~35-test ORM suite to be multi-engine (SQLite's `INTEGER PRIMARY
+   KEY` vs MySQL's `AUTO_INCREMENT` vs Postgres's `SERIAL` alone would mean
+   three DDL variants for every existing test).
 3. ~~ORM feature gaps~~ — done. `QueryHelper::insert()` didn't exist before
    this (every INSERT in the showcase project was raw PDO by hand) — it now
    exists with an opt-in `timestamps: true` flag that sets `created_at`/
