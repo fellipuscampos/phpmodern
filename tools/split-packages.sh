@@ -32,6 +32,7 @@ declare -A PACKAGES=(
   [packages/core/orm]="phpmodern/orm"
   [packages/core/push-hub]="phpmodern/push-hub"
   [packages/core/queue]="phpmodern/queue"
+  [packages/core/rate-limiting]="phpmodern/rate-limiting"
   [packages/core/security]="phpmodern/security"
   [packages/core/store]="phpmodern/store"
   [packages/core/testing]="phpmodern/testing"
