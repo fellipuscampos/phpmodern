@@ -786,6 +786,7 @@ monorepo, tagged `v0.1.0`) — ready to submit to Packagist at
 | `phpmodern/error-handler` | [phpmodern-error-handler](https://github.com/fellipuscampos/phpmodern-error-handler) |
 | `phpmodern/events` | [phpmodern-events](https://github.com/fellipuscampos/phpmodern-events) |
 | `phpmodern/http` | [phpmodern-http](https://github.com/fellipuscampos/phpmodern-http) |
+| `phpmodern/i18n` | [phpmodern-i18n](https://github.com/fellipuscampos/phpmodern-i18n) |
 | `phpmodern/kernel` | [phpmodern-kernel](https://github.com/fellipuscampos/phpmodern-kernel) |
 | `phpmodern/logging` | [phpmodern-logging](https://github.com/fellipuscampos/phpmodern-logging) |
 | `phpmodern/mail` | [phpmodern-mail](https://github.com/fellipuscampos/phpmodern-mail) |
