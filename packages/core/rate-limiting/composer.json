@@ -1,0 +1,24 @@
+{
+    "name": "phpmodern/rate-limiting",
+    "description": "A general-purpose rate limiter (RateLimiter) and HTTP middleware (RateLimitMiddleware) on top of phpmodern/cache — the framework primitive the showcase project's login rate limit reimplemented by hand before this existed.",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "phpmodern/cache": "*",
+        "phpmodern/http": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "PhpModern\\RateLimiting\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "PhpModern\\RateLimiting\\Tests\\": "tests/"
+        }
+    }
+}

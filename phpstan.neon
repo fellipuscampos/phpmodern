@@ -23,6 +23,7 @@ parameters:
         - packages/core/testing/src
         - packages/core/container/src
         - packages/core/templating/src
+        - packages/core/rate-limiting/src
         - packages/bridge/adapter/src
         - packages/framework/kernel/src
     ignoreErrors:

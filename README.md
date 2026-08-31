@@ -936,11 +936,24 @@ it is realistic in one pass:
 6. **push-hub is SSE-only** — no WebSocket driver, no channel-level
    authorization model (a channel is just a string, not authenticated per
    subscriber like Laravel's private/presence channels).
-7. **Missing subsystems entirely**: an events/listeners system, a unified
+7. **Missing subsystems**: an events/listeners system, a unified
    notifications API (email/SMS/Slack/database from one call), a file
-   storage abstraction (local/S3), a fluent task scheduler, i18n, and a
-   general-purpose rate-limiting middleware (today's login rate limit in
-   the showcase is a one-off, not a framework primitive).
+   storage abstraction (local/S3), a fluent task scheduler, and i18n.
+   ~~A general-purpose rate-limiting middleware~~ is done — `phpmodern/rate-limiting`
+   (`RateLimiter` on top of `phpmodern/cache`, `RateLimitMiddleware` for
+   `phpmodern/http`) is the real framework primitive the showcase's login
+   rate limit reimplemented by hand before this existed. `attempt()`
+   checks the current count before writing, so a key already over the
+   limit doesn't keep incrementing on every blocked request; `remaining()`
+   and `clear()` are separate, deliberately non-mutating/mutating
+   operations so a caller can *check* without counting an attempt (what a
+   login form needs before verifying a password) versus *reset* on success.
+   Verified for real: `phpmodern-demo`'s `actions/login.php` was rewritten
+   onto this primitive instead of raw `Cache::increment()` calls, and the
+   exact same end-to-end behavior still holds against a running server (5
+   failed logins, 429 on the 6th even with the correct password; a single
+   wrong attempt followed immediately by the correct password still
+   succeeds, since a block-check isn't itself a counted attempt).
 
 None of this changes the Phase 0–3 verdict: what exists is real, tested, and
 coherent. This phase is about how much *more* a mature framework's feature

@@ -32,7 +32,8 @@
         "phpmodern/console": "*",
         "phpmodern/testing": "*",
         "phpmodern/container": "*",
-        "phpmodern/templating": "*"
+        "phpmodern/templating": "*",
+        "phpmodern/rate-limiting": "*"
     },
     "repositories": [
         {
@@ -66,7 +67,8 @@
             "PhpModern\\Console\\Tests\\": "packages/core/console/tests/",
             "PhpModern\\Testing\\Tests\\": "packages/core/testing/tests/",
             "PhpModern\\Container\\Tests\\": "packages/core/container/tests/",
-            "PhpModern\\Templating\\Tests\\": "packages/core/templating/tests/"
+            "PhpModern\\Templating\\Tests\\": "packages/core/templating/tests/",
+            "PhpModern\\RateLimiting\\Tests\\": "packages/core/rate-limiting/tests/"
         }
     },
     "config": {
