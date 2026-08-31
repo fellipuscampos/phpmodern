@@ -24,6 +24,7 @@ declare -A PACKAGES=(
   [packages/core/component-engine]="phpmodern/component-engine"
   [packages/core/config]="phpmodern/config"
   [packages/core/console]="phpmodern/console"
+  [packages/core/container]="phpmodern/container"
   [packages/core/error-handler]="phpmodern/error-handler"
   [packages/core/http]="phpmodern/http"
   [packages/core/logging]="phpmodern/logging"

@@ -779,6 +779,7 @@ monorepo, tagged `v0.1.0`) — ready to submit to Packagist at
 | `phpmodern/cache` | [phpmodern-cache](https://github.com/fellipuscampos/phpmodern-cache) |
 | `phpmodern/component-engine` | [phpmodern-component-engine](https://github.com/fellipuscampos/phpmodern-component-engine) |
 | `phpmodern/config` | [phpmodern-config](https://github.com/fellipuscampos/phpmodern-config) |
+| `phpmodern/container` | [phpmodern-container](https://github.com/fellipuscampos/phpmodern-container) |
 | `phpmodern/console` | [phpmodern-console](https://github.com/fellipuscampos/phpmodern-console) |
 | `phpmodern/debugbar` | [phpmodern-debugbar](https://github.com/fellipuscampos/phpmodern-debugbar) |
 | `phpmodern/dev-server` | [phpmodern-dev-server](https://github.com/fellipuscampos/phpmodern-dev-server) |
