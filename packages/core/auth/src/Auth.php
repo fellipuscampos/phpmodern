@@ -50,4 +50,16 @@ final class Auth
             exit;
         }
     }
+
+    /**
+     * A second (or third...) independently-tracked login, for an app that
+     * needs more than one kind of principal at once — see Guard's own
+     * docblock. Every call with the same $name returns behaviorally
+     * equivalent access to that guard's session slot; Guard holds no state
+     * of its own besides the name, so a fresh instance per call is fine.
+     */
+    public static function guard(string $name): Guard
+    {
+        return new Guard($name);
+    }
 }

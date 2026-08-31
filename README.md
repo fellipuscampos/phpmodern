@@ -1101,9 +1101,40 @@ both.
      something indistinguishable from a static helper method and a
      constructor argument — not worth pretending to add.
    - Polymorphic relations — still open, no code written yet.
-2. **Auth** — OAuth2, 2FA, and multiple guards for authenticating different
-   kinds of principals at once (today: session login + one flavor of API
-   token, nothing more).
+2. ~~Auth~~ — done. Three additions, all landed without touching `Auth`'s
+   existing static API (nothing that already calls `Auth::login()`/`id()`/
+   `check()` changed behavior):
+   - **Multiple guards**: `Guard` is a small instance class (login/logout/
+     id/check/requireLogin, same shape as `Auth`'s own methods) reached via
+     the new `Auth::guard(string $name)`, each name backed by its own
+     session key so guards never collide. Verified live in
+     `phpmodern-demo`: `actions/admin-login.php` logs into
+     `Auth::guard('admin')` in the same browser session as a regular
+     `Auth::login()`, and `actions/whoami.php` shows both `user_id` and
+     `admin_id` set at once — then logging one out via `actions/
+     logout.php` left the other's `admin_id` untouched, over real HTTP
+     against a running server, not just two `Guard` instances in a test.
+   - **2FA**: `Totp` implements RFC 6238 (HMAC-SHA1, 30-second step,
+     Base32 secrets, plus `provisioningUri()` for the QR code a real
+     authenticator app scans). Its HMAC/dynamic-truncation logic is
+     checked against RFC 6238 Appendix B's own published test vectors, not
+     just internal round-trips. Verified live: `actions/totp-enroll.php`
+     added a real secret to the seeded demo account, and `actions/
+     login.php` now genuinely rejects that account's login without a
+     correct code (curl proved both the missing-code and wrong-code cases
+     401, and the actual current code computed from the stored secret
+     then let it through with 204).
+   - **OAuth2**: `OAuth2Client` is a generic RFC 6749 authorization-code
+     client with RFC 7636 PKCE — no provider SDK, matching the "hand-build
+     the protocol instead of a heavy vendor dependency" choice already
+     made for SMTP and SSE. `codeChallengeFromVerifier()` is checked
+     against RFC 7636 Appendix B's published test vector. The actual HTTP
+     transport is swappable (tests inject a fake), but the *real* default
+     transport — the code path any actual usage goes through — was
+     additionally verified against a genuine local token endpoint serving
+     real HTTP, both the successful-exchange and provider-error cases,
+     the same "real local server, not a mock library" standard the SMTP
+     and push-hub work already set.
 3. **Queue** — a Redis/SQS backend, job batching/chaining, per-job rate
    limiting (distinct from the HTTP-level `phpmodern/rate-limiting`).
 4. ~~Validation~~ — done. Added `Email`, `Url`, `Numeric`, `Between(min,
