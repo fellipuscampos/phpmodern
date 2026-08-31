@@ -1078,10 +1078,20 @@ both.
    token, nothing more).
 3. **Queue** — a Redis/SQS backend, job batching/chaining, per-job rate
    limiting (distinct from the HTTP-level `phpmodern/rate-limiting`).
-4. **Validation** — six rules (`Required`, `StringType`, `IntType`,
-   `MinLength`, `MaxLength`, `In`) is thin for a real app; missing the
-   basics like email/URL format, numeric ranges, regex, and cross-field
-   rules (`confirmed`, `same_as`).
+4. ~~Validation~~ — done. Added `Email`, `Url`, `Numeric`, `Between(min,
+   max)`, `Regex(pattern)`, and `Confirmed` (a "password"/
+   "password_confirmation" pair check). `Confirmed` needed something the
+   plain `Rule` interface can't do — see another field's value, not just
+   its own — so it implements a new opt-in `DataAwareRule` interface
+   instead of changing `Rule` itself: `Validator` checks for it and calls
+   `withData($fullDataset)` before `validate()`, but every existing plain
+   `Rule` is completely unaffected, the same additive pattern
+   `RetryableJob` used for the queue. Verified for real, and a genuine bug
+   fix, not just new tests: the showcase's `register.php` (and
+   `forgot-password.php`) validated `email` with only `Required` +
+   `StringType` before this — any non-empty string passed. Checked against
+   a running server: `"not-an-email"` now 422s with a clear message,
+   a real address still 204s.
 5. **CLI** — still ~7 commands, not a generator framework; no
    `make:model`/`make:migration`/`make:job`/`make:notification` scaffolds
    to match the subsystems Phase 4 added.

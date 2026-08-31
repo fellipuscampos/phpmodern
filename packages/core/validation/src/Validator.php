@@ -22,7 +22,8 @@ final class Validator
             $value = $data[$field] ?? null;
 
             foreach ($fieldRules as $rule) {
-                $error = $rule->validate($value, $field);
+                $activeRule = $rule instanceof DataAwareRule ? $rule->withData($data) : $rule;
+                $error = $activeRule->validate($value, $field);
 
                 if ($error !== null) {
                     $errors[$field][] = $error;

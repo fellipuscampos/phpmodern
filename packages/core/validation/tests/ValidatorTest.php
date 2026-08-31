@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PhpModern\Validation\Tests;
 
+use PhpModern\Validation\Rules\Confirmed;
 use PhpModern\Validation\Rules\In;
 use PhpModern\Validation\Rules\MaxLength;
 use PhpModern\Validation\Rules\Required;
@@ -71,5 +72,22 @@ final class ValidatorTest extends TestCase
 
         self::assertSame('', $result->get('message'));
         self::assertNull($result->get('missing_field'));
+    }
+
+    public function test_a_data_aware_rule_receives_the_full_submitted_dataset(): void
+    {
+        $passing = Validator::validate(
+            ['password' => 'secret', 'password_confirmation' => 'secret'],
+            ['password' => [new Confirmed()]],
+        );
+
+        self::assertTrue($passing->passes());
+
+        $failing = Validator::validate(
+            ['password' => 'secret', 'password_confirmation' => 'different'],
+            ['password' => [new Confirmed()]],
+        );
+
+        self::assertTrue($failing->fails());
     }
 }
