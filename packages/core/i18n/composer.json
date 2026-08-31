@@ -1,0 +1,22 @@
+{
+    "name": "phpmodern/i18n",
+    "description": "Translator: looks up a key in a locale's translation file (a plain PHP array, no special format to parse), substitutes :placeholder values, and falls back to the default locale and then the key itself rather than throwing. No pluralization rules — that's genuinely per-language complex — documented as a real gap, not silently missing.",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "PhpModern\\I18n\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "PhpModern\\I18n\\Tests\\": "tests/"
+        }
+    }
+}

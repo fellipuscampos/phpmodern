@@ -7,6 +7,7 @@ require __DIR__ . '/../vendor/autoload.php';
 use App\Controllers\AboutController;
 use App\Controllers\OrderStatusController;
 use PhpModern\Container\Container;
+use PhpModern\I18n\Translator;
 use PhpModern\Kernel\FileRouter;
 use PhpModern\Kernel\Kernel;
 use PhpModern\Kernel\Router;
@@ -32,6 +33,10 @@ $container->instance(Connection::class, $connection);
 $container->singleton(View::class, static fn (): View => new View(
     __DIR__ . '/../resources/views',
     __DIR__ . '/../../../var/cache/starter-kernel-views',
+));
+$container->singleton(Translator::class, static fn (): Translator => new Translator(
+    __DIR__ . '/../resources/lang',
+    defaultLocale: 'en',
 ));
 
 $router = new Router($container);

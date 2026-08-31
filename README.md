@@ -941,76 +941,79 @@ it is realistic in one pass:
 6. **push-hub is SSE-only** — no WebSocket driver, no channel-level
    authorization model (a channel is just a string, not authenticated per
    subscriber like Laravel's private/presence channels).
-7. **Missing subsystems**: i18n. ~~A fluent task scheduler~~ is done —
-   `phpmodern/scheduler`'s `Schedule::call(...)->daily()` (also `hourly()`,
-   `everyMinute()`, `everyFiveMinutes()`, `dailyAt('13:30')`, `weekly()`,
-   or a raw `cron()` expression) sits on top of a minimal 5-field cron
-   matcher supporting wildcards, exact values, and step values — no
-   ranges or comma-lists yet, honestly documented as such rather than
-   claiming a full parser. No daemon of its own: a single system cron
-   entry runs a script once a minute that builds the `Schedule` and calls
-   `run()`, exactly how every real "fluent scheduler" API actually works
-   underneath. Verified for real: the showcase project's
-   `bin/schedule-run.php` registers a genuine maintenance task (prune
-   soft-deleted comments older than 30 days) and was run for real against
-   seeded data — an old soft-deleted comment was actually removed, a
-   recently-deleted one and an active one were both correctly left alone,
-   and the real prune count landed in the app log.
-   ~~A file storage abstraction~~ is partially done —
-   `phpmodern/storage`'s `Filesystem` interface (`put`/`get`/`exists`/
-   `delete`/`url`) has one implementation, `LocalFilesystem`, with
-   path-traversal rejected outright (a `..` in the path throws, rather
-   than trying to resolve and re-check a `realpath()` that may not exist
-   yet for a file being newly written). No S3 implementation: that would
-   mean either pulling in the AWS SDK (a genuinely heavy external
-   dependency, unlike every hand-built integration elsewhere in this
-   framework — see `SmtpMailer`) or hand-rolling SigV4 request signing with
-   no real AWS account to verify it against, breaking this whole project's
-   rule of only claiming what was actually checked end to end. Left open
-   honestly rather than shipped unverified. Verified for real: the
-   showcase project gained a genuinely new feature (not a refactor) on top
-   of this — a per-user profile bio stored as a plain text file under
-   `var/storage/bios/`, proven against a running server (empty before
-   saving, the exact saved text after, the same content readable straight
-   off disk, and a 401 for an unauthenticated request). ~~A unified notifications API~~ is done —
-   `phpmodern/notifications`' `NotificationSender::send()` delivers through
-   every channel a `Notification` names in `via()`; a notification
-   implements the matching per-channel interface (`MailNotification`,
-   `LogNotification`) for each one, and a channel named without its
-   interface implemented is a clear thrown error, not a silently-skipped
-   send. Verified for real: the showcase project's verification email
-   (previously a bare `Mailer::send()` call with no record of it anywhere
-   else) is now a `VerifyEmailNotification` sent through `mail` and `log`
-   at once — confirmed against a running server, with the real token
-   showing up in the mail log and a matching entry in the app log from the
-   exact same notification object. ~~An events/listeners system~~ is done
-   — `phpmodern/events`' `Dispatcher` is deliberately minimal: an event is
-   a plain typed object (no base `Event` class/interface to implement,
-   matching the "no magic marker types" rule elsewhere), `listen()`
-   registers a callable against an event's exact class, `dispatch()` calls
-   every listener registered for that class in registration order. No
-   auto-discovery, no event bus — a listener is registered where it's
-   meaningful to read. Verified for real: the showcase project dispatches
-   a genuine `UserRegistered` event from `actions/register.php`, with a
-   listener registered once in `bootstrap.php` (the bridge-mode equivalent
-   of a service provider's boot step) that logs it — confirmed against a
-   running server, with the real user id and username showing up in
-   `var/app.log`.
-   ~~A general-purpose rate-limiting middleware~~ is done — `phpmodern/rate-limiting`
-   (`RateLimiter` on top of `phpmodern/cache`, `RateLimitMiddleware` for
-   `phpmodern/http`) is the real framework primitive the showcase's login
-   rate limit reimplemented by hand before this existed. `attempt()`
-   checks the current count before writing, so a key already over the
-   limit doesn't keep incrementing on every blocked request; `remaining()`
-   and `clear()` are separate, deliberately non-mutating/mutating
-   operations so a caller can *check* without counting an attempt (what a
-   login form needs before verifying a password) versus *reset* on success.
-   Verified for real: `phpmodern-demo`'s `actions/login.php` was rewritten
-   onto this primitive instead of raw `Cache::increment()` calls, and the
-   exact same end-to-end behavior still holds against a running server (5
-   failed logins, 429 on the 6th even with the correct password; a single
-   wrong attempt followed immediately by the correct password still
-   succeeds, since a block-check isn't itself a counted attempt).
+7. ~~Missing subsystems~~ — all closed except S3 storage (an honest,
+   explicit exception — see below), each verified end to end in the
+   showcase project, not just unit tested:
+   - **Rate limiting** — `phpmodern/rate-limiting`'s `RateLimiter` (on
+     `phpmodern/cache`) and `RateLimitMiddleware` (for `phpmodern/http`)
+     replaced the showcase's hand-rolled login rate limit. `attempt()`
+     checks the current count before writing, so a key already over the
+     limit doesn't keep incrementing on every blocked request; `remaining()`
+     and `clear()` are separate non-mutating/mutating operations, so a
+     caller can *check* without counting an attempt versus *reset* on
+     success. Confirmed against a running server: 5 failed logins, 429 on
+     the 6th even with the correct password; one wrong attempt followed
+     immediately by the correct password still succeeds.
+   - **Events/listeners** — `phpmodern/events`'s `Dispatcher` is
+     deliberately minimal: an event is a plain typed object (no base
+     `Event` class/interface, matching the "no magic marker types" rule
+     elsewhere), `listen()` registers a callable against an event's exact
+     class, `dispatch()` calls every listener in registration order. No
+     auto-discovery, no event bus. Confirmed: the showcase dispatches a
+     genuine `UserRegistered` event from `actions/register.php`, with a
+     listener registered once in `bootstrap.php` that logs it — the real
+     user id and username showed up in `var/app.log`.
+   - **Notifications** — `phpmodern/notifications`'s
+     `NotificationSender::send()` delivers through every channel a
+     `Notification` names in `via()`; a notification implements the
+     matching per-channel interface (`MailNotification`, `LogNotification`)
+     for each one, and a channel named without its interface implemented
+     is a clear thrown error, not a silently-skipped send. Confirmed: the
+     showcase's verification email (previously a bare `Mailer::send()` call
+     with no record of it anywhere else) is now a `VerifyEmailNotification`
+     sent through `mail` and `log` at once — the real token showed up in
+     the mail log and a matching entry in the app log, from the same object.
+   - **File storage** — partially done. `phpmodern/storage`'s `Filesystem`
+     interface (`put`/`get`/`exists`/`delete`/`url`) has one implementation,
+     `LocalFilesystem`, with path traversal rejected outright (a `..`
+     throws immediately, rather than resolving and re-checking a
+     `realpath()` that may not exist yet for a file being newly written).
+     No S3 implementation: that would mean either pulling in the AWS SDK
+     (a genuinely heavy external dependency, unlike every hand-built
+     integration elsewhere — see `SmtpMailer`) or hand-rolling SigV4
+     signing with no real AWS account to verify it against, breaking this
+     project's rule of only claiming what was actually checked end to end.
+     Left open honestly rather than shipped unverified. Confirmed: the
+     showcase gained a genuinely new feature — a per-user profile bio
+     stored as a plain text file under `var/storage/bios/` — proven against
+     a running server (empty before saving, the exact saved text after,
+     the same content readable straight off disk, 401 unauthenticated).
+   - **Task scheduler** — `phpmodern/scheduler`'s
+     `Schedule::call(...)->daily()` (also `hourly()`, `everyMinute()`,
+     `everyFiveMinutes()`, `dailyAt('13:30')`, `weekly()`, or a raw
+     `cron()` expression) sits on a minimal 5-field cron matcher
+     (wildcards, exact values, step values — no ranges or comma-lists yet,
+     documented honestly). No daemon of its own: a single system cron
+     entry runs a script once a minute that builds the `Schedule` and
+     calls `run()`, exactly how every real fluent scheduler works
+     underneath. Confirmed: the showcase's `bin/schedule-run.php`
+     registers a genuine maintenance task (prune soft-deleted comments
+     older than 30 days) and was run against seeded data — an old
+     soft-deleted comment was actually removed, a recently-deleted one and
+     an active one were both correctly left alone, and the real prune
+     count landed in the app log.
+   - **i18n** — `phpmodern/i18n`'s `Translator`: a translation file is a
+     plain PHP file returning a flat `array<string, string>` (no special
+     format to parse), `translate()` substitutes `:placeholder` values and
+     falls back to the default locale and then the key itself rather than
+     throwing — a visibly-wrong string beats a fatal error taking the page
+     down. No pluralization rules, documented as a real gap rather than a
+     half-implemented English-only heuristic. Confirmed: the showcase's
+     `/about` page (already using `phpmodern/templating` and
+     `phpmodern/container`) now pulls its copy through `Translator`
+     instead of hardcoded strings, switching locale on `?lang=pt-br` —
+     checked against a running server in both English and Portuguese, with
+     every other route still working unchanged.
 
 None of this changes the Phase 0–3 verdict: what exists is real, tested, and
 coherent. This phase is about how much *more* a mature framework's feature

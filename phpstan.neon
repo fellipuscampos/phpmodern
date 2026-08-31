@@ -28,6 +28,7 @@ parameters:
         - packages/core/notifications/src
         - packages/core/storage/src
         - packages/core/scheduler/src
+        - packages/core/i18n/src
         - packages/bridge/adapter/src
         - packages/framework/kernel/src
     ignoreErrors:

@@ -88,6 +88,9 @@
         <testsuite name="scheduler">
             <directory>packages/core/scheduler/tests</directory>
         </testsuite>
+        <testsuite name="i18n">
+            <directory>packages/core/i18n/tests</directory>
+        </testsuite>
     </testsuites>
     <source>
         <include>
@@ -118,6 +121,7 @@
             <directory suffix=".php">packages/core/notifications/src</directory>
             <directory suffix=".php">packages/core/storage/src</directory>
             <directory suffix=".php">packages/core/scheduler/src</directory>
+            <directory suffix=".php">packages/core/i18n/src</directory>
             <directory suffix=".php">packages/bridge/adapter/src</directory>
             <directory suffix=".php">packages/framework/kernel/src</directory>
         </include>

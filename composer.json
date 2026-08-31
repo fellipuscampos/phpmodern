@@ -37,7 +37,8 @@
         "phpmodern/events": "*",
         "phpmodern/notifications": "*",
         "phpmodern/storage": "*",
-        "phpmodern/scheduler": "*"
+        "phpmodern/scheduler": "*",
+        "phpmodern/i18n": "*"
     },
     "repositories": [
         {
@@ -76,7 +77,8 @@
             "PhpModern\\Events\\Tests\\": "packages/core/events/tests/",
             "PhpModern\\Notifications\\Tests\\": "packages/core/notifications/tests/",
             "PhpModern\\Storage\\Tests\\": "packages/core/storage/tests/",
-            "PhpModern\\Scheduler\\Tests\\": "packages/core/scheduler/tests/"
+            "PhpModern\\Scheduler\\Tests\\": "packages/core/scheduler/tests/",
+            "PhpModern\\I18n\\Tests\\": "packages/core/i18n/tests/"
         }
     },
     "config": {
