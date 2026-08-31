@@ -35,6 +35,7 @@ declare -A PACKAGES=(
   [packages/core/security]="phpmodern/security"
   [packages/core/store]="phpmodern/store"
   [packages/core/testing]="phpmodern/testing"
+  [packages/core/templating]="phpmodern/templating"
   [packages/core/typing-contracts]="phpmodern/typing-contracts"
   [packages/core/validation]="phpmodern/validation"
   [packages/devtools/debugbar]="phpmodern/debugbar"
