@@ -82,6 +82,9 @@
         <testsuite name="notifications">
             <directory>packages/core/notifications/tests</directory>
         </testsuite>
+        <testsuite name="storage">
+            <directory>packages/core/storage/tests</directory>
+        </testsuite>
     </testsuites>
     <source>
         <include>
@@ -110,6 +113,7 @@
             <directory suffix=".php">packages/core/rate-limiting/src</directory>
             <directory suffix=".php">packages/core/events/src</directory>
             <directory suffix=".php">packages/core/notifications/src</directory>
+            <directory suffix=".php">packages/core/storage/src</directory>
             <directory suffix=".php">packages/bridge/adapter/src</directory>
             <directory suffix=".php">packages/framework/kernel/src</directory>
         </include>

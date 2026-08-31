@@ -939,8 +939,24 @@ it is realistic in one pass:
 6. **push-hub is SSE-only** — no WebSocket driver, no channel-level
    authorization model (a channel is just a string, not authenticated per
    subscriber like Laravel's private/presence channels).
-7. **Missing subsystems**: a file storage abstraction (local/S3), a fluent
-   task scheduler, and i18n. ~~A unified notifications API~~ is done —
+7. **Missing subsystems**: a fluent task scheduler and i18n.
+   ~~A file storage abstraction~~ is partially done —
+   `phpmodern/storage`'s `Filesystem` interface (`put`/`get`/`exists`/
+   `delete`/`url`) has one implementation, `LocalFilesystem`, with
+   path-traversal rejected outright (a `..` in the path throws, rather
+   than trying to resolve and re-check a `realpath()` that may not exist
+   yet for a file being newly written). No S3 implementation: that would
+   mean either pulling in the AWS SDK (a genuinely heavy external
+   dependency, unlike every hand-built integration elsewhere in this
+   framework — see `SmtpMailer`) or hand-rolling SigV4 request signing with
+   no real AWS account to verify it against, breaking this whole project's
+   rule of only claiming what was actually checked end to end. Left open
+   honestly rather than shipped unverified. Verified for real: the
+   showcase project gained a genuinely new feature (not a refactor) on top
+   of this — a per-user profile bio stored as a plain text file under
+   `var/storage/bios/`, proven against a running server (empty before
+   saving, the exact saved text after, the same content readable straight
+   off disk, and a 401 for an unauthenticated request). ~~A unified notifications API~~ is done —
    `phpmodern/notifications`' `NotificationSender::send()` delivers through
    every channel a `Notification` names in `via()`; a notification
    implements the matching per-channel interface (`MailNotification`,

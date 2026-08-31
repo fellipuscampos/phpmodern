@@ -26,6 +26,7 @@ parameters:
         - packages/core/rate-limiting/src
         - packages/core/events/src
         - packages/core/notifications/src
+        - packages/core/storage/src
         - packages/bridge/adapter/src
         - packages/framework/kernel/src
     ignoreErrors:

@@ -35,7 +35,8 @@
         "phpmodern/templating": "*",
         "phpmodern/rate-limiting": "*",
         "phpmodern/events": "*",
-        "phpmodern/notifications": "*"
+        "phpmodern/notifications": "*",
+        "phpmodern/storage": "*"
     },
     "repositories": [
         {
@@ -72,7 +73,8 @@
             "PhpModern\\Templating\\Tests\\": "packages/core/templating/tests/",
             "PhpModern\\RateLimiting\\Tests\\": "packages/core/rate-limiting/tests/",
             "PhpModern\\Events\\Tests\\": "packages/core/events/tests/",
-            "PhpModern\\Notifications\\Tests\\": "packages/core/notifications/tests/"
+            "PhpModern\\Notifications\\Tests\\": "packages/core/notifications/tests/",
+            "PhpModern\\Storage\\Tests\\": "packages/core/storage/tests/"
         }
     },
     "config": {
