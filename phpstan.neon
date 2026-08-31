@@ -22,13 +22,25 @@ parameters:
         - packages/core/console/src
         - packages/core/testing/src
         - packages/core/container/src
+        - packages/core/templating/src
         - packages/bridge/adapter/src
         - packages/framework/kernel/src
-    # HubServer::run() / Worker::run() are intentionally long-lived daemon loops.
     ignoreErrors:
+        # HubServer::run() / Worker::run() are intentionally long-lived daemon loops.
         -
             message: '#While loop condition is always true#'
             path: packages/core/push-hub/src/HubServer.php
         -
             message: '#While loop condition is always true#'
             path: packages/core/queue/src/Worker.php
+        # View::render()'s pendingLayout check looks always-null/unreachable to
+        # PHPStan because the mutation happens inside a dynamically include()'d
+        # compiled template calling back into $this->extend() — invisible to
+        # static analysis, but real at runtime (proven by ViewTest's
+        # extends/section/yield tests actually executing that path).
+        -
+            message: '#will always evaluate to true#'
+            path: packages/core/templating/src/View.php
+        -
+            message: '#Unreachable statement#'
+            path: packages/core/templating/src/View.php

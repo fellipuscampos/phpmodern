@@ -1,0 +1,15 @@
+@extends('layouts.app')
+@section('title')
+Sobre — phpmodern
+@endsection
+@section('content')
+<h1>Sobre este projeto</h1>
+<p>Esta página é renderizada por <strong>{{ $engine }}</strong>, não por heredoc.</p>
+@if(count($features) > 0)
+<ul>
+@foreach($features as $feature)
+<li>{{ $feature }}</li>
+@endforeach
+</ul>
+@endif
+@endsection

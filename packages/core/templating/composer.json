@@ -1,0 +1,22 @@
+{
+    "name": "phpmodern/templating",
+    "description": "A real template engine: {{ }}/{!! !!} echoes, @if/@foreach, @extends/@section/@yield layout inheritance, and @include composition, compiled to plain cached PHP files (not eval) — the structural gap Component::render() returning raw heredoc strings left open.",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "PhpModern\\Templating\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "PhpModern\\Templating\\Tests\\": "tests/"
+        }
+    }
+}

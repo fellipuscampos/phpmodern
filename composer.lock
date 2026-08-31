@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7e591445a7adc8ee1c2ab13965b21014",
+    "content-hash": "2e23019e3002bf63307533cb32151729",
     "packages": [],
     "packages-dev": [
         {
@@ -918,6 +918,39 @@
                 "MIT"
             ],
             "description": "Minimal Redux-shaped state container: register a reducer per action, dispatch() mutates state and notifies every listener. Sized for one PHP request, not a long-lived process — deliberately has no dependency on push-hub or the ORM; composing 'notify a listener that publishes' or 'notify a listener that persists' is left to the caller.",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "phpmodern/templating",
+            "version": "dev-master",
+            "dist": {
+                "type": "path",
+                "url": "packages/core/templating",
+                "reference": "167db907c6581df40311b84c9d38ca85be0f7de8"
+            },
+            "require": {
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^10.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PhpModern\\Templating\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "PhpModern\\Templating\\Tests\\": "tests/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "A real template engine: {{ }}/{!! !!} echoes, @if/@foreach, @extends/@section/@yield layout inheritance, and @include composition, compiled to plain cached PHP files (not eval) — the structural gap Component::render() returning raw heredoc strings left open.",
             "transport-options": {
                 "relative": true
             }

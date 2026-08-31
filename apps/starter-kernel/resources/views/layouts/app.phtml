@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <title>@yield('title', 'phpmodern starter-kernel')</title>
+</head>
+<body style="font-family: sans-serif; padding: 2rem;">
+    <main>
+        @yield('content')
+    </main>
+    @include('partials.footer', ['renderedAt' => $renderedAt])
+</body>
+</html>

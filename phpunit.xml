@@ -70,6 +70,9 @@
         <testsuite name="container">
             <directory>packages/core/container/tests</directory>
         </testsuite>
+        <testsuite name="templating">
+            <directory>packages/core/templating/tests</directory>
+        </testsuite>
     </testsuites>
     <source>
         <include>
@@ -94,6 +97,7 @@
             <directory suffix=".php">packages/core/console/src</directory>
             <directory suffix=".php">packages/core/testing/src</directory>
             <directory suffix=".php">packages/core/container/src</directory>
+            <directory suffix=".php">packages/core/templating/src</directory>
             <directory suffix=".php">packages/bridge/adapter/src</directory>
             <directory suffix=".php">packages/framework/kernel/src</directory>
         </include>

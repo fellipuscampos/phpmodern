@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 require __DIR__ . '/../vendor/autoload.php';
 
+use App\Controllers\AboutController;
 use App\Controllers\OrderStatusController;
 use PhpModern\Container\Container;
 use PhpModern\Kernel\FileRouter;
 use PhpModern\Kernel\Kernel;
 use PhpModern\Kernel\Router;
 use PhpModern\Orm\Connection;
+use PhpModern\Templating\View;
 
 $dbPath = __DIR__ . '/../../../var/demo.sqlite';
 $isFirstRun = !file_exists($dbPath);
@@ -27,6 +29,10 @@ if ($isFirstRun) {
 // OrderStatusController below, still gets it injected automatically from here.
 $container = new Container();
 $container->instance(Connection::class, $connection);
+$container->singleton(View::class, static fn (): View => new View(
+    __DIR__ . '/../resources/views',
+    __DIR__ . '/../../../var/cache/starter-kernel-views',
+));
 
 $router = new Router($container);
 (require __DIR__ . '/../routes/web.php')($router, static fn (): Connection => $connection);
@@ -38,5 +44,6 @@ $router = new Router($container);
 // A controller class instead of a closure — Router resolves it through
 // $container, autowiring Connection into its constructor.
 $router->get('/orders/{id}/status', [OrderStatusController::class, 'show']);
+$router->get('/about', [AboutController::class, 'show']);
 
 (new Kernel($router))->run();

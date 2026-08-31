@@ -31,7 +31,8 @@
         "phpmodern/cache": "*",
         "phpmodern/console": "*",
         "phpmodern/testing": "*",
-        "phpmodern/container": "*"
+        "phpmodern/container": "*",
+        "phpmodern/templating": "*"
     },
     "repositories": [
         {
@@ -64,7 +65,8 @@
             "PhpModern\\Cache\\Tests\\": "packages/core/cache/tests/",
             "PhpModern\\Console\\Tests\\": "packages/core/console/tests/",
             "PhpModern\\Testing\\Tests\\": "packages/core/testing/tests/",
-            "PhpModern\\Container\\Tests\\": "packages/core/container/tests/"
+            "PhpModern\\Container\\Tests\\": "packages/core/container/tests/",
+            "PhpModern\\Templating\\Tests\\": "packages/core/templating/tests/"
         }
     },
     "config": {

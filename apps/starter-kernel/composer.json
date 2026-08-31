@@ -7,7 +7,8 @@
         "php": "^8.2",
         "phpmodern/kernel": "*",
         "phpmodern/bridge-adapter": "*",
-        "phpmodern/security": "*"
+        "phpmodern/security": "*",
+        "phpmodern/templating": "*"
     },
     "repositories": [
         {

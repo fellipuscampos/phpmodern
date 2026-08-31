@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5ea62b9af8911eed3f4df77151da0d90",
+    "content-hash": "663215daaa481c44261816492564ea2a",
     "packages": [
         {
             "name": "phpmodern/bridge-adapter",
@@ -342,6 +342,39 @@
                 "MIT"
             ],
             "description": "CSRF protection (double-submit cookie — no session dependency) and default security headers (CSP with per-request nonces, HSTS, frame/content-type hardening). The 'secure by default' pillar promised early on and not delivered until now.",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "phpmodern/templating",
+            "version": "dev-master",
+            "dist": {
+                "type": "path",
+                "url": "../../packages/core/templating",
+                "reference": "167db907c6581df40311b84c9d38ca85be0f7de8"
+            },
+            "require": {
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^10.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PhpModern\\Templating\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "PhpModern\\Templating\\Tests\\": "tests/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "A real template engine: {{ }}/{!! !!} echoes, @if/@foreach, @extends/@section/@yield layout inheritance, and @include composition, compiled to plain cached PHP files (not eval) — the structural gap Component::render() returning raw heredoc strings left open.",
             "transport-options": {
                 "relative": true
             }

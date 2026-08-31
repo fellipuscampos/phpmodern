@@ -864,9 +864,22 @@ it is realistic in one pass:
    `/orders/{id}/status`, verified against a running server (200 with the
    real order status, 404 for a missing one) alongside every pre-existing
    closure-based route still working unchanged.
-2. **No templating engine** — `Component::render()` returns raw PHP heredoc
-   strings. No compiled templates, no layouts/inheritance, no directives.
-   This is a structural gap, not a missing convenience.
+2. ~~No templating engine~~ — done (`phpmodern/templating`). `{{ $expr }}`
+   (escaped) / `{!! $expr !!}` (raw) echoes, `@if`/`@elseif`/`@else`/
+   `@endif`, `@foreach`/`@endforeach`, `@include('name', [...])`
+   composition, and `@extends('layout')` + `@section('name')...
+   @endsection` + `@yield('name', 'default')` layout inheritance — the
+   two-pass model every framework with this feature actually uses under
+   the hood (render the child, buffer its `@section` output, then render
+   the named layout so `@yield` can pull that buffered content back out).
+   Compiles to a real cached `.php` file per template (invalidated on
+   source mtime, same strategy as `versioned_asset_url()`'s cache-busting)
+   and `include`s it — deliberately not `eval()`, for the same reason
+   Blade compiles to disk instead. Proven for real in
+   `apps/starter-kernel`: a genuine `/about` page with a shared layout, a
+   partial (`@include`d footer receiving its own data), and a real
+   `@foreach` over a feature list, verified against a running server with
+   the compiled cache files inspected on disk afterward.
 3. **The ORM has no model layer** — `QueryHelper` returns plain arrays, not
    typed objects. No Active Record, no query scopes, no accessors/casts, no
    model events, no `belongsToMany`/polymorphic relationships, no

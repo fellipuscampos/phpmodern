@@ -4,4 +4,5 @@
 /.phpunit.cache/
 /.phpunit.result.cache
 /var/coverage-html/
+/var/cache/
 /.claude/
