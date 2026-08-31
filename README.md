@@ -115,6 +115,23 @@ It runs PHPStan at level 9 plus a custom rule
 TypeScript — without requiring the consuming project to write any PHPStan
 config of its own.
 
+**`--watch`** gets you the continuous-feedback part of `tsc --watch` without
+PHP actually having a compiler of its own to hook into (there's no
+language-level "recompile on save" step for userland code to attach to —
+`tsc` owns its whole compilation pipeline; PHP just runs the file):
+
+```bash
+vendor/bin/phpmodern-check --watch path/to/your/components
+```
+
+It runs once immediately, then polls the given paths (the same
+mtime-snapshot `FileWatcher` `phpmodern/dev-server` already uses for hot
+reload) and re-runs automatically whenever a `.php` file changes — save a
+file with a type error, see it in the terminal within a second, save the
+fix, watch it clear. Verified for real: introducing an actual return-type
+error into a watched file, then fixing it, both showed up automatically
+across three consecutive check cycles with no restart in between.
+
 ## Scaffolding: `make:component`
 
 Kernel-mode projects (only — this is a dev-time convenience, not something

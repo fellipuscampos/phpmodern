@@ -6,6 +6,7 @@
     "require": {
         "php": "^8.2",
         "phpmodern/component-engine": "*",
+        "phpmodern/dev-server": "*",
         "phpstan/phpstan": "^2.2"
     },
     "require-dev": {

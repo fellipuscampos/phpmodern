@@ -8,7 +8,15 @@ declare(strict_types=1);
  * Runs PHPStan at strict level with the phpmodern component-typing rule
  * enabled, without requiring the consumer to write any PHPStan config.
  *
- * Usage: vendor/bin/phpmodern-check [path ...]   (defaults to the current directory)
+ * Usage: vendor/bin/phpmodern-check [--watch] [path ...]   (defaults to the current directory)
+ *
+ * --watch re-runs the check automatically whenever a watched .php file's
+ * mtime changes — PHP has no compiler of its own to hook into the way
+ * `tsc --watch` does (there's no language-level "recompile on save" step
+ * for userland code to attach to), but continuous automatic feedback is
+ * the actual developer-facing benefit of that, and this delivers the same
+ * thing on top of the polling FileWatcher phpmodern/dev-server already
+ * uses for hot reload.
  */
 
 function phpmodern_check_find_upwards(string $startDir, string $relative): ?string
@@ -47,6 +55,8 @@ if ($autoload === null) {
 
 require $autoload;
 
+use PhpModern\DevServer\FileWatcher;
+
 $phpstanBinary = phpmodern_check_find_upwards(getcwd(), 'vendor/bin/phpstan')
     ?? phpmodern_check_find_upwards(__DIR__, 'vendor/bin/phpstan');
 
@@ -56,10 +66,21 @@ if ($phpstanBinary === null) {
 }
 
 $rulesConfig = __DIR__ . '/../config/phpmodern-rules.neon';
-$paths = array_slice($argv, 1);
 
-if ($paths === []) {
-    $paths = [getcwd()];
+$watch = false;
+$rawPaths = [];
+foreach (array_slice($argv, 1) as $arg) {
+    if ($arg === '--watch') {
+        $watch = true;
+
+        continue;
+    }
+
+    $rawPaths[] = $arg;
+}
+
+if ($rawPaths === []) {
+    $rawPaths = [getcwd()];
 }
 
 // PHPStan resolves relative paths in a neon file against that file's own
@@ -73,29 +94,121 @@ $paths = array_map(static function (string $path): string {
     }
 
     return $absolute;
-}, $paths);
+}, $rawPaths);
 
-$neon = "includes:\n    - " . str_replace('\\', '/', $rulesConfig) . "\n";
-$neon .= "parameters:\n    level: 9\n    paths:\n";
-foreach ($paths as $path) {
-    $neon .= '        - ' . str_replace('\\', '/', $path) . "\n";
-}
-$neon .= "    excludePaths:\n        - */vendor/*\n        - */var/*\n";
+/**
+ * Runs PHPStan once against $paths, streaming its output straight through.
+ *
+ * @param list<string> $paths
+ */
+function phpmodern_check_run(array $paths, string $rulesConfig, string $phpstanBinary): int
+{
+    $neon = 'includes:' . PHP_EOL . '    - ' . str_replace('\\', '/', $rulesConfig) . PHP_EOL;
+    $neon .= 'parameters:' . PHP_EOL . '    level: 9' . PHP_EOL . '    paths:' . PHP_EOL;
+    foreach ($paths as $path) {
+        $neon .= '        - ' . str_replace('\\', '/', $path) . PHP_EOL;
+    }
+    $neon .= '    excludePaths:' . PHP_EOL . '        - */vendor/*' . PHP_EOL . '        - */var/*' . PHP_EOL;
 
-$tmpConfig = tempnam(sys_get_temp_dir(), 'phpmodern-check-') . '.neon';
-file_put_contents($tmpConfig, $neon);
+    $tmpConfig = tempnam(sys_get_temp_dir(), 'phpmodern-check-') . '.neon';
+    file_put_contents($tmpConfig, $neon);
 
-$command = [PHP_BINARY, $phpstanBinary, 'analyse', '-c', $tmpConfig, '--no-progress'];
+    $command = [PHP_BINARY, $phpstanBinary, 'analyse', '-c', $tmpConfig, '--no-progress'];
 
-$process = proc_open($command, [1 => STDOUT, 2 => STDERR], $pipes);
+    // Explicit pipes relayed by hand, not [1 => STDOUT, 2 => STDERR]: a
+    // long-lived parent process (as --watch is) spawning several child
+    // processes in turn can hit stale/locked inherited-handle behavior on
+    // Windows if each child shares the parent's own STDOUT/STDERR handle
+    // directly — piping and copying the bytes ourselves sidesteps that.
+    $process = proc_open($command, [1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes);
 
-if (!is_resource($process)) {
-    fwrite(STDERR, "Failed to start PHPStan.\n");
+    if (!is_resource($process)) {
+        fwrite(STDERR, "Failed to start PHPStan.\n");
+        unlink($tmpConfig);
+
+        return 1;
+    }
+
+    // Draining stdout and stderr one at a time (fpassthru then fpassthru)
+    // can deadlock if the child fills one pipe's buffer while blocked
+    // writing to the other — stream_select reads whichever pipe actually
+    // has data, the same pattern HubServer's own socket loop uses.
+    stream_set_blocking($pipes[1], false);
+    stream_set_blocking($pipes[2], false);
+    $open = [$pipes[1], $pipes[2]];
+
+    while ($open !== []) {
+        $read = $open;
+        $write = [];
+        $except = [];
+
+        if (stream_select($read, $write, $except, 1) === false) {
+            break;
+        }
+
+        foreach ($read as $stream) {
+            $chunk = fread($stream, 8192);
+
+            if ($chunk === '' || $chunk === false) {
+                if (feof($stream)) {
+                    $open = array_values(array_filter($open, static fn ($s): bool => $s !== $stream));
+                }
+
+                continue;
+            }
+
+            fwrite($stream === $pipes[1] ? STDOUT : STDERR, $chunk);
+        }
+    }
+
+    fclose($pipes[1]);
+    fclose($pipes[2]);
+
+    $exitCode = proc_close($process);
     unlink($tmpConfig);
-    exit(1);
+
+    return $exitCode;
 }
 
-$exitCode = proc_close($process);
-unlink($tmpConfig);
+/**
+ * A directory is snapshotted recursively via FileWatcher (the same class
+ * dev-server's hot reload uses); a single file target is snapshotted
+ * directly since FileWatcher only watches directories.
+ *
+ * @param list<string> $paths
+ * @return array<string, int>
+ */
+function phpmodern_check_snapshot(array $paths): array
+{
+    $snapshot = [];
 
-exit($exitCode);
+    foreach ($paths as $path) {
+        if (is_dir($path)) {
+            $snapshot += (new FileWatcher($path))->snapshot();
+        } elseif (is_file($path)) {
+            $snapshot[$path] = (int) filemtime($path);
+        }
+    }
+
+    return $snapshot;
+}
+
+if (!$watch) {
+    exit(phpmodern_check_run($paths, $rulesConfig, $phpstanBinary));
+}
+
+fwrite(STDOUT, "phpmodern check --watch: watching for changes (Ctrl+C to stop)\n");
+phpmodern_check_run($paths, $rulesConfig, $phpstanBinary);
+
+$before = phpmodern_check_snapshot($paths);
+
+while (true) {
+    usleep(500_000);
+    $after = phpmodern_check_snapshot($paths);
+
+    if (FileWatcher::hasChanged($before, $after)) {
+        fwrite(STDOUT, PHP_EOL . '[' . date('H:i:s') . "] change detected, re-checking...\n");
+        phpmodern_check_run($paths, $rulesConfig, $phpstanBinary);
+        $before = $after;
+    }
+}

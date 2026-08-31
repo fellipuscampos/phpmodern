@@ -1197,11 +1197,12 @@
             "dist": {
                 "type": "path",
                 "url": "packages/core/typing-contracts",
-                "reference": "b3cacb22eb4c4fd387b184727d5691c789d78688"
+                "reference": "7e17868bd3a2366f8eb7dd9106c9582a58d65963"
             },
             "require": {
                 "php": "^8.2",
                 "phpmodern/component-engine": "*",
+                "phpmodern/dev-server": "*",
                 "phpstan/phpstan": "^2.2"
             },
             "require-dev": {
