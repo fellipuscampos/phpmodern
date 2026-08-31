@@ -67,6 +67,9 @@
         <testsuite name="testing">
             <directory>packages/core/testing/tests</directory>
         </testsuite>
+        <testsuite name="container">
+            <directory>packages/core/container/tests</directory>
+        </testsuite>
     </testsuites>
     <source>
         <include>
@@ -90,6 +93,7 @@
             <directory suffix=".php">packages/core/cache/src</directory>
             <directory suffix=".php">packages/core/console/src</directory>
             <directory suffix=".php">packages/core/testing/src</directory>
+            <directory suffix=".php">packages/core/container/src</directory>
             <directory suffix=".php">packages/bridge/adapter/src</directory>
             <directory suffix=".php">packages/framework/kernel/src</directory>
         </include>

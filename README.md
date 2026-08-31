@@ -838,6 +838,56 @@ by raising supervisor's `numprocs` (see the comment in that file) —
 status = 'pending'`, so two workers racing to claim the same row is a normal
 "the other one already got it" outcome (`rowCount() === 0`), not a bug.
 
+## Phase 4 roadmap: closing the technology gap with mature frameworks
+
+Phase 3 made the framework production-hardened *relative to its own scope*.
+That's a different claim from "has the feature surface of Laravel/Symfony/
+Rails" — it doesn't, not close. This phase is the honest list of missing
+subsystems those frameworks treat as basics, not a claim that closing all of
+it is realistic in one pass:
+
+1. ~~No DI container~~ — done (`phpmodern/container`). `bind()`/
+   `singleton()` are deliberately closure-only (a class-string `$concrete`
+   would be ambiguous about whether it means "autowire this" or "this
+   literal value" — a closure is always explicit), `instance()` registers
+   an already-built object, and `make()` autowires a concrete class's typed
+   constructor parameters via reflection when nothing was bound at all —
+   recursively, with circular-dependency detection instead of a stack
+   overflow. Wired into `phpmodern/kernel`'s `Router`: a route handler can
+   now be `[ControllerClass::class, 'method']` instead of a closure, and
+   Router resolves the controller through the `Container` passed to its
+   constructor. Proven for real, not just unit tests: `apps/starter-kernel`
+   got a genuine `OrderStatusController` with `Connection` injected into
+   its constructor (registered once via `$container->instance(...)` since
+   a DSN string can't be autowired from nothing), reachable at
+   `/orders/{id}/status`, verified against a running server (200 with the
+   real order status, 404 for a missing one) alongside every pre-existing
+   closure-based route still working unchanged.
+2. **No templating engine** — `Component::render()` returns raw PHP heredoc
+   strings. No compiled templates, no layouts/inheritance, no directives.
+   This is a structural gap, not a missing convenience.
+3. **The ORM has no model layer** — `QueryHelper` returns plain arrays, not
+   typed objects. No Active Record, no query scopes, no accessors/casts, no
+   model events, no `belongsToMany`/polymorphic relationships, no
+   configurable eager loading beyond the two fixed helpers `Relations` has.
+4. **Auth is session-login only** — no API tokens, no OAuth2, no 2FA, no
+   multiple guards for authenticating different kinds of principals.
+5. **Queue has one driver and no resilience features** — no Redis/SQS
+   backend, no automatic retry with backoff, no job batching or chaining,
+   no per-job rate limiting.
+6. **push-hub is SSE-only** — no WebSocket driver, no channel-level
+   authorization model (a channel is just a string, not authenticated per
+   subscriber like Laravel's private/presence channels).
+7. **Missing subsystems entirely**: an events/listeners system, a unified
+   notifications API (email/SMS/Slack/database from one call), a file
+   storage abstraction (local/S3), a fluent task scheduler, i18n, and a
+   general-purpose rate-limiting middleware (today's login rate limit in
+   the showcase is a one-off, not a framework primitive).
+
+None of this changes the Phase 0–3 verdict: what exists is real, tested, and
+coherent. This phase is about how much *more* a mature framework's feature
+surface actually is.
+
 ## Requirements
 
 PHP 8.2+. No async runtime (Swoole/RoadRunner) is required — the push hub is

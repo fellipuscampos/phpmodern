@@ -30,7 +30,8 @@
         "phpmodern/error-handler": "*",
         "phpmodern/cache": "*",
         "phpmodern/console": "*",
-        "phpmodern/testing": "*"
+        "phpmodern/testing": "*",
+        "phpmodern/container": "*"
     },
     "repositories": [
         {
@@ -62,7 +63,8 @@
             "PhpModern\\ErrorHandler\\Tests\\": "packages/core/error-handler/tests/",
             "PhpModern\\Cache\\Tests\\": "packages/core/cache/tests/",
             "PhpModern\\Console\\Tests\\": "packages/core/console/tests/",
-            "PhpModern\\Testing\\Tests\\": "packages/core/testing/tests/"
+            "PhpModern\\Testing\\Tests\\": "packages/core/testing/tests/",
+            "PhpModern\\Container\\Tests\\": "packages/core/container/tests/"
         }
     },
     "config": {

@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace PhpModern\Kernel\Tests;
 
+use LogicException;
+use PhpModern\Container\Container;
 use PhpModern\Http\Request;
 use PhpModern\Kernel\Router;
+use PhpModern\Kernel\Tests\Fixtures\GreetingController;
 use PHPUnit\Framework\TestCase;
 
 final class RouterTest extends TestCase
@@ -113,5 +116,25 @@ final class RouterTest extends TestCase
 
         self::assertSame('get 1', $router->match('GET', '/orders/1')(Request::create('GET', '/orders/1'))->body);
         self::assertSame('post 1', $router->match('POST', '/orders/1')(Request::create('POST', '/orders/1'))->body);
+    }
+
+    public function test_a_controller_class_handler_is_resolved_through_the_container(): void
+    {
+        $router = new Router(new Container());
+        $router->get('/hello/{name}', [GreetingController::class, 'show']);
+
+        $response = $router->match('GET', '/hello/World')(Request::create('GET', '/hello/World'));
+
+        self::assertSame('Hello, World!', $response->body);
+    }
+
+    public function test_a_controller_class_handler_without_a_container_throws_a_clear_error(): void
+    {
+        $router = new Router();
+        $router->get('/hello/{name}', [GreetingController::class, 'show']);
+
+        $this->expectException(LogicException::class);
+
+        $router->match('GET', '/hello/World');
     }
 }

@@ -1,0 +1,22 @@
+{
+    "name": "phpmodern/container",
+    "description": "A dependency injection container: bind an interface to an implementation, register a singleton, or let autowiring resolve a concrete class's typed constructor parameters via reflection — the missing piece behind every mature framework's \"just type-hint it in the constructor\" ergonomics.",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "PhpModern\\Container\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "PhpModern\\Container\\Tests\\": "tests/"
+        }
+    }
+}

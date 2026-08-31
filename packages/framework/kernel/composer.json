@@ -10,7 +10,8 @@
         "phpmodern/push-hub": "*",
         "phpmodern/config": "*",
         "phpmodern/console": "*",
-        "phpmodern/http": "*"
+        "phpmodern/http": "*",
+        "phpmodern/container": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "^10.5"

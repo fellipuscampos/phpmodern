@@ -21,6 +21,7 @@ parameters:
         - packages/core/cache/src
         - packages/core/console/src
         - packages/core/testing/src
+        - packages/core/container/src
         - packages/bridge/adapter/src
         - packages/framework/kernel/src
     # HubServer::run() / Worker::run() are intentionally long-lived daemon loops.
