@@ -1069,10 +1069,38 @@ both.
 
 **Addressable — deepens something already partially built:**
 
-1. **ORM** — query scopes, accessors/casts, model events (`created`,
-   `updated`, `deleted` hooks), `belongsToMany`/polymorphic relationships,
-   and eager loading configurable beyond `Relations`'s two fixed helpers
-   (`hasMany`/`belongsTo`).
+1. **ORM** — partially done.
+   - ~~Model events~~ — done. `Model::useDispatcher(?Dispatcher $dispatcher)`
+     wires an optional `phpmodern/events` `Dispatcher`, the same
+     "configure once in bootstrap" shape as the existing
+     `useQueryHelper()`. `save()` now dispatches `ModelSaved` (with a
+     `wasCreated` flag distinguishing insert from update) and `delete()`
+     dispatches `ModelDeleted`, both no-ops if no dispatcher was ever
+     wired. Verified for real, not just in tests: `phpmodern-demo`'s
+     stock-adjust write path now saves through the `Stock` model instead
+     of a raw `QueryHelper::update()` call, with a listener logging every
+     `ModelSaved`. A live curl-driven stock adjustment against a running
+     server produced a genuine `var/app.log` entry — `model:
+     Demo\Models\Stock, was_created: false` — proving the event actually
+     fires on a real write path, not just a unit test's `Dispatcher`.
+   - ~~belongsToMany~~ — done. `Relations::belongsToMany()` adds
+     many-to-many through a pivot table, keeping the exact N+1-safe shape
+     `hasMany`/`belongsTo` already had: still exactly two extra queries —
+     one for the pivot rows, one for the related rows they point at — no
+     matter how many parent rows come in. Covered by a books/tags/pivot
+     SQLite test; the demo schema has no natural many-to-many table yet,
+     so unlike `belongsTo` (exercised live via comments' authors) this one
+     stops at package-test-level proof for now.
+   - Query scopes / accessors & casts — deliberately not built, not just
+     not-gotten-to. `Model` is intentionally not an attribute bag with
+     `__get`/`__set` magic; that's *why* the ORM doesn't already have
+     Eloquent-style scopes or casts. Bolting them onto readonly,
+     explicitly-typed properties would mean reintroducing the exact magic
+     this codebase avoids everywhere else (`Comparison` instead of a query
+     DSL, `Rule` objects instead of a validation DSL), or shrinking them to
+     something indistinguishable from a static helper method and a
+     constructor argument — not worth pretending to add.
+   - Polymorphic relations — still open, no code written yet.
 2. **Auth** — OAuth2, 2FA, and multiple guards for authenticating different
    kinds of principals at once (today: session login + one flavor of API
    token, nothing more).
