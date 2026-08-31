@@ -33,7 +33,8 @@
         "phpmodern/testing": "*",
         "phpmodern/container": "*",
         "phpmodern/templating": "*",
-        "phpmodern/rate-limiting": "*"
+        "phpmodern/rate-limiting": "*",
+        "phpmodern/events": "*"
     },
     "repositories": [
         {
@@ -68,7 +69,8 @@
             "PhpModern\\Testing\\Tests\\": "packages/core/testing/tests/",
             "PhpModern\\Container\\Tests\\": "packages/core/container/tests/",
             "PhpModern\\Templating\\Tests\\": "packages/core/templating/tests/",
-            "PhpModern\\RateLimiting\\Tests\\": "packages/core/rate-limiting/tests/"
+            "PhpModern\\RateLimiting\\Tests\\": "packages/core/rate-limiting/tests/",
+            "PhpModern\\Events\\Tests\\": "packages/core/events/tests/"
         }
     },
     "config": {

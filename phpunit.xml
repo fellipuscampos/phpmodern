@@ -76,6 +76,9 @@
         <testsuite name="rate-limiting">
             <directory>packages/core/rate-limiting/tests</directory>
         </testsuite>
+        <testsuite name="events">
+            <directory>packages/core/events/tests</directory>
+        </testsuite>
     </testsuites>
     <source>
         <include>
@@ -102,6 +105,7 @@
             <directory suffix=".php">packages/core/container/src</directory>
             <directory suffix=".php">packages/core/templating/src</directory>
             <directory suffix=".php">packages/core/rate-limiting/src</directory>
+            <directory suffix=".php">packages/core/events/src</directory>
             <directory suffix=".php">packages/bridge/adapter/src</directory>
             <directory suffix=".php">packages/framework/kernel/src</directory>
         </include>

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ee33fd99f726065ac9766d86088fef8e",
+    "content-hash": "842b22737c26e00fcc850cfbc3001d85",
     "packages": [],
     "packages-dev": [
         {
@@ -602,6 +602,39 @@
                 "MIT"
             ],
             "description": "Registers a global exception/error handler so an uncaught Throwable is always logged and always gets a response — never a blank page, never a leaked stack trace to a real visitor.",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "phpmodern/events",
+            "version": "dev-master",
+            "dist": {
+                "type": "path",
+                "url": "packages/core/events",
+                "reference": "7041bba29352ed9d29345398d3d2ef9ef26eb0c6"
+            },
+            "require": {
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^10.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PhpModern\\Events\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "PhpModern\\Events\\Tests\\": "tests/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "A minimal events/listeners system: Dispatcher::listen() registers a callable against an event's class, dispatch() calls every listener registered for that exact class, in registration order. No event bus magic, no auto-discovery — a listener is registered where it's meaningful to read, the same explicitness the rest of the framework insists on.",
             "transport-options": {
                 "relative": true
             }

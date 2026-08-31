@@ -1,0 +1,22 @@
+{
+    "name": "phpmodern/events",
+    "description": "A minimal events/listeners system: Dispatcher::listen() registers a callable against an event's class, dispatch() calls every listener registered for that exact class, in registration order. No event bus magic, no auto-discovery — a listener is registered where it's meaningful to read, the same explicitness the rest of the framework insists on.",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "PhpModern\\Events\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "PhpModern\\Events\\Tests\\": "tests/"
+        }
+    }
+}

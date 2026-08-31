@@ -937,9 +937,21 @@ it is realistic in one pass:
 6. **push-hub is SSE-only** — no WebSocket driver, no channel-level
    authorization model (a channel is just a string, not authenticated per
    subscriber like Laravel's private/presence channels).
-7. **Missing subsystems**: an events/listeners system, a unified
-   notifications API (email/SMS/Slack/database from one call), a file
-   storage abstraction (local/S3), a fluent task scheduler, and i18n.
+7. **Missing subsystems**: a unified notifications API (email/SMS/Slack/
+   database from one call), a file storage abstraction (local/S3), a
+   fluent task scheduler, and i18n. ~~An events/listeners system~~ is done
+   — `phpmodern/events`' `Dispatcher` is deliberately minimal: an event is
+   a plain typed object (no base `Event` class/interface to implement,
+   matching the "no magic marker types" rule elsewhere), `listen()`
+   registers a callable against an event's exact class, `dispatch()` calls
+   every listener registered for that class in registration order. No
+   auto-discovery, no event bus — a listener is registered where it's
+   meaningful to read. Verified for real: the showcase project dispatches
+   a genuine `UserRegistered` event from `actions/register.php`, with a
+   listener registered once in `bootstrap.php` (the bridge-mode equivalent
+   of a service provider's boot step) that logs it — confirmed against a
+   running server, with the real user id and username showing up in
+   `var/app.log`.
    ~~A general-purpose rate-limiting middleware~~ is done — `phpmodern/rate-limiting`
    (`RateLimiter` on top of `phpmodern/cache`, `RateLimitMiddleware` for
    `phpmodern/http`) is the real framework primitive the showcase's login
