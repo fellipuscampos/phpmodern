@@ -795,6 +795,7 @@ monorepo, tagged `v0.1.0`) — ready to submit to Packagist at
 | `phpmodern/queue` | [phpmodern-queue](https://github.com/fellipuscampos/phpmodern-queue) |
 | `phpmodern/rate-limiting` | [phpmodern-rate-limiting](https://github.com/fellipuscampos/phpmodern-rate-limiting) |
 | `phpmodern/security` | [phpmodern-security](https://github.com/fellipuscampos/phpmodern-security) |
+| `phpmodern/storage` | [phpmodern-storage](https://github.com/fellipuscampos/phpmodern-storage) |
 | `phpmodern/store` | [phpmodern-store](https://github.com/fellipuscampos/phpmodern-store) |
 | `phpmodern/templating` | [phpmodern-templating](https://github.com/fellipuscampos/phpmodern-templating) |
 | `phpmodern/testing` | [phpmodern-testing](https://github.com/fellipuscampos/phpmodern-testing) |

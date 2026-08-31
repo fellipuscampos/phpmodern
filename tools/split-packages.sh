@@ -36,6 +36,7 @@ declare -A PACKAGES=(
   [packages/core/queue]="phpmodern/queue"
   [packages/core/rate-limiting]="phpmodern/rate-limiting"
   [packages/core/security]="phpmodern/security"
+  [packages/core/storage]="phpmodern/storage"
   [packages/core/store]="phpmodern/store"
   [packages/core/testing]="phpmodern/testing"
   [packages/core/templating]="phpmodern/templating"
