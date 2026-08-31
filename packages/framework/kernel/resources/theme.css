@@ -1,0 +1,274 @@
+/*
+ * phpmodern's default kernel-mode look — the "create-react-app index.css"
+ * of this framework: a small set of design tokens and component classes so
+ * a brand-new project doesn't start from an unstyled <body>, styled the way
+ * a modern Node/React/TypeScript app usually is (system fonts, one accent
+ * color, cards with soft shadows, dark mode via prefers-color-scheme) —
+ * not a UI kit, no build step, no external font/CDN dependency, just a
+ * plain stylesheet an app can link to as-is or override piece by piece.
+ */
+
+:root {
+    color-scheme: light dark;
+
+    --pm-bg: #f7f7fb;
+    --pm-surface: #ffffff;
+    --pm-surface-2: #f1f1f8;
+    --pm-border: #e3e3ee;
+    --pm-text: #16161f;
+    --pm-text-muted: #6b6b7b;
+    --pm-accent: #5b5bf0;
+    --pm-accent-hover: #4747d6;
+    --pm-accent-contrast: #ffffff;
+    --pm-danger: #d64545;
+    --pm-danger-bg: #fdeceb;
+    --pm-success: #1f9d55;
+    --pm-radius: 10px;
+    --pm-shadow: 0 1px 2px rgba(20, 20, 40, 0.06), 0 1px 1px rgba(20, 20, 40, 0.04);
+    --pm-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --pm-bg: #121218;
+        --pm-surface: #1b1b24;
+        --pm-surface-2: #23232e;
+        --pm-border: #2e2e3a;
+        --pm-text: #eeeef4;
+        --pm-text-muted: #9797a8;
+        --pm-accent: #8484ff;
+        --pm-accent-hover: #9d9dff;
+        --pm-accent-contrast: #10101a;
+        --pm-danger: #ff8080;
+        --pm-danger-bg: #3a1f22;
+        --pm-success: #4ade80;
+        --pm-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 1px rgba(0, 0, 0, 0.2);
+    }
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--pm-bg);
+    color: var(--pm-text);
+    font-family: var(--pm-font);
+}
+
+body { line-height: 1.55; -webkit-font-smoothing: antialiased; }
+
+a { color: var(--pm-accent); text-decoration: none; }
+a:hover { color: var(--pm-accent-hover); text-decoration: underline; }
+
+.pm-container {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0 1.25rem 4rem;
+}
+
+/* ---------- header ---------- */
+
+.pm-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: color-mix(in srgb, var(--pm-bg) 88%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--pm-border);
+}
+
+.pm-header__inner {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0.85rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.pm-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 800;
+    font-size: 1.15rem;
+    color: var(--pm-text) !important;
+    text-decoration: none !important;
+    margin-right: auto;
+    letter-spacing: -0.02em;
+}
+
+.pm-brand__mark {
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--pm-accent), #a78bfa);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 800;
+}
+
+.pm-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+}
+
+.pm-nav a {
+    color: var(--pm-text-muted) !important;
+    text-decoration: none !important;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.4rem 0.6rem;
+    border-radius: 8px;
+}
+
+.pm-nav a:hover { color: var(--pm-text) !important; background: var(--pm-surface-2); }
+.pm-nav a.is-cta { color: var(--pm-accent-contrast) !important; background: var(--pm-accent); }
+.pm-nav a.is-cta:hover { background: var(--pm-accent-hover); }
+
+/* ---------- page basics ---------- */
+
+.pm-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 1.75rem 0 1.1rem;
+}
+
+.pm-subtle { color: var(--pm-text-muted); }
+.pm-text-center { text-align: center; }
+.pm-mt-0 { margin-top: 0; }
+.pm-stack-lg { display: flex; flex-direction: column; gap: 1.25rem; }
+
+/* ---------- avatar ---------- */
+
+.pm-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: white;
+    flex-shrink: 0;
+    object-fit: cover;
+    background: var(--pm-accent);
+}
+
+.pm-avatar--lg { width: 64px; height: 64px; font-size: 1.4rem; }
+
+/* ---------- card ---------- */
+
+.pm-card {
+    background: var(--pm-surface);
+    border: 1px solid var(--pm-border);
+    border-radius: var(--pm-radius);
+    box-shadow: var(--pm-shadow);
+    padding: 1.5rem;
+}
+
+.pm-empty-state { text-align: center; padding: 3rem 1rem; color: var(--pm-text-muted); }
+
+/* ---------- forms ---------- */
+
+form.pm-stack { display: flex; flex-direction: column; gap: 1rem; }
+
+.pm-field { display: flex; flex-direction: column; gap: 0.35rem; }
+
+.pm-field label { font-weight: 600; font-size: 0.85rem; color: var(--pm-text-muted); }
+
+.pm-field input[type="text"],
+.pm-field input[type="email"],
+.pm-field input[type="password"],
+.pm-field input[type="file"],
+.pm-field textarea {
+    font: inherit;
+    font-size: 0.95rem;
+    padding: 0.6rem 0.7rem;
+    border-radius: 8px;
+    border: 1px solid var(--pm-border);
+    background: var(--pm-surface-2);
+    color: var(--pm-text);
+    width: 100%;
+}
+
+.pm-field input:focus, .pm-field textarea:focus {
+    outline: none;
+    border-color: var(--pm-accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--pm-accent) 20%, transparent);
+}
+
+.pm-field textarea { resize: vertical; min-height: 6rem; }
+.pm-field-hint { font-size: 0.78rem; color: var(--pm-text-muted); }
+
+/* ---------- buttons ---------- */
+
+.pm-btn {
+    all: unset;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 0.9rem;
+    padding: 0.6rem 1.1rem;
+    border-radius: 8px;
+    background: var(--pm-accent);
+    color: var(--pm-accent-contrast);
+    text-align: center;
+    transition: background 0.12s, opacity 0.12s;
+}
+
+.pm-btn:hover { background: var(--pm-accent-hover); }
+.pm-btn:disabled { opacity: 0.6; cursor: default; }
+.pm-btn--secondary { background: var(--pm-surface-2); color: var(--pm-text); }
+.pm-btn--secondary:hover { background: var(--pm-border); }
+.pm-btn--danger { background: var(--pm-danger-bg); color: var(--pm-danger); }
+.pm-btn--danger:hover { opacity: 0.85; }
+.pm-btn--sm { padding: 0.4rem 0.75rem; font-size: 0.82rem; }
+.pm-btn--block { width: 100%; }
+
+/* ---------- feedback ---------- */
+
+.pm-alert { border-radius: 8px; padding: 0.7rem 0.9rem; font-size: 0.86rem; display: none; }
+.pm-alert--error { background: var(--pm-danger-bg); color: var(--pm-danger); }
+.pm-alert.is-visible { display: block; }
+
+.pm-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    background: var(--pm-surface-2);
+    color: var(--pm-text-muted);
+}
+
+.pm-badge--success { background: color-mix(in srgb, var(--pm-success) 15%, transparent); color: var(--pm-success); }
+.pm-badge--accent { background: color-mix(in srgb, var(--pm-accent) 15%, transparent); color: var(--pm-accent); }
+
+.pm-helper-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: var(--pm-text-muted); }
+
+code {
+    background: var(--pm-surface-2);
+    padding: 0.15rem 0.4rem;
+    border-radius: 5px;
+    font-size: 0.85em;
+    word-break: break-all;
+}
+
+@media (max-width: 560px) {
+    .pm-header__inner { flex-wrap: wrap; }
+    .pm-nav { order: 3; width: 100%; }
+}

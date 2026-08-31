@@ -3,7 +3,8 @@
 {{ $title }}
 @endsection
 @section('content')
-<h1>{{ $heading }}</h1>
+<h1 class="pm-title pm-mt-0">{{ $heading }}</h1>
+<div class="pm-card">
 <p>{!! $intro !!}</p>
 @if(count($features) > 0)
 <ul>
@@ -12,4 +13,5 @@
 @endforeach
 </ul>
 @endif
+</div>
 @endsection

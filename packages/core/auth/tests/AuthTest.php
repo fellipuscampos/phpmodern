@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PhpModern\Auth\Tests;
 
 use PhpModern\Auth\Auth;
+use PhpModern\Http\Response;
 use PHPUnit\Framework\TestCase;
 
 final class AuthTest extends TestCase
@@ -39,5 +40,20 @@ final class AuthTest extends TestCase
 
         self::assertFalse(Auth::check());
         self::assertNull(Auth::id());
+    }
+
+    public function test_require_login_or_respond_returns_a_401_response_when_nobody_is_logged_in(): void
+    {
+        $response = Auth::requireLoginOrRespond();
+
+        self::assertInstanceOf(Response::class, $response);
+        self::assertSame(401, $response->status);
+    }
+
+    public function test_require_login_or_respond_returns_null_when_someone_is_logged_in(): void
+    {
+        Auth::login(42);
+
+        self::assertNull(Auth::requireLoginOrRespond());
     }
 }

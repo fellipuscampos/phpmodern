@@ -6,6 +6,7 @@ namespace PhpModern\Authorization\Tests;
 
 use InvalidArgumentException;
 use PhpModern\Authorization\Gate;
+use PhpModern\Http\Response;
 use PHPUnit\Framework\TestCase;
 
 final class GateTest extends TestCase
@@ -47,6 +48,28 @@ final class GateTest extends TestCase
 
         // reaching this line proves authorize() didn't call exit()
         self::assertTrue(true);
+    }
+
+    public function test_authorize_or_respond_returns_null_when_the_ability_is_allowed(): void
+    {
+        Gate::define('edit-comment', fn (int $userId, array $comment): bool => $comment['user_id'] === $userId);
+
+        self::assertNull(Gate::authorizeOrRespond('edit-comment', 1, ['user_id' => 1]));
+    }
+
+    /**
+     * authorize()'s denied branch calls exit() and so can never run inside
+     * this test process — authorizeOrRespond() is what actually lets the
+     * denied case get covered at all.
+     */
+    public function test_authorize_or_respond_returns_a_403_response_when_the_ability_is_denied(): void
+    {
+        Gate::define('edit-comment', fn (int $userId, array $comment): bool => $comment['user_id'] === $userId);
+
+        $response = Gate::authorizeOrRespond('edit-comment', 2, ['user_id' => 1]);
+
+        self::assertInstanceOf(Response::class, $response);
+        self::assertSame(403, $response->status);
     }
 
     public function test_reset_clears_every_defined_policy(): void

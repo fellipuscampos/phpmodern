@@ -2,12 +2,38 @@
 <html lang="pt-br">
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'phpmodern starter-kernel')</title>
+    <?php
+        // __DIR__ here resolves to View's *compiled cache* directory
+        // (var/cache/starter-kernel-views/), not this .phtml's own source
+        // location — View compiles each template to a real PHP file on
+        // disk and include()s that, so PHP's __DIR__ reflects wherever the
+        // compiled copy actually lives. That cache dir is fixed relative
+        // to the repo root (see public/index.php), which is what this path
+        // is actually relative to.
+        $themeUrl = \PhpModern\Bridge\versioned_asset_url(
+            '/assets/theme.css',
+            __DIR__ . '/../../../packages/framework/kernel/resources/theme.css',
+        );
+    ?>
+    <link rel="stylesheet" href="{{ $themeUrl }}">
 </head>
-<body style="font-family: sans-serif; padding: 2rem;">
-    <main>
-        @yield('content')
-    </main>
-    @include('partials.footer', ['renderedAt' => $renderedAt])
+<body>
+    <header class="pm-header">
+        <div class="pm-header__inner">
+            <a class="pm-brand" href="/"><span class="pm-brand__mark">P</span> starter-kernel</a>
+            <nav class="pm-nav">
+                <a href="/">Home</a>
+                <a href="/about">About</a>
+            </nav>
+        </div>
+    </header>
+    <div class="pm-container">
+        <main>
+            @yield('content')
+        </main>
+        @include('partials.footer', ['renderedAt' => $renderedAt])
+    </div>
 </body>
 </html>

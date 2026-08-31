@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace PhpModern\Auth;
 
+use PhpModern\Http\Response;
+
 /**
  * A second (or third...) independently-tracked "who is logged in", for an
  * app that needs more than one kind of principal live at once — an admin
@@ -58,5 +60,11 @@ final class Guard
             echo 'Login required.';
             exit;
         }
+    }
+
+    /** The kernel-mode twin of requireLogin() — see Auth::requireLoginOrRespond(). */
+    public function requireLoginOrRespond(): ?Response
+    {
+        return $this->check() ? null : Response::text('Login required.', 401);
     }
 }

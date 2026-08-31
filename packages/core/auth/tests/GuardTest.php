@@ -6,6 +6,7 @@ namespace PhpModern\Auth\Tests;
 
 use PhpModern\Auth\Auth;
 use PhpModern\Auth\Guard;
+use PhpModern\Http\Response;
 use PHPUnit\Framework\TestCase;
 
 final class GuardTest extends TestCase
@@ -72,5 +73,20 @@ final class GuardTest extends TestCase
 
         self::assertNull(Auth::id());
         self::assertSame(1, Auth::guard('admin')->id());
+    }
+
+    public function test_require_login_or_respond_returns_a_401_response_when_the_guard_is_not_logged_in(): void
+    {
+        $response = Auth::guard('admin')->requireLoginOrRespond();
+
+        self::assertInstanceOf(Response::class, $response);
+        self::assertSame(401, $response->status);
+    }
+
+    public function test_require_login_or_respond_returns_null_once_the_guard_is_logged_in(): void
+    {
+        Auth::guard('admin')->login(1);
+
+        self::assertNull(Auth::guard('admin')->requireLoginOrRespond());
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PhpModern\Authorization;
 
 use InvalidArgumentException;
+use PhpModern\Http\Response;
 
 /**
  * A registry of policies, deliberately static for the same reason DebugBar
@@ -47,6 +48,21 @@ final class Gate
             echo 'Forbidden.';
             exit;
         }
+    }
+
+    /**
+     * The kernel-mode twin of authorize(): rather than exit()ing (which
+     * bypasses the Response a Router/Pipeline handler is expected to
+     * return, and would kill a PHPUnit process outright — exactly why
+     * GateTest never exercises authorize()'s denied branch), this returns
+     * a 403 Response for the caller to `return` themselves, or null when
+     * the ability is allowed and the caller should keep going.
+     *
+     * @return Response|null a 403 Response if denied, null if allowed
+     */
+    public static function authorizeOrRespond(string $ability, mixed ...$args): ?Response
+    {
+        return self::denies($ability, ...$args) ? Response::text('Forbidden.', 403) : null;
     }
 
     /** Clears every registered policy — mainly for tests. */

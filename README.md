@@ -1229,6 +1229,60 @@ under a real daemon manager (this dev machine is Windows).
 - **No external security audit, no LTS/versioning policy, no CVE
   tracking** — every package sits at `v0.1.0` with no track record.
 
+## Phase 6: what building a real app outside this repo found
+
+Every prior phase was verified against showcases living inside this
+monorepo or its sibling demo. Phase 6 is different: a genuinely separate
+kernel-mode app (a small link/discussion board — register, post, vote live,
+comment, moderate — deliberately built to use as much of the framework's
+surface as fits one coherent app) exposed two real gaps that no amount of
+testing *this* repo's own code would have caught, because both only show up
+once someone else is actually building on top of it.
+
+1. ~~`Auth::requireLogin()` / `Gate::authorize()` bypass the Response a
+   kernel-mode handler is expected to return~~ — done. Both call
+   `http_response_code()` + `echo` + `exit()` directly — the only option
+   available when they were written for bridge-mode scripts, but a real
+   cost in kernel mode: `exit()` skips the `Response` object entirely, and
+   would kill a PHPUnit process outright, which is exactly why `GateTest`
+   never exercised `authorize()`'s denied branch and `AuthTest`/`GuardTest`
+   never exercised `requireLogin()`'s failing one — there was no way to
+   write that test. Building the showcase surfaced a second, sharper
+   version of the same problem: `PostController::destroy()` called
+   `Auth::requireLogin()` before checking `Gate`, which silently assumes
+   the default `'web'` guard — so a moderator logged in *only* through
+   `Auth::guard('moderator')` (the whole point of a second guard) was
+   locked out of the one action that guard exists for. Fixed additively,
+   nothing existing changed behavior: `Auth::requireLoginOrRespond()`,
+   `Guard::requireLoginOrRespond()`, and `Gate::authorizeOrRespond()`
+   return a 401/403 `Response` (or `null` to keep going) instead of
+   exiting, plus a `RequireAuthMiddleware` for the common
+   "this whole route needs login" case, composable in the same `Pipeline`
+   as `CsrfMiddleware`. Now genuinely testable — `GateTest` covers the
+   denied branch for real for the first time — and the showcase's
+   moderator-delete bug is fixed at the root cause (`Gate` is the only
+   boundary now, not a guard-specific `requireLogin()` first).
+2. ~~The framework has no opinion on how a kernel-mode app should look~~ —
+   done, to the extent a framework reasonably should. There was no CSS,
+   no starter visual language — every new project began from an
+   unstyled `<body>`, which is exactly the complaint the showcase drew
+   once it existed to look at. `packages/framework/kernel/resources/theme.css`
+   is a small, dependency-free default stylesheet (design tokens, dark
+   mode via `prefers-color-scheme`, cards/buttons/forms/badges) styled the
+   way a modern Node/React/TypeScript app usually looks — not a UI kit,
+   no build step, nothing to opt out of. `apps/starter-kernel` links it now
+   as the concrete proof it isn't just a file sitting unused in a
+   `resources/` folder. Fixing this also caught a real, pre-existing,
+   unrelated bug: `apps/starter-kernel`'s asset routes (`idiomorph.js`,
+   `push-hub-client.js`, and now `theme.css`) returned a bare string, which
+   `Router::normalize()` wraps in `Response::html()` — whose own `send()`
+   sets `Content-Type: text/html` *after* the route's own manual
+   `header()` call, silently overwriting it. Every static asset
+   starter-kernel served was mislabeled `text/html` the entire time,
+   caught only by actually checking the response header instead of just
+   the body. Fixed by returning a real `Response` object from each asset
+   route instead of a plain string.
+
 ## Requirements
 
 PHP 8.2+. No async runtime (Swoole/RoadRunner) is required — the push hub is

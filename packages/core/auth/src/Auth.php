@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace PhpModern\Auth;
 
+use PhpModern\Http\Response;
+
 /**
  * Tracks who is logged in — nothing more. Fetching the actual user record
  * (name, email, roles...) from the database by id() is the caller's job,
@@ -49,6 +51,18 @@ final class Auth
             echo 'Login required.';
             exit;
         }
+    }
+
+    /**
+     * The kernel-mode twin of requireLogin(): a Router/Pipeline handler is
+     * expected to return a Response, and exit()ing bypasses that (it would
+     * also kill a PHPUnit process outright, which is why no test exercises
+     * requireLogin()'s failing branch). Returns a 401 Response to `return`
+     * when nobody is logged in, or null to keep going.
+     */
+    public static function requireLoginOrRespond(): ?Response
+    {
+        return self::check() ? null : Response::text('Login required.', 401);
     }
 
     /**

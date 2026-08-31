@@ -4,7 +4,8 @@
     "type": "library",
     "license": "MIT",
     "require": {
-        "php": "^8.2"
+        "php": "^8.2",
+        "phpmodern/http": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "^10.5"
