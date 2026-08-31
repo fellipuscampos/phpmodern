@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d19d183305af74d0247da1e79da61cbf",
+    "content-hash": "31e6a541f02cd3e6fa071d26f9a54fa8",
     "packages": [],
     "packages-dev": [
         {
@@ -926,12 +926,12 @@
             "dist": {
                 "type": "path",
                 "url": "packages/core/typing-contracts",
-                "reference": "ee7fb89e3bef571fc0e52a3a9f6ec92bbb762112"
+                "reference": "b3cacb22eb4c4fd387b184727d5691c789d78688"
             },
             "require": {
                 "php": "^8.2",
                 "phpmodern/component-engine": "*",
-                "phpstan/phpstan": "^1.11"
+                "phpstan/phpstan": "^2.2"
             },
             "require-dev": {
                 "phpunit/phpunit": "^10.5"
@@ -993,15 +993,15 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.12.34",
+            "version": "2.2.10",
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/4dd89ca7aa30fdc6760be21550d583bcc32e8476",
-                "reference": "4dd89ca7aa30fdc6760be21550d583bcc32e8476",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/36d1509c998b0602811824143526b4a9ee2774e7",
+                "reference": "36d1509c998b0602811824143526b4a9ee2774e7",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.2|^8.0"
+                "php": "^7.4|^8.0"
             },
             "conflict": {
                 "phpstan/phpstan-shim": "*"
@@ -1019,6 +1019,17 @@
             "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ondřej Mirtes"
+                },
+                {
+                    "name": "Markus Staab"
+                },
+                {
+                    "name": "Vincent Langlet"
+                }
             ],
             "description": "PHPStan - PHP Static Analysis Tool",
             "keywords": [
@@ -1042,7 +1053,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-07-28T10:04:39+00:00"
+            "time": "2026-08-30T12:46:16+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",

@@ -684,10 +684,22 @@ declaring victory:
    queries richer than equality/`IN` (no `LIKE`, no comparison operators, no
    `ORDER BY` outside `paginate()`), and seeders for repeatable test/demo
    data.
-4. **PHPStan is pinned to the 1.12.x series** — every `composer analyse` run
-   this whole project prints a deprecation warning urging an upgrade to
-   2.2+. Never addressed because the 1.x line still catches real bugs at
-   level 8, but it's accumulating tooling debt.
+4. ~~PHPStan is pinned to the 1.12.x series~~ — done, upgraded to 2.2.10.
+   Its stricter list-type inference caught 6 real (if minor) issues 1.x
+   missed: `QueryHelper::findMany()`/`findManyWhereIn()`/`paginate()` were
+   typed to return `list<...>` but returned `PDOStatement::fetchAll()`'s
+   result directly, which PHPStan 2.x no longer assumes is a list without
+   an explicit `array_values()`; a redundant `array_values()` call on an
+   already-list parameter in `findManyWhereIn()`; and a `?? ''` fallback in
+   `HubServer` on an array offset PHPStan could now prove always exists.
+   All fixed for real, not suppressed — `composer analyse` is clean on 2.2.
+   Running `phpmodern-check` (the framework's own zero-config level-9 tool)
+   against the showcase project surfaced ~50 pre-existing level-9 findings
+   in the demo's own application code (mostly untyped `array` offsets from
+   `QueryHelper::findOneBy()` results) — unrelated to this upgrade and not
+   a regression, but a real gap: the flagship demo doesn't yet pass the
+   framework's own strictness tool. Left as a follow-up, not folded into
+   this item.
 5. **No measured test coverage** — 187+ tests passing is not the same claim
    as "the important branches are covered." No coverage driver (Xdebug/
    PCOV) or `--coverage` report is wired into CI, so there's no actual
