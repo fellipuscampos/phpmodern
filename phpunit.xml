@@ -68,4 +68,30 @@
             <directory>packages/core/testing/tests</directory>
         </testsuite>
     </testsuites>
+    <source>
+        <include>
+            <directory suffix=".php">packages/core/component-engine/src</directory>
+            <directory suffix=".php">packages/core/orm/src</directory>
+            <directory suffix=".php">packages/core/push-hub/src</directory>
+            <directory suffix=".php">packages/core/typing-contracts/src</directory>
+            <directory suffix=".php">packages/core/queue/src</directory>
+            <directory suffix=".php">packages/devtools/dev-server/src</directory>
+            <directory suffix=".php">packages/core/store/src</directory>
+            <directory suffix=".php">packages/devtools/debugbar/src</directory>
+            <directory suffix=".php">packages/core/security/src</directory>
+            <directory suffix=".php">packages/core/auth/src</directory>
+            <directory suffix=".php">packages/core/validation/src</directory>
+            <directory suffix=".php">packages/core/http/src</directory>
+            <directory suffix=".php">packages/core/config/src</directory>
+            <directory suffix=".php">packages/core/authorization/src</directory>
+            <directory suffix=".php">packages/core/mail/src</directory>
+            <directory suffix=".php">packages/core/logging/src</directory>
+            <directory suffix=".php">packages/core/error-handler/src</directory>
+            <directory suffix=".php">packages/core/cache/src</directory>
+            <directory suffix=".php">packages/core/console/src</directory>
+            <directory suffix=".php">packages/core/testing/src</directory>
+            <directory suffix=".php">packages/bridge/adapter/src</directory>
+            <directory suffix=".php">packages/framework/kernel/src</directory>
+        </include>
+    </source>
 </phpunit>

@@ -70,6 +70,7 @@
     },
     "scripts": {
         "test": "phpunit",
+        "test-coverage": "phpunit --coverage-text --coverage-html var/coverage-html",
         "analyse": "phpstan analyse --memory-limit=512M"
     }
 }

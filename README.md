@@ -718,10 +718,22 @@ declaring victory:
    a regression, but a real gap: the flagship demo doesn't yet pass the
    framework's own strictness tool. Left as a follow-up, not folded into
    this item.
-5. **No measured test coverage** — 187+ tests passing is not the same claim
-   as "the important branches are covered." No coverage driver (Xdebug/
-   PCOV) or `--coverage` report is wired into CI, so there's no actual
-   number behind "well tested," just the absence of known gaps.
+5. ~~No measured test coverage~~ — done. PCOV is enabled locally and via
+   `coverage: pcov` in CI (only on the PHP 8.4 leg — coverage is measured
+   once, not per PHP version); `composer test-coverage` runs
+   `phpunit --coverage-text --coverage-html var/coverage-html`, and CI
+   prints the text summary to the job log on every push. It's informational,
+   not a gate — no threshold fails the build, since none has been
+   deliberately chosen yet. First real number: **79% line coverage / 73%
+   method coverage** across every package's `src/`. The gaps are exactly
+   where you'd expect for a project that always chose real integration
+   checks (curl, headless Chrome, a live SMTP server) over unit tests for
+   I/O-heavy code: `HubServer` (3% — a socket-`select()` daemon loop, never
+   unit tested, always checked by hand against a real subscribed browser)
+   and `SmtpMailer` (24% — `buildDataSection()`, the one pure/testable
+   method, is fully covered; the socket-talking parts were verified against
+   a real local SMTP debug server instead of mocked). Not padded to look
+   better than it is.
 6. **Submitting the 22 split packages to Packagist** — the repos exist,
    are tagged `v0.1.0`, and install today via a Composer VCS repository
    (see above), but nobody can `composer require phpmodern/orm` with zero

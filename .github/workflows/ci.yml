@@ -22,7 +22,7 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           extensions: pdo_sqlite, mbstring, phar
-          coverage: none
+          coverage: ${{ matrix.php == '8.4' && 'pcov' || 'none' }}
 
       - name: Validate composer.json
         run: composer validate --no-check-publish
@@ -31,7 +31,15 @@ jobs:
         run: composer install --no-interaction --prefer-dist
 
       - name: Run tests
+        if: matrix.php != '8.4'
         run: composer test
+
+      # Coverage is measured once (not on every PHP version) and printed to
+      # the job log — informational, not a gate: no threshold fails the
+      # build, since none has been deliberately chosen yet.
+      - name: Run tests with coverage
+        if: matrix.php == '8.4'
+        run: composer test-coverage
 
       - name: Run static analysis
         run: composer analyse
