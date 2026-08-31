@@ -881,10 +881,26 @@ it is realistic in one pass:
    partial (`@include`d footer receiving its own data), and a real
    `@foreach` over a feature list, verified against a running server with
    the compiled cache files inspected on disk afterward.
-3. **The ORM has no model layer** — `QueryHelper` returns plain arrays, not
-   typed objects. No Active Record, no query scopes, no accessors/casts, no
-   model events, no `belongsToMany`/polymorphic relationships, no
-   configurable eager loading beyond the two fixed helpers `Relations` has.
+3. ~~The ORM has no model layer~~ — partially done. `PhpModern\Orm\Model`
+   is a minimal Active Record layer deliberately without Eloquent's
+   `__get`/`__set` dynamic attribute bag — a subclass declares its own
+   typed readonly properties plus three small methods (`table()`,
+   `attributes()`, `fromRow()`), matching the "no magic string/array
+   standing in for structure" rule the rest of the framework already
+   follows (`Comparison` instead of a query DSL, `Rule` objects instead of
+   a validation DSL). `find()`/`where()`/`all()` return typed instances,
+   not arrays; `save()` is immutable — it re-fetches the row after
+   inserting/updating and returns a *new* instance, the same
+   `Response::withHeader()`-style preference for a new value over mutating
+   one, since a `readonly $id`/`$createdAt` can't be updated in place
+   anyway. `QueryHelper::delete()` didn't exist before this either — added
+   alongside, since a model layer needs one. Verified for real: a `Stock`
+   model in the showcase project backs a brand-new read-only endpoint
+   (`Stock::all()`, unrelated to the already-tested `stock_adjust_app()`
+   code path) and a full insert/find/update/delete cycle run against the
+   app's real SQLite file, not just `:memory:` unit tests. Still open:
+   query scopes, accessors/casts, model events, `belongsToMany`/polymorphic
+   relationships, and eager loading beyond `Relations`'s two fixed helpers.
 4. **Auth is session-login only** — no API tokens, no OAuth2, no 2FA, no
    multiple guards for authenticating different kinds of principals.
 5. **Queue has one driver and no resilience features** — no Redis/SQS
