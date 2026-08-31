@@ -30,6 +30,7 @@ declare -A PACKAGES=(
   [packages/core/http]="phpmodern/http"
   [packages/core/logging]="phpmodern/logging"
   [packages/core/mail]="phpmodern/mail"
+  [packages/core/notifications]="phpmodern/notifications"
   [packages/core/orm]="phpmodern/orm"
   [packages/core/push-hub]="phpmodern/push-hub"
   [packages/core/queue]="phpmodern/queue"

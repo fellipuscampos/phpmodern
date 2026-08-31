@@ -789,6 +789,7 @@ monorepo, tagged `v0.1.0`) — ready to submit to Packagist at
 | `phpmodern/kernel` | [phpmodern-kernel](https://github.com/fellipuscampos/phpmodern-kernel) |
 | `phpmodern/logging` | [phpmodern-logging](https://github.com/fellipuscampos/phpmodern-logging) |
 | `phpmodern/mail` | [phpmodern-mail](https://github.com/fellipuscampos/phpmodern-mail) |
+| `phpmodern/notifications` | [phpmodern-notifications](https://github.com/fellipuscampos/phpmodern-notifications) |
 | `phpmodern/orm` | [phpmodern-orm](https://github.com/fellipuscampos/phpmodern-orm) |
 | `phpmodern/push-hub` | [phpmodern-push-hub](https://github.com/fellipuscampos/phpmodern-push-hub) |
 | `phpmodern/queue` | [phpmodern-queue](https://github.com/fellipuscampos/phpmodern-queue) |
