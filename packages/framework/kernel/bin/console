@@ -55,6 +55,7 @@ use PhpModern\Console\Application;
 use PhpModern\Kernel\Console\MakeComponentConsoleCommand;
 use PhpModern\Kernel\Console\MigrateConsoleCommand;
 use PhpModern\Kernel\Console\MigrateRollbackConsoleCommand;
+use PhpModern\Kernel\Console\SeedConsoleCommand;
 
 Env::load(getcwd() . '/.env'); // a real environment variable always wins over this
 
@@ -62,6 +63,7 @@ $app = new Application('phpmodern kernel console');
 $app->register(new MakeComponentConsoleCommand());
 $app->register(new MigrateConsoleCommand());
 $app->register(new MigrateRollbackConsoleCommand());
+$app->register(new SeedConsoleCommand());
 
 /** @var list<string> $argv */
 exit($app->run($argv));

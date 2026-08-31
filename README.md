@@ -680,10 +680,28 @@ declaring victory:
    `new Connection($dsn)` accepts any PDO DSN in principle, but MySQL/
    Postgres-specific behavior (identifier quoting, `LIMIT`/`OFFSET` syntax
    differences, transaction isolation defaults) has never been exercised.
-3. **ORM feature gaps** — automatic `created_at`/`updated_at` timestamps,
-   queries richer than equality/`IN` (no `LIKE`, no comparison operators, no
-   `ORDER BY` outside `paginate()`), and seeders for repeatable test/demo
-   data.
+3. ~~ORM feature gaps~~ — done. `QueryHelper::insert()` didn't exist before
+   this (every INSERT in the showcase project was raw PDO by hand) — it now
+   exists with an opt-in `timestamps: true` flag that sets `created_at`/
+   `updated_at`, and `update()` grew the matching flag for `updated_at`
+   alone; explicit opt-in, not schema introspection, consistent with the
+   framework's "no magic" rule elsewhere (`Rule` objects instead of a
+   validation DSL, `Comparison` objects instead of a query DSL — see next).
+   `Comparison::greaterThan()/lessThan()/lessThanOrEqual()/
+   greaterThanOrEqual()/notEqual()/like()` gives `findOneBy()`/`findMany()`/
+   `paginate()`/`update()` conditions richer than equality, typed instead of
+   a magic string like `"quantity > 5"`. `findMany()` gained the same
+   `orderBy`/`direction` parameters `paginate()` already had. `Seeder`/
+   `SeederRunner` mirror `Migration`/`MigrationRunner`'s convention (a file
+   returns an instance, no registry) but re-run every time instead of
+   tracking "already applied" — seeding is meant to rebuild demo/test data,
+   not apply once. Wired into `phpmodern/kernel` as a new `db:seed` console
+   command. Verified for real, not just unit tests: a throwaway migration +
+   seeder in `apps/starter-kernel` (`database/migrations/…create_demo_products`,
+   `database/seeders/01_demo_products`) ran through the actual installed
+   `console migrate`/`console db:seed` binaries, inserted rows with real
+   automatic timestamps, and `Comparison::lessThan(10)` correctly filtered
+   the low-stock ones — then `console migrate:rollback` cleanly undid it.
 4. ~~PHPStan is pinned to the 1.12.x series~~ — done, upgraded to 2.2.10.
    Its stricter list-type inference caught 6 real (if minor) issues 1.x
    missed: `QueryHelper::findMany()`/`findManyWhereIn()`/`paginate()` were
