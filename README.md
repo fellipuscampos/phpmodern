@@ -1056,6 +1056,64 @@ None of this changes the Phase 0–3 verdict: what exists is real, tested, and
 coherent. This phase is about how much *more* a mature framework's feature
 surface actually is.
 
+## Phase 5 roadmap: deepening what's partial, and naming what code can't fix
+
+Phase 4 closed every subsystem category, but several landed "partially
+done" with a specific, addressable remainder — those are real roadmap
+items, listed below. Two other kinds of gap don't belong on the same list:
+things left out of scope on purpose (already explained where they came up,
+restated here for one place to look), and things no amount of code changes
+here fixes at all. Keeping those separate is the point — conflating "needs
+more work" with "needs the world to use this for years" would misrepresent
+both.
+
+**Addressable — deepens something already partially built:**
+
+1. **ORM** — query scopes, accessors/casts, model events (`created`,
+   `updated`, `deleted` hooks), `belongsToMany`/polymorphic relationships,
+   and eager loading configurable beyond `Relations`'s two fixed helpers
+   (`hasMany`/`belongsTo`).
+2. **Auth** — OAuth2, 2FA, and multiple guards for authenticating different
+   kinds of principals at once (today: session login + one flavor of API
+   token, nothing more).
+3. **Queue** — a Redis/SQS backend, job batching/chaining, per-job rate
+   limiting (distinct from the HTTP-level `phpmodern/rate-limiting`).
+4. **Validation** — six rules (`Required`, `StringType`, `IntType`,
+   `MinLength`, `MaxLength`, `In`) is thin for a real app; missing the
+   basics like email/URL format, numeric ranges, regex, and cross-field
+   rules (`confirmed`, `same_as`).
+5. **CLI** — still ~7 commands, not a generator framework; no
+   `make:model`/`make:migration`/`make:job`/`make:notification` scaffolds
+   to match the subsystems Phase 4 added.
+6. **~50 pre-existing `phpmodern-check` findings in `phpmodern-demo`'s own
+   code** (mostly untyped array offsets from `QueryHelper::findOneBy()`
+   results) — flagged honestly back in Phase 3, never actually fixed. The
+   framework's own flagship demo doesn't yet pass the framework's own
+   strictness tool.
+
+**Explicitly out of scope, restated in one place:** S3 storage (would mean
+either the AWS SDK — a genuinely heavy external dependency unlike every
+hand-built integration elsewhere here — or hand-rolled SigV4 signing with
+no real AWS account to verify it against); a WebSocket driver for push-hub
+(a correct hand-rolled RFC 6455 implementation is real protocol work with
+no real browser/client library here to validate it against, and Swoole
+would be a heavy runtime dependency); an asset bundler; a GraphQL/API
+layer; systemd/supervisor configs reviewed carefully but never started
+under a real daemon manager (this dev machine is Windows).
+
+**Not a code problem — no amount of implementation work here closes these:**
+
+- **Distribution to Packagist** — the 29 package repos exist, tagged and
+  installable via VCS today; actually submitting each on packagist.org
+  needs the maintainer's own account login, not more code.
+- **Zero production usage, zero community, zero third-party ecosystem** —
+  this is the real distance from Laravel/Symfony/Rails, and it isn't
+  closed by writing more of this framework. Laravel's Nova/Forge/Vapor/
+  Cashier/Horizon/Telescope exist because years of other developers built
+  on it and needed them; that only happens after real adoption, not before.
+- **No external security audit, no LTS/versioning policy, no CVE
+  tracking** — every package sits at `v0.1.0` with no track record.
+
 ## Requirements
 
 PHP 8.2+. No async runtime (Swoole/RoadRunner) is required — the push hub is
