@@ -1135,8 +1135,41 @@ both.
      real HTTP, both the successful-exchange and provider-error cases,
      the same "real local server, not a mock library" standard the SMTP
      and push-hub work already set.
-3. **Queue** — a Redis/SQS backend, job batching/chaining, per-job rate
-   limiting (distinct from the HTTP-level `phpmodern/rate-limiting`).
+3. ~~Queue~~ — partially done.
+   - ~~Redis backend~~ — done. `QueueDriver` is `DatabaseQueue`'s public
+     surface extracted into an interface (a pure extraction, no behavior
+     change), so `Worker` now depends on that instead of the concrete
+     class. `RedisQueue` implements it via `RespClient`, a hand-rolled
+     RESP client over a plain TCP socket — no ext-redis dependency, the
+     same "hand-build the wire protocol instead of a heavy dependency"
+     choice already made for SMTP, SSE, and OAuth2. It uses Redis's
+     standard reliable-queue idiom (`LPUSH` to enqueue, `RPOPLPUSH`
+     pending→reserved to pop — one atomic move, so two workers can never
+     grab the same job) and a `ZSET` scored by unix timestamp for retry
+     backoff. Verified two ways: the wire protocol itself was proven
+     against a real TCP socket (a small RESP server written for this,
+     exercising push → worker-processes → batch-completes end to end over
+     actual encoded/decoded RESP frames), and CI now runs a genuine
+     `redis:7` service container (`Queue smoke test (Redis)`, mirroring
+     the ORM's PostgreSQL/MySQL smoke tests) proving real Redis semantics,
+     not just this client's own protocol correctness — this machine has
+     no local Redis to verify against directly, so CI is the second half
+     of that proof, not a downgrade from it.
+   - ~~Job batching/chaining~~ — done, and driver-agnostic (works
+     identically over `DatabaseQueue` and `RedisQueue`, since both are
+     just `BatchableQueue`/`QueueDriver`). `ChainableJob` is an opt-in
+     interface — the same shape `RetryableJob` already uses — whose
+     `next()` gets pushed only after the current job actually succeeds,
+     so a failed link stops the chain. `Batch::dispatch()` pushes a group
+     of jobs and, once every one has settled (`BatchableQueue`'s atomic
+     `recordBatchCompletion()` — a single `UPDATE ... SET completed =
+     completed + 1` for the database driver, `HINCRBY` for Redis, so two
+     workers finishing the batch's last two jobs at once can't lose an
+     increment), pushes a "then" job. A batched job's `batch_id` is kept
+     in its own column/hash field rather than folded into the payload
+     JSON a job's constructor is hydrated from, so no job class has to
+     know or care it's part of a batch.
+   - SQS backend, per-job rate limiting — still open, no code written yet.
 4. ~~Validation~~ — done. Added `Email`, `Url`, `Numeric`, `Between(min,
    max)`, `Regex(pattern)`, and `Confirmed` (a "password"/
    "password_confirmation" pair check). `Confirmed` needed something the

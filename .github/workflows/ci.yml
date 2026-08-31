@@ -121,6 +121,39 @@ jobs:
           PHPMODERN_TEST_DB_PASS: phpmodern
         run: vendor/bin/phpunit --filter CrossEngineSmokeTest packages/core/orm/tests
 
+  queue-redis:
+    name: "Queue smoke test (Redis)"
+    runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: pdo_sqlite, mbstring, phar
+          coverage: none
+
+      - name: Install dependencies (workspace root)
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Run the queue smoke test against real Redis
+        env:
+          PHPMODERN_TEST_REDIS_HOST: 127.0.0.1
+          PHPMODERN_TEST_REDIS_PORT: "6379"
+        run: vendor/bin/phpunit --filter RedisQueueSmokeTest packages/core/queue/tests
+
   demo-apps:
     name: "Demo apps install + lint"
     runs-on: ubuntu-latest
