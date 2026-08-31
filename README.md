@@ -918,9 +918,21 @@ it is realistic in one pass:
    resolving the correct user id; an invalid token still 401s. Still open:
    OAuth2, 2FA, and multiple guards for authenticating different kinds of
    principals at once.
-5. **Queue has one driver and no resilience features** — no Redis/SQS
-   backend, no automatic retry with backoff, no job batching or chaining,
-   no per-job rate limiting.
+5. ~~Queue has no resilience features~~ — partially done. A job whose
+   class implements `RetryableJob` (adding one method, `maxAttempts()`, on
+   top of `Job`) now gets automatic retry with exponential backoff (2, 4,
+   8... seconds) instead of failing permanently on its first exception — a
+   plain `Job` still fails immediately, exactly as before this existed, so
+   nothing breaks by this being additive. `DatabaseQueue::pop()` now skips
+   a job still waiting out its backoff (`available_at` in the future); a
+   new `release()` puts a job back to `pending` with its attempt count and
+   next-available time; `markFailed()` optionally records the final
+   attempt count. Verified for real against the actual `bin/worker.php`
+   binary, not just unit tests: a job that fails its first two attempts and
+   succeeds on the third ran through the real worker process end to end,
+   observed waiting out real 2-then-4-second backoff delays before
+   succeeding and being deleted from the queue. Still open: a Redis/SQS
+   backend, job batching/chaining, and per-job rate limiting.
 6. **push-hub is SSE-only** — no WebSocket driver, no channel-level
    authorization model (a channel is just a string, not authenticated per
    subscriber like Laravel's private/presence channels).
