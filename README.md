@@ -727,12 +727,20 @@ declaring victory:
    (see above), but nobody can `composer require phpmodern/orm` with zero
    configuration until each one is actually submitted on packagist.org —
    a manual step tied to a personal account, left for the maintainer.
-7. **A real deployment story for the daemons** — `push-hub` and the queue
-   `Worker` have only ever been started by hand (`php bin/hub.php` in a
-   terminal). No systemd unit file, no supervisor config, no documented
-   restart-on-crash/restart-on-boot behavior — the "daemon lives outside
-   PHP-FPM" architecture decision was never followed through to "and here's
-   how it survives a server reboot."
+7. ~~A real deployment story for the daemons~~ — done. Both
+   `phpmodern/push-hub` and `phpmodern/queue` now ship a `deploy/` directory
+   with a systemd unit (`deploy/systemd/*.service`) and a supervisor config
+   (`deploy/supervisor/*.conf`) — two options because plenty of PHP hosting
+   has shell access but not systemd. Both restart the process on crash
+   (`Restart=on-failure` / `autorestart=true`) and start it on boot
+   (`WantedBy=multi-user.target` / supervisor's own always-on model),
+   finally following through on the "daemon lives outside PHP-FPM"
+   decision to "and here's how it survives a crash or a reboot." Honesty
+   check, since this project's whole pattern has been verifying
+   end-to-end: this dev machine is Windows, so these configs were reviewed
+   carefully but never actually started under a real systemd/supervisor —
+   unlike everything else in this README, this one is unverified in that
+   specific sense. See "Deploying the daemons" below for install steps.
 
 Explicitly still out of scope, unchanged from earlier phases: an asset
 bundler, a GraphQL/API layer, i18n, and real WebSocket support (the push hub
@@ -773,6 +781,44 @@ monorepo, tagged `v0.1.0`) — ready to submit to Packagist at
 Submitting one of these on Packagist also connects a GitHub webhook, so
 future pushes to that mirror (via `tools/split-packages.sh`) update the
 Packagist listing automatically — no re-submission needed after the first time.
+
+## Deploying the daemons
+
+`push-hub` and the queue `Worker` are plain PHP CLI scripts meant to run as
+long-lived processes outside PHP-FPM (see "Two modes, one engine" above for
+why) — which means something has to restart them if they crash and start
+them again after a reboot. Each package ships both a systemd unit and a
+supervisor config for exactly that; pick whichever your host actually has.
+
+**systemd** (`packages/core/push-hub/deploy/systemd/phpmodern-push-hub.service`,
+`packages/core/queue/deploy/systemd/phpmodern-queue-worker.service`):
+
+```bash
+sudo cp phpmodern-push-hub.service /etc/systemd/system/
+# edit WorkingDirectory= (and User=) to match your deployment, then:
+sudo systemctl daemon-reload
+sudo systemctl enable --now phpmodern-push-hub
+sudo journalctl -u phpmodern-push-hub -f   # tail its output
+```
+
+Same steps for `phpmodern-queue-worker.service`.
+
+**supervisor** (`packages/core/push-hub/deploy/supervisor/phpmodern-push-hub.conf`,
+`packages/core/queue/deploy/supervisor/phpmodern-queue-worker.conf`) — for
+hosts with shell access but no systemd:
+
+```bash
+sudo cp phpmodern-push-hub.conf /etc/supervisor/conf.d/
+# edit directory= (and user=) to match your deployment, then:
+sudo supervisorctl reread && sudo supervisorctl update
+sudo supervisorctl start phpmodern-push-hub
+```
+
+Running more than one queue worker against the same database is safe to do
+by raising supervisor's `numprocs` (see the comment in that file) —
+`DatabaseQueue::pop()` reserves a job with a status-guarded `UPDATE ... WHERE
+status = 'pending'`, so two workers racing to claim the same row is a normal
+"the other one already got it" outcome (`rowCount() === 0`), not a bug.
 
 ## Requirements
 
