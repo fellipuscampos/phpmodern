@@ -1,0 +1,22 @@
+{
+    "name": "phpmodern/scheduler",
+    "description": "A fluent task scheduler (Schedule::call(...)->daily()) on top of a minimal 5-field cron matcher — no daemon of its own; a single system cron entry runs Schedule::run() every minute, the same way every real scheduler actually works under the fluent API.",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "PhpModern\\Scheduler\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "PhpModern\\Scheduler\\Tests\\": "tests/"
+        }
+    }
+}

@@ -27,6 +27,7 @@ parameters:
         - packages/core/events/src
         - packages/core/notifications/src
         - packages/core/storage/src
+        - packages/core/scheduler/src
         - packages/bridge/adapter/src
         - packages/framework/kernel/src
     ignoreErrors:

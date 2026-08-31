@@ -940,7 +940,21 @@ it is realistic in one pass:
 6. **push-hub is SSE-only** — no WebSocket driver, no channel-level
    authorization model (a channel is just a string, not authenticated per
    subscriber like Laravel's private/presence channels).
-7. **Missing subsystems**: a fluent task scheduler and i18n.
+7. **Missing subsystems**: i18n. ~~A fluent task scheduler~~ is done —
+   `phpmodern/scheduler`'s `Schedule::call(...)->daily()` (also `hourly()`,
+   `everyMinute()`, `everyFiveMinutes()`, `dailyAt('13:30')`, `weekly()`,
+   or a raw `cron()` expression) sits on top of a minimal 5-field cron
+   matcher supporting wildcards, exact values, and step values — no
+   ranges or comma-lists yet, honestly documented as such rather than
+   claiming a full parser. No daemon of its own: a single system cron
+   entry runs a script once a minute that builds the `Schedule` and calls
+   `run()`, exactly how every real "fluent scheduler" API actually works
+   underneath. Verified for real: the showcase project's
+   `bin/schedule-run.php` registers a genuine maintenance task (prune
+   soft-deleted comments older than 30 days) and was run for real against
+   seeded data — an old soft-deleted comment was actually removed, a
+   recently-deleted one and an active one were both correctly left alone,
+   and the real prune count landed in the app log.
    ~~A file storage abstraction~~ is partially done —
    `phpmodern/storage`'s `Filesystem` interface (`put`/`get`/`exists`/
    `delete`/`url`) has one implementation, `LocalFilesystem`, with
