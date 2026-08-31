@@ -901,8 +901,23 @@ it is realistic in one pass:
    app's real SQLite file, not just `:memory:` unit tests. Still open:
    query scopes, accessors/casts, model events, `belongsToMany`/polymorphic
    relationships, and eager loading beyond `Relations`'s two fixed helpers.
-4. **Auth is session-login only** — no API tokens, no OAuth2, no 2FA, no
-   multiple guards for authenticating different kinds of principals.
+4. ~~Auth is session-login only~~ — partially done. `ApiTokenManager`
+   (Sanctum-style personal access tokens: `issue()` returns a plaintext
+   token exactly once — only its SHA-256 hash is ever stored — and
+   `resolveUserId()` looks a presented token up by that hash) and
+   `ApiTokenMiddleware` (gates a route on `Authorization: Bearer <token>`)
+   give a completely stateless alternative to session login, entirely
+   separate from it. Needed `Request::withAttribute()`/`attribute()` — an
+   immutable per-request attribute bag didn't exist before this — for the
+   middleware to hand the resolved user id downstream without a session or
+   a global. Verified for real end to end: in the showcase project, a
+   session-authenticated request mints a token
+   (`actions/api-token-issue.php`), and a *completely separate, cookieless*
+   curl request presenting that token as a bearer header successfully
+   authenticates against a new stateless route (`actions/api-stock.php`),
+   resolving the correct user id; an invalid token still 401s. Still open:
+   OAuth2, 2FA, and multiple guards for authenticating different kinds of
+   principals at once.
 5. **Queue has one driver and no resilience features** — no Redis/SQS
    backend, no automatic retry with backoff, no job batching or chaining,
    no per-job rate limiting.

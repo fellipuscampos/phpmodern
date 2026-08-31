@@ -9,6 +9,7 @@ final class Request
     /**
      * @param array<string, string> $query
      * @param array<string, string> $headers lowercase header name => value
+     * @param array<string, mixed> $attributes resolved-by-middleware data (e.g. an authenticated user id)
      */
     private function __construct(
         public readonly string $method,
@@ -16,6 +17,7 @@ final class Request
         public readonly array $query,
         private readonly string $rawBody,
         private readonly array $headers,
+        private readonly array $attributes = [],
     ) {
     }
 
@@ -79,6 +81,25 @@ final class Request
         $decoded = json_decode($this->rawBody, true);
 
         return is_array($decoded) ? $decoded : null;
+    }
+
+    /**
+     * Returns a copy of this request carrying one extra piece of resolved
+     * data — the way a Middleware (API-token auth, a resolved rate-limit
+     * bucket) hands something downstream to the next handler without a
+     * mutable request or a global.
+     */
+    public function withAttribute(string $key, mixed $value): self
+    {
+        $attributes = $this->attributes;
+        $attributes[$key] = $value;
+
+        return new self($this->method, $this->path, $this->query, $this->rawBody, $this->headers, $attributes);
+    }
+
+    public function attribute(string $key): mixed
+    {
+        return $this->attributes[$key] ?? null;
     }
 
     /**

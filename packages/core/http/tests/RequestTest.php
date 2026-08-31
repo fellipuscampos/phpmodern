@@ -73,4 +73,28 @@ final class RequestTest extends TestCase
 
         self::assertSame('abc123', $request->header('X-CSRF-Token'));
     }
+
+    public function test_attribute_is_null_when_never_set(): void
+    {
+        self::assertNull(Request::create('GET', '/')->attribute('user_id'));
+    }
+
+    public function test_with_attribute_returns_a_new_request_carrying_the_value(): void
+    {
+        $original = Request::create('GET', '/');
+        $withUser = $original->withAttribute('user_id', 42);
+
+        self::assertSame(42, $withUser->attribute('user_id'));
+        self::assertNull($original->attribute('user_id'), 'the original request must be unchanged');
+    }
+
+    public function test_with_attribute_can_be_chained_to_carry_more_than_one_value(): void
+    {
+        $request = Request::create('GET', '/')
+            ->withAttribute('user_id', 42)
+            ->withAttribute('token_name', 'cli');
+
+        self::assertSame(42, $request->attribute('user_id'));
+        self::assertSame('cli', $request->attribute('token_name'));
+    }
 }

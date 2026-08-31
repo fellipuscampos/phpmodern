@@ -248,10 +248,12 @@
             "dist": {
                 "type": "path",
                 "url": "packages/core/auth",
-                "reference": "4aa897d542f966de799f0e4161c37bddd0ba01bb"
+                "reference": "cde60ff289c48cd1d3a952b164143eb4786c5f4b"
             },
             "require": {
-                "php": "^8.2"
+                "php": "^8.2",
+                "phpmodern/http": "*",
+                "phpmodern/orm": "*"
             },
             "require-dev": {
                 "phpunit/phpunit": "^10.5"
@@ -270,7 +272,7 @@
             "license": [
                 "MIT"
             ],
-            "description": "Session-backed authentication: PasswordHasher (a typed face on password_hash/verify), Session (a testable wrapper around $_SESSION), and Auth (login/logout/id/check, with session-fixation protection). Fetching the actual user record is left to the caller — this only tracks who is logged in.",
+            "description": "Session-backed authentication (PasswordHasher, Session, Auth) plus Sanctum-style API tokens (ApiTokenManager, ApiTokenMiddleware) for routes with no session at all. Fetching the actual user record is left to the caller — this only tracks who is logged in.",
             "transport-options": {
                 "relative": true
             }

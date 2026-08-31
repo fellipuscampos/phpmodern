@@ -1,10 +1,12 @@
 {
     "name": "phpmodern/auth",
-    "description": "Session-backed authentication: PasswordHasher (a typed face on password_hash/verify), Session (a testable wrapper around $_SESSION), and Auth (login/logout/id/check, with session-fixation protection). Fetching the actual user record is left to the caller — this only tracks who is logged in.",
+    "description": "Session-backed authentication (PasswordHasher, Session, Auth) plus Sanctum-style API tokens (ApiTokenManager, ApiTokenMiddleware) for routes with no session at all. Fetching the actual user record is left to the caller — this only tracks who is logged in.",
     "type": "library",
     "license": "MIT",
     "require": {
-        "php": "^8.2"
+        "php": "^8.2",
+        "phpmodern/orm": "*",
+        "phpmodern/http": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "^10.5"
