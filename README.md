@@ -1184,9 +1184,22 @@ both.
    `StringType` before this — any non-empty string passed. Checked against
    a running server: `"not-an-email"` now 422s with a clear message,
    a real address still 204s.
-5. **CLI** — still ~7 commands, not a generator framework; no
-   `make:model`/`make:migration`/`make:job`/`make:notification` scaffolds
-   to match the subsystems Phase 4 added.
+5. ~~CLI~~ — done. Four new generator commands, each following the exact
+   split `make:component` already established (a framework-agnostic
+   `Make*Command` with `run()`/`generateSource()`, unit-testable without a
+   CLI in the loop, plus a thin `Make*ConsoleCommand` adapter):
+   `make:model` (a `Model` subclass with `table()` guessed from the class
+   name via a small built-in pluralizer — no dependency for it, matching
+   "hand-build it instead of a heavy dependency" elsewhere here),
+   `make:migration` (a timestamp-prefixed file `return`ing an anonymous
+   `Migration` — a `create_X_table`-shaped name gets a real `CREATE`/`DROP
+   TABLE` stub instead of an empty one), `make:job`, and
+   `make:notification` (a `MailNotification` implementation). `console`
+   now lists 8 commands, not ~7. Verified live: ran all four against a
+   real temp project, then `console migrate` against a genuine SQLite
+   file actually created the generated migration's `products` table — a
+   second `migrate` run correctly reported "Nothing to migrate", proving
+   the migration was tracked for real, not just written to disk.
 6. **~50 pre-existing `phpmodern-check` findings in `phpmodern-demo`'s own
    code** (mostly untyped array offsets from `QueryHelper::findOneBy()`
    results) — flagged honestly back in Phase 3, never actually fixed. The

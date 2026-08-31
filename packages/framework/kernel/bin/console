@@ -53,6 +53,10 @@ require $autoload;
 use PhpModern\Config\Env;
 use PhpModern\Console\Application;
 use PhpModern\Kernel\Console\MakeComponentConsoleCommand;
+use PhpModern\Kernel\Console\MakeJobConsoleCommand;
+use PhpModern\Kernel\Console\MakeMigrationConsoleCommand;
+use PhpModern\Kernel\Console\MakeModelConsoleCommand;
+use PhpModern\Kernel\Console\MakeNotificationConsoleCommand;
 use PhpModern\Kernel\Console\MigrateConsoleCommand;
 use PhpModern\Kernel\Console\MigrateRollbackConsoleCommand;
 use PhpModern\Kernel\Console\SeedConsoleCommand;
@@ -61,6 +65,10 @@ Env::load(getcwd() . '/.env'); // a real environment variable always wins over t
 
 $app = new Application('phpmodern kernel console');
 $app->register(new MakeComponentConsoleCommand());
+$app->register(new MakeModelConsoleCommand());
+$app->register(new MakeMigrationConsoleCommand());
+$app->register(new MakeJobConsoleCommand());
+$app->register(new MakeNotificationConsoleCommand());
 $app->register(new MigrateConsoleCommand());
 $app->register(new MigrateRollbackConsoleCommand());
 $app->register(new SeedConsoleCommand());
